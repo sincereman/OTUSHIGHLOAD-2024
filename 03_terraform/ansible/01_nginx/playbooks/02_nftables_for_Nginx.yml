@@ -1,0 +1,12 @@
+---
+
+- name: Playbook of 02_nftables_for_Nginx
+  hosts:
+    - all
+  become: true
+  roles:
+    - role: '../roles/02_nftables_for_Nginx'
+
+  vars_files:
+    - "../roles/02_nftables_for_Nginx/vars/main.yml"
+    - "../roles/02_nftables_for_Nginx/vars/{{ ansible_os_family }}.yml"

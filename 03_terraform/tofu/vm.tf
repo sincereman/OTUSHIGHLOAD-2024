@@ -8,10 +8,16 @@ resource "yandex_compute_disk" "boot-disk-1" {
 
 resource "yandex_compute_instance" "vm-1" {
   name = "otus-l03-tf1"
+  hostname="otus-l03-tf1"
+
+  scheduling_policy {
+    preemptible = true
+  }
 
   resources {
     cores  = 2
     memory = 2
+    core_fraction = 5
   }
 
   boot_disk {

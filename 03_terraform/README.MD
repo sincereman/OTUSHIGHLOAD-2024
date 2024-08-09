@@ -138,7 +138,7 @@ Your profile default Compute zone has been set to 'ru-central1-a'.
 
 ```
 
- Конфиг основного пользователя будет такой
+Конфиг основного пользователя будет такой
 
 ```bash
 sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/00_account/01_yc$ yc config list
