@@ -138,7 +138,7 @@ Your profile default Compute zone has been set to 'ru-central1-a'.
 
 ```
 
-# Конфиг основного пользователя будет такой
+ Конфиг основного пользователя будет такой
 
 ```bash
 sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/00_account/01_yc$ yc config list
@@ -148,14 +148,14 @@ folder-id: b***
 compute-default-zone: ru-central1-a
 ```
 
-# Нам насколько я понял документацию для devops лучше использовать сервисный аккаунт
+Для devops лучше использовать сервисный аккаунт
 
-#данные берем в web части yc
+данные берем в web части yc
 
-#yc iam key create \
-#  --service-account-id <идентификатор_сервисного_аккаунта> \
-#  --folder-name <имя_каталога_с_сервисным_аккаунтом> \
-#  --output key.json
+yc iam key create \
+  --service-account-id <идентификатор_сервисного_аккаунта> \
+  --folder-name <имя_каталога_с_сервисным_аккаунтом> \
+  --output key.json
 
 
 ```bash
