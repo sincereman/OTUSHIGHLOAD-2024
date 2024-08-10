@@ -3,7 +3,7 @@
 OTUS_USER_PUB_KEY=$(cat ~/.ssh/id_otus_ed25519.pub)
 
 
-cat > metadata.yml << EOM
+cat > tofu/metayc.yml << EOM
 
 #cloud-config
 users:
