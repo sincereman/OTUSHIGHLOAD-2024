@@ -577,3 +577,109 @@ permitted by applicable law.
 ```
 
 
+## 2. Ansible
+
+Немного знаком с Ansible и имею ранее написанный playbook поэтому использую его.
+
+```shell
+
+ansible/01_nginx/
+├── ansible.cfg
+├── inventories
+│   ├── hosts
+│   ├── hosts1
+│   └── hostsyc
+├── playbooks
+│   ├── 01_Nginx.yml
+│   └── 02_nftables_for_Nginx.yml
+├── README.md
+├── roles
+│   ├── 01_Nginx
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   ├── index.html
+│   │   │   ├── nginx.conf.j2
+│   │   │   └── repo.conf.j2
+│   │   └── vars
+│   │       ├── Debian.yml
+│   │       └── main.yml
+│   └── 02_nftables_for_Nginx
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   └── main.yml
+│       ├── templates
+│       │   └── nftables.rules
+│       └── vars
+│           ├── Debian.yml
+│           └── main.yml
+
+
+```
+
+Но так как ДЗ делается до практической части и я еще не знаю будут ли там говорить про динамические inventory написал небольшой скрипт по запуску
+OpenTofu, генерации inventory для Ansible и запуску playbook
+
+
+Важно понимать что Tofu сработает только при предварительно настроенных ключах с названием id_otus_ed25519
+
+Должна создаться VM otus-l03-tf1  в ходе выполнения скрипта будет сформирована ссылка на машину с nginx - REPOYC
+
+start.sh
+
+```bash
+
+#!/bin/bash
+
+export YC_TOKEN=$(yc iam create-token)
+export YC_CLOUD_ID=$(yc config get cloud-id)
+export YC_FOLDER_ID=$(yc config get folder-id)
+
+cd tofu
+tofu apply -auto-approve
+cd ..
+
+
+
+
+echo "VM LAUNCHED"
+echo ip: $(yc compute instance get otus-l03-tf1 --format json | jq -r '.network_interfaces[].primary_v4_address.one_to_one_nat.address') 
+
+echo otus-l03-tf1 ansible_ssh_host=$(yc compute instance get otus-l03-tf1 --format json | jq -r '.network_interfaces[].primary_v4_address.one_to_one_nat.address') > $PWD/ansible/01_nginx/inventories/hosts
+
+
+
+echo "Waiting SSH to launch on 22..."
+while ! nc -z $(yc compute instance get otus-l03-tf1 --format json | jq -r '.network_interfaces[].primary_v4_address.one_to_one_nat.address') 22; do
+  sleep 1 # wait for 1 of the second before check again
+  echo "Wait SSH..."
+done
+echo "SSH launched"
+
+
+echo Start Ansible Provisioning 
+cd ansible/01_nginx
+ansible-playbook playbooks/01_Nginx.yml playbooks/02_nftables_for_Nginx.yml
+
+
+echo "Nginx Launched"
+echo Check link: https://$(yc compute instance get otus-l03-tf1 --format json | jq -r '.network_interfaces[].primary_v4_address.one_to_one_nat.address')
+
+
+read -p "Press key to continue to destroy VM " -n1 -s
+
+cd .. && cd ..
+
+cd tofu
+tofu destroy -auto-approve
+
+```
+
+
+
+
+
+## Заданиt выполнено.
