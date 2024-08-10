@@ -250,9 +250,10 @@ terraform {
 
 provider "yandex" {
 
-  zone = "<зона_доступности_по_умолчанию>"
+  zone = "ru-central1-a"
 
 }
+
 ```
 
 Результат
@@ -292,6 +293,9 @@ commands will detect it and remind you to do so if necessary.
 `yc compute image list --folder-id standard-images | grep -B 1 "debian-12"`
 
 | fd801rku4j14mv7fs703 | debian-12-v20240506                                        | debian-12                                       | f2ensop16ipcgqe16qfg           | READY  |
+
+PS - Использовал другой ID в итоге
+
 
 
 и сгенерировать ssh ключик
@@ -624,7 +628,7 @@ ansible/01_nginx/
 OpenTofu, генерации inventory для Ansible и запуску playbook
 
 
-Важно понимать что Tofu сработает только при предварительно настроенных ключах с названием id_otus_ed25519
+Важно понимать что Tofu сработает только при предварительно настроенных ключах с названием id_otus_ed25519 `ssh-keygen -t ed25519  -f ~/.ssh/id_otus_ed2551`
 
 Должна создаться VM otus-l03-tf1  в ходе выполнения скрипта будет сформирована ссылка на машину с nginx - REPOYC
 
@@ -682,4 +686,4 @@ tofu destroy -auto-approve
 
 
 
-## Заданиt выполнено.
+## Задание выполнено.
