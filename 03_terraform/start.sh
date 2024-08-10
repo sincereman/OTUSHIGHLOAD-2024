@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OTUS_USER_PUB_KEY=$(cat ~/.ssh/id_otus_ed2551.pub)
+OTUS_USER_PUB_KEY=$(cat ~/.ssh/id_otus_ed25519.pub)
 
 
 cat > metadata.yml << EOM
@@ -39,7 +39,7 @@ echo otus-l03-tf1 ansible_ssh_host=$(yc compute instance get otus-l03-tf1 --form
 
 echo "Waiting SSH to launch on 22..."
 while ! nc -z $(yc compute instance get otus-l03-tf1 --format json | jq -r '.network_interfaces[].primary_v4_address.one_to_one_nat.address') 22; do
-  sleep 1 # wait for 1 of the second before check again
+  sleep 5 # wait for 1 of the second before check again
   echo "Wait SSH..."
 done
 echo "SSH launched"
