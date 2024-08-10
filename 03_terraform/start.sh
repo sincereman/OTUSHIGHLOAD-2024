@@ -1,5 +1,26 @@
 #!/bin/bash
 
+OTUS_USER_PUB_KEY=$(cat ~/.ssh/id_otus_ed2551.pub)
+
+
+cat > metadata.yml << EOM
+
+#cloud-config
+users:
+  - name: devops
+    groups: sudo
+    shell: /bin/bash
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh-authorized-keys:
+    - $OTUS_USER_PUB_KEY
+disable_root: true
+timezone: Europe/Moscow
+repo_update: true
+repo_upgrade: true
+
+
+EOM
+
 export YC_TOKEN=$(yc iam create-token)
 export YC_CLOUD_ID=$(yc config get cloud-id)
 export YC_FOLDER_ID=$(yc config get folder-id)

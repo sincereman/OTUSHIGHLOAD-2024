@@ -31,7 +31,7 @@ resource "yandex_compute_instance" "vm-1" {
 
   metadata = {
     ssh-keys  = "ubuntu:${file("~/.ssh/id_otus_ed25519.pub")}"
-    user-data = "${file("metayc.txt")}"
+    user-data = "${file("metayc.yml")}"
   }
 }
 
