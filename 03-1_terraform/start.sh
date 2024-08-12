@@ -61,6 +61,7 @@ ansible-playbook playbooks/01_Nginx.yml playbooks/02_nftables_for_Nginx.yml
 echo "Nginx Launched"
 echo Check link: https://$(yc compute instance get otus-l03-tf1 --format json | jq -r '.network_interfaces[].primary_v4_address.one_to_one_nat.address')
 
+
 read -p "Press key to continue to destroy VM " -n1 -s
 
 cd .. && cd ..
