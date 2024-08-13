@@ -1,14 +1,8 @@
-resource "yandex_compute_disk" "boot-disk-1" {
-  name     = "boot-disk-1"
-  type     = "network-hdd"
-  zone     = "ru-central1-a"
-  size     = "20"
-  image_id = "fd8p9iv9fkpds5pueviu"
-}
-
-resource "yandex_compute_instance" "vm-1" {
-  name = "otus-l03-tf1"
-  hostname="otus-l03-tf1"
+resource "yandex_compute_instance" "nginx" {
+  name = "otus-nginx-${count.index}"
+  hostname="otus-nginx-${count.index}"
+    platform_id = "standard-v1"
+    count = 2
 
   scheduling_policy {
     preemptible = true
@@ -20,9 +14,15 @@ resource "yandex_compute_instance" "vm-1" {
     core_fraction = 5
   }
 
+   
   boot_disk {
-    disk_id = yandex_compute_disk.boot-disk-1.id
+    initialize_params {
+      name     = "boot-disk-nginx-${count.index}"
+      size     = "10"
+      image_id = "fd8p9iv9fkpds5pueviu"
+    }
   }
+
 
   network_interface {
     subnet_id = yandex_vpc_subnet.subnet-1.id
@@ -46,12 +46,4 @@ resource "yandex_vpc_subnet" "subnet-1" {
   v4_cidr_blocks = ["192.168.10.0/24"]
 }
 
-output "internal_ip_address_vm_1" {
-  value = yandex_compute_instance.vm-1.network_interface.0.ip_address
-}
-
-
-output "external_ip_address_vm_1" {
-  value = yandex_compute_instance.vm-1.network_interface.0.nat_ip_address
-}
 

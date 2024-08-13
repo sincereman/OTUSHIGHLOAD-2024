@@ -1,1 +1,0 @@
-{"all": {"children": ["ru_central1_a", "ru_central1_b", "ru_central1_c", "ru_central1_d"]}, "_meta": {"hostvars": {"otus_l03_tf1": {"ansible_host": "89.169.146.225"}}}, "ru_central1_a": {"hosts": ["otus_l03_tf1"]}, "ru_central1_b": {"hosts": []}, "ru_central1_c": {"hosts": []}, "ru_central1_d": {"hosts": []}}

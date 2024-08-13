@@ -6,12 +6,12 @@ wwwnginxgroup: "www-data"
 
 nginx_listen_port: 80
 nginx_listen_httpsport: 443
-nginx_server_name: repoyc
+nginx_server_name: "{{ ansible_host }}"
 web_dns: 8.8.8.8
 
 nginx_config_template: "nginx.conf.j2"
 nginx_repo_template: "repo.conf.j2"
-nginx_index_template: "index.html"
+nginx_index_template: "index.html.j2"
 
 # SSL Configuration
 nginx_redirect_http_to_https: true
