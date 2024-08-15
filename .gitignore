@@ -64,3 +64,8 @@ override.tf.json
 #secret
 secret.*
 metayc.yml
+
+
+#direnv
+
+.envrc
