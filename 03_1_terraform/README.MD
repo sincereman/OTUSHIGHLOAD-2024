@@ -743,6 +743,7 @@ resource "local_file" "inventory" {
 #    }
 #  }
 
+
 #v3
  provisioner "local-exec" {
     command = "sleep 60"
