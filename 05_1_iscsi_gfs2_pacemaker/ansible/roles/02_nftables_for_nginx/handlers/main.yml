@@ -1,0 +1,7 @@
+---
+
+   - name: reload nftables
+     become: yes
+     service:
+       name: nftables
+       state: reloaded

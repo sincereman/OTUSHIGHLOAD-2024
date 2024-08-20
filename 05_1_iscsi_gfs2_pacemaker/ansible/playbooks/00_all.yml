@@ -1,0 +1,9 @@
+---
+
+- name: Playbook of 00_all
+  hosts:
+    - all
+  become: true
+  roles:
+    - role: '../roles/00_all'
+

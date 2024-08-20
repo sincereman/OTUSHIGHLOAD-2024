@@ -1,0 +1,4 @@
+---
+  nginx_ssl_path: "/etc/nginx/ssl"
+  nginx_www_folder: "/usr/share/nginx/html"
+  nginx_repo_folder: "{{ nginx_www_folder }}/{{ nginx_server_name }}"
