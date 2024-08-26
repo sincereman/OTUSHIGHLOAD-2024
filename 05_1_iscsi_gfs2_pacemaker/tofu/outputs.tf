@@ -1,11 +1,18 @@
-
-output "internal_ip_address_iscsitarget" {
-  value = yandex_compute_instance.iscsitarget.*.network_interface.0.ip_address
+output "otus-iscsitarget"  {
+  value       = [ 
+    for i in yandex_compute_instance.iscsitarget :
+    {
+        name  = i.name
+        id    = i.id
+        fqdn  = i.fqdn
+        internal_ip_0 = i.*.network_interface.0.ip_address
+        internal_ip_1 = i.*.network_interface.1.ip_address
+        public_ip = i.*.network_interface.0.nat_ip_address
+    }
+  ]
+  description = "info-otus-node"
 }
 
-output "external_ip_address_iscsitarget" {
-  value = yandex_compute_instance.iscsitarget.*.network_interface.0.nat_ip_address
-}
 
 output "otus-nodes"  {
   value       = [ 
@@ -14,7 +21,8 @@ output "otus-nodes"  {
         name  = i.name
         id    = i.id
         fqdn  = i.fqdn
-        internal_ip = i.*.network_interface.0.ip_address
+        internal_ip_0 = i.*.network_interface.0.ip_address
+        internal_ip_1 = i.*.network_interface.1.ip_address        
         public_ip = i.*.network_interface.0.nat_ip_address
     }
   ]

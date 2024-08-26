@@ -1,9 +1,9 @@
 ---
 
 - name: Check Base Packages
-  apt:
+  yum:
     name:         "{{ item.package }}"
     state:        "{{ item.state }}"
     update_cache: yes
   loop:
-    - { package: "chronyd",   state: "present" }
+    - { package: "chrony",   state: "present" }

@@ -4,7 +4,7 @@ resource "yandex_compute_instance" "node" {
   name = "otus-node-${count.index + 1}"
   hostname="otus-node-${count.index + 1}"
     platform_id = "standard-v1"
-    count = 3
+    count = 2
 
   scheduling_policy {
     preemptible = true
@@ -22,15 +22,22 @@ resource "yandex_compute_instance" "node" {
       name     = "boot-disk-node-${count.index + 1}"
       size     = "10"
       #image_id = "fd8p9iv9fkpds5pueviu"
-      image_id = data.yandex_compute_image.debian.image_id
+      image_id = data.yandex_compute_image.centos9.image_id
     }
   }
 
   network_interface {
     subnet_id = yandex_vpc_subnet.subnet-1.id
     nat       = true
+    ip_address = "10.200.0.${count.index + 10}"
   }
 
+  network_interface  { 
+      index = "1"
+      subnet_id = yandex_vpc_subnet.subnet-2.id
+      ip_address = "10.201.0.${count.index + 10}"
+    
+  }
 
   metadata = {
     ssh-keys  = "ubuntu:${file("~/.ssh/id_otus_ed25519.pub")}"

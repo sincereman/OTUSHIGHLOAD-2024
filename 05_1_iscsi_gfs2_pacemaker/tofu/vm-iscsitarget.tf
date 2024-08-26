@@ -31,7 +31,7 @@ resource "yandex_compute_instance" "iscsitarget" {
       name     = "boot-disk-iscsitarget-${count.index + 1}"
       size     = "10"
       #image_id = "fd8p9iv9fkpds5pueviu"
-      image_id = data.yandex_compute_image.debian.image_id
+      image_id = data.yandex_compute_image.centos9.image_id
     }
   }
 
@@ -43,11 +43,20 @@ resource "yandex_compute_instance" "iscsitarget" {
       }   
   }
 
-  network_interface {
-    subnet_id = yandex_vpc_subnet.subnet-1.id
-    nat       = true
+  network_interface  {
+    
+      index = "0"
+      subnet_id = yandex_vpc_subnet.subnet-1.id
+      nat       = true
+      ip_address = "10.200.0.254"
   }
 
+  network_interface  { 
+      index = "1"
+      subnet_id = yandex_vpc_subnet.subnet-2.id
+      ip_address = "10.201.0.254"
+    
+  }
 
   metadata = {
     ssh-keys  = "ubuntu:${file("~/.ssh/id_otus_ed25519.pub")}"

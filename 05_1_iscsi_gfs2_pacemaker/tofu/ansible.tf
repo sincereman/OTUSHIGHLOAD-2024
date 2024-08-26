@@ -44,7 +44,7 @@ resource "local_file" "inventory" {
 
  #Start Ansible
 
-  provisioner "local-exec" {
-    command = "ANSIBLE_CONFIG=${path.module}/../ansible/ansible.cfg ansible-playbook ${path.module}/../ansible/playbooks/00_all.yml"
-  }
+  #provisioner "local-exec" {
+  #  command = "ANSIBLE_CONFIG=${path.module}/../ansible/ansible.cfg ansible-playbook ${path.module}/../ansible/playbooks/00_all.yml"
+  #}
 }
