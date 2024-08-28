@@ -64,6 +64,7 @@ override.tf.json
 #secret
 secret.*
 metayc.yml
+cloud-init.yml
 
 
 #direnv

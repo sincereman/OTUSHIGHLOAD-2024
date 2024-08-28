@@ -1,0 +1,7 @@
+---
+
+- name: Install GFS2 and cLVM software
+  become: true
+  hosts: nodes
+  roles:
+    - { role: '04_gfs2_cluster' }

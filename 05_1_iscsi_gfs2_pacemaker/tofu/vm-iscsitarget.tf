@@ -43,24 +43,35 @@ resource "yandex_compute_instance" "iscsitarget" {
       }   
   }
 
+
+  network_interface  { 
+      index = "0"
+      subnet_id = yandex_vpc_subnet.subnet-3.id
+      nat       = true
+      ip_address = "10.100.0.254"
+    
+  }
+
   network_interface  {
     
-      index = "0"
+      index = "1"
       subnet_id = yandex_vpc_subnet.subnet-1.id
-      nat       = true
       ip_address = "10.200.0.254"
   }
 
   network_interface  { 
-      index = "1"
+      index = "2"
       subnet_id = yandex_vpc_subnet.subnet-2.id
       ip_address = "10.201.0.254"
     
   }
 
+
   metadata = {
-    ssh-keys  = "ubuntu:${file("~/.ssh/id_otus_ed25519.pub")}"
-    user-data = "${file("metayc.yml")}"
+    ssh-keys  = "devops:${file("~/.ssh/id_otus_ed25519.pub")}"
+    user-data = "${file("cloud-init.yml")}"
+    enable-oslogin = false
+    serial-port-enable = 1
   }
 }
 

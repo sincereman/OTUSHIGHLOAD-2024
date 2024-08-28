@@ -9,3 +9,9 @@ variable "centos9" {
   default     = "centos-stream-9-oslogin"
   description = "centos-stream-9-oslogin"
 }
+
+variable "centos8" {
+  type        = string
+  default     = "centos-stream-8"
+  description = "centos-stream-8"
+}

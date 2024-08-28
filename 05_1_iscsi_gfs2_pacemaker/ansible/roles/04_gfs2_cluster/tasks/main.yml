@@ -1,0 +1,77 @@
+---
+
+- name: Install GFS2 and cLVM software
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    enablerepo: resilientstorage
+    state: present
+  vars:
+    packages:
+    - gfs2-utils
+    - lvm2-lockd
+    - dlm
+
+- name: Enable use_lvmlockd = 1
+  ansible.builtin.lineinfile:
+    path: /etc/lvm/lvm.conf
+    regexp: '^# use_lvmlockd = 0'
+    insertafter: '# use_lvmlockd = 0'    
+    line: 'use_lvmlockd = 1'
+  #when: (ansible_hostname == "otus-node-1")  
+
+# - name: Configuring cLVM
+#   command: "{{ item }}"
+#   with_items:
+#     - "lvmconf --enable-cluster" 
+
+# https://www.server-world.info/en/note?os=CentOS_Stream_9&p=pacemaker&f=7
+
+- name: Configuring cluster for use DLM,LockD and create GFS2 filesystem
+  shell: |
+   # set [no-quorum-policy=freeze] on GFS2
+    pcs property set stonith-enabled=false
+    pcs property set no-quorum-policy=freeze
+    # pcs resource defaults resource-stickiness=200
+    # create controld resource
+    # [dlm] ⇒ any name you like
+    # [group] ⇒ any group name
+    pcs resource create dlm systemd:dlm op monitor interval=30s on-fail=ignore clone interleave=true ordered=true
+    # pcs resource create dlm systemd:dlm op monitor interval=30s on-fail=fence group locking --future
+    sleep 5
+    # create clone of [locking] to activate it on all nodes in cluster
+    pcs resource clone locking interleave=true
+    sleep 5
+    # create lvmlockd resource
+    # [lvmlockdd] ⇒ any name
+    # [group] ⇒ the same group with controld resource
+    pcs resource create lvmlockdd ocf:heartbeat:lvmlockd op monitor interval=30s on-fail=ignore clone interleave=true ordered=true
+    #pcs resource create lvmlockdd systemd:lvmlockd op monitor interval=30s on-fail=fence group locking --future
+    sleep 5
+    pcs constraint order start dlm-clone then lvmlockdd-clone
+    # pcs status --full
+
+    pvcreate /dev/mapper/mpatha
+    vgcreate  --shared vg_gfs2 /dev/mapper/mpatha
+    lvcreate -l 100%FREE -n lv_gfs2 vg_gfs2
+    echo y | mkfs.gfs2 -O -j3 -p lock_dlm -t hacluster:gfs2 /dev/vg_gfs2/lv_gfs2
+    
+    # create LVM-activate resource
+    # [shared_lv] ⇒ any name
+    # [group] ⇒ any group name
+    pcs resource create shared_lv ocf:heartbeat:LVM-activate lvname=lv_gfs2 vgname=vg_gfs2 activation_mode=shared vg_access_mode=lvmlockd group shared_vg --future
+    
+    # create clone of [LVM-activate]
+    pcs resource clone shared_vg interleave=true
+
+    # set start order as [locking] → [shared_vg]
+    pcs constraint order start lvmlockdd-clone then shared_vg-clone
+    
+    # set that [shared_vg] and [locking] start on a same node
+    pcs constraint colocation add shared_vg-clone with lvmlockdd-clone
+
+    #pcs resource create clusterfs Filesystem device="/dev/vg_gfs2/lv_gfs2" directory="/mnt/gfs2" fstype="gfs2" "options=noatime" op monitor interval=10s on-fail=ignore clone interleave=true
+    #pcs resource create shared_lv ocf:heartbeat:LVM-activate lvname=lv_gfs2 vgname=vg_gfs2 activation_mode=shared vg_access_mode=lvmlockd group shared_vg --future
+    sleep 3
+    #pcs constraint order start lvmlockdd-clone then clusterfs-clone
+    sleep 3
+    #pcs constraint colocation add clusterfs-clone with lvmlockdd-clone
