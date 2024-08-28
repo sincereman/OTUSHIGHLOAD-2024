@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of Install iscsifensing
+  become: true
+  hosts: nodes
+  tags: iscsifensing
+  roles:
+    - { role: '04_iscsifensing' }

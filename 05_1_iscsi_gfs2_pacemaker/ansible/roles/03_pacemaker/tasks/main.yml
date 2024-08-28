@@ -25,7 +25,7 @@
     state: present
     update_password: always
     create_home: yes
-  notify: "restart pcsd"
+
   #no_log: true
 
 #- name: Allow cluster processes on SELinux
@@ -84,13 +84,17 @@
   when: (ansible_hostname == "otus-node-1")
 
 
-- name: Configuring cluster (step 4) - assign IP and resources
-  command: "{{ item }}"
-  with_items:
-    - "pcs resource create virtual_ip ocf:heartbeat:IPaddr2 ip=10.100.0.100 cidr_netmask=32 op monitor interval=60s"
-    - "pcs property set stonith-enabled=false"
-  when: (ansible_hostname == "otus-node-1")
+# - name: Configuring cluster (step 4) - assign IP and resources
+#   command: "{{ item }}"
+#   with_items:
+#     - "pcs resource create virtual_ip ocf:heartbeat:IPaddr2 ip=10.100.0.100 cidr_netmask=32 op monitor interval=60s"
+#     - "pcs property set stonith-enabled=false"
+#   when: (ansible_hostname == "otus-node-1")
 
+
+
+
+###
 
 
 #pcs property set no-quorum-policy=ignore

@@ -4,4 +4,4 @@
   become: true
   hosts: nodes
   roles:
-    - { role: '04_gfs2_cluster' }
+    - { role: '05_gfs2_cluster' }

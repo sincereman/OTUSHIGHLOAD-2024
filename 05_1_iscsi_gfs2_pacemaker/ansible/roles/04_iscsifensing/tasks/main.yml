@@ -1,0 +1,55 @@
+---
+
+- name: Install iscsifence
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    enablerepo: highavailability
+    state: present
+  vars:
+    packages:
+      - fence-agents-scsi
+      - watchdog
+      - pcp-zeroconf
+
+
+- name: Configuring iscsi_shooter
+  shell: |
+    cp /usr/share/cluster/fence_scsi_check /etc/watchdog.d/
+
+
+- name: Enable Watchdog
+  systemd:
+    name: watchdog
+    enabled: true
+
+# set fencing
+# confirm disk ID
+
+- name: Check disk information
+  shell: "ls -la /dev/disk/by-id | grep dm-0 | grep wwn | awk '{ print $9}'"
+  register: wwn_info
+  args:
+    executable: /bin/bash
+  when: (ansible_hostname == "otus-node-1")    
+  tags: wwn
+
+- name: Check WWN ISCSI disk
+  ansible.builtin.debug:
+    msg: "{{ wwn_info.stdout }}"
+  when: (ansible_hostname == "otus-node-1")
+  tags: wwn
+
+
+
+- name: Configuring Pacemaker Resource
+  shell: |
+    # [scsi-shooter] : any name
+    # [pcmk_host_list=***] : specify cluster nodes
+    # [devices=***] : disk ID
+    pcs stonith create scsi-shooter fence_scsi pcmk_host_list="otus-node-1 otus-node-2 otus-node-3 " devices=/dev/disk/by-id/$(ls -la /dev/disk/by-id | grep dm-0 | grep wwn | awk '{ print $9}') meta provides=unfencing 
+    pcs stonith config scsi-shooter
+  args:
+    executable: /bin/bash
+  when: (ansible_hostname == "otus-node-1")
+
+  
