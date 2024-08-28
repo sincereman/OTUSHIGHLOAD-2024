@@ -35,3 +35,4 @@ sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/05_1_iscsi_gfs2_pacemaker/
 `ansible-galaxy install -r requirements.yml`
 
 
+Good instruction https://www.server-world.info/en/note?os=CentOS_Stream_9&p=pacemaker&f=1

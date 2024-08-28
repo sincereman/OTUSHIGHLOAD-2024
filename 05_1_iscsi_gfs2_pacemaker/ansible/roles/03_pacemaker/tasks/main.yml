@@ -49,7 +49,11 @@
 #    - ssh
 #    - high-availability
 
-- meta: flush_handlers
+- name: "restart pcsd"
+  systemd:
+    name: pcsd.service
+    state: restarted
+
 
 
 ##Configure

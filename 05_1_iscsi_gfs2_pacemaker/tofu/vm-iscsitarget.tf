@@ -4,7 +4,7 @@ resource "yandex_compute_disk" "volumes" {
   name     = "disk-iscsitarget-${count.index + 1}"
   type     = "network-hdd"
   size     = 1
-  zone     = "ru-central1-a"
+  zone     = var.yc_zone
 
 }
 

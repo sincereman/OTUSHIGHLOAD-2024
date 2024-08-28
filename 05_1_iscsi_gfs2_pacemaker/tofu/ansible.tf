@@ -39,12 +39,12 @@ resource "local_file" "inventory" {
 
 #v3
  provisioner "local-exec" {
-    command = "sleep 5"
+    command = "sleep 120"
   }
 
- #Start Ansible
+#Start Ansible
 
-  #provisioner "local-exec" {
-  #  command = "ANSIBLE_CONFIG=${path.module}/../ansible/ansible.cfg ansible-playbook ${path.module}/../ansible/playbooks/00_all.yml"
-  #}
+ provisioner "local-exec" {
+    command = "ANSIBLE_CONFIG=${path.module}/../ansible/ansible.cfg ansible-playbook ${path.module}/../ansible/playbooks/000_start.yml"
+  }
 }

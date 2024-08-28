@@ -15,3 +15,9 @@ variable "centos8" {
   default     = "centos-stream-8"
   description = "centos-stream-8"
 }
+
+variable "yc_zone" {
+  type        = string
+  default     = "ru-central1-a"
+  description = "zone datacenter"
+}

@@ -1,4 +1,4 @@
 ---
 
-pcm_password: "password" #for cluster user: hacluster
-cluster_name: "hacluster"
+    pcm_password: "password" #for cluster user: hacluster
+    cluster_name: "hacluster"
