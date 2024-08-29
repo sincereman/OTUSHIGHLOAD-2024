@@ -47,6 +47,10 @@ export YC_FOLDER_ID=$(yc config get folder-id)
 
 Итоговый стенд приведен к виду
 
+Один таргет - два адреса для iscsi и один менеджмент
+Три ноды - два адреса для iscsi и один менеджмент
+
+Настроен MPIO
 
 ```shell
 
@@ -188,6 +192,7 @@ sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/05_1_iscsi_gfs2_pacemaker/
 
 `ansible-galaxy install -r requirements.yml`
 
+02_mpio_configure - настроен multipath
 03_pacemaker - установка pacemaker и создание кластера hacluster с паролем password
 04_iscsifensing - реализация fencing на основе доступа ноды к iscsi таргету. При недоступности - нода отправляется в рестарт сервисом watchdog
 05_gfs2_cluster - создание кластерного ресурса shared_fs
