@@ -48,6 +48,7 @@
     # [devices=***] : disk ID
     pcs stonith create scsi-shooter fence_scsi pcmk_host_list="otus-node-1 otus-node-2 otus-node-3 " devices=/dev/disk/by-id/$(ls -la /dev/disk/by-id | grep dm-0 | grep wwn | awk '{ print $9}') meta provides=unfencing 
     pcs stonith config scsi-shooter
+    sleep 60
   args:
     executable: /bin/bash
   when: (ansible_hostname == "otus-node-1")

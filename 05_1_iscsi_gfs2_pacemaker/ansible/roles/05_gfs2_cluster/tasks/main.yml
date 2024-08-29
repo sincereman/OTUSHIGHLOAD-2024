@@ -89,6 +89,9 @@
     # [directory] - any directory youd like to mount GFS2 filesystem
     # [group] - the same group with LVM-activate resource
     pcs resource create shared_fs ocf:heartbeat:Filesystem device="/dev/vg_gfs2/lv_gfs2" directory="/home/gfs2-share" fstype="gfs2" options=noatime op monitor interval=10s on-fail=fence group shared_vg --future
+    pcs cluster stop --all
+    pcs cluster start --all
+    sleep 60
     exit 0
   when: (ansible_hostname == "otus-node-1") 
 
@@ -103,6 +106,7 @@
 #   ansible.builtin.debug:
 #     msg: "{{ pcs_info.stdout }}"
 #   tags: pcs_check
+
 
 - name: Check df -h  information
   shell: "df -hT /home/gfs2-share"

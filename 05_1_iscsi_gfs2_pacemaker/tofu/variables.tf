@@ -18,6 +18,6 @@ variable "centos8" {
 
 variable "yc_zone" {
   type        = string
-  default     = "ru-central1-a"
+  default     = "ru-central1-b"
   description = "zone datacenter"
 }
