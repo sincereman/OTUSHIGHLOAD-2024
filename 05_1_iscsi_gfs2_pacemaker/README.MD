@@ -1359,14 +1359,14 @@ otus-nodes = [
   },
   
   ```
-<details>
+</details>
 
 В каталоге images несколько скринов кластера
 
 https://otus-node-x:2224
 
 
-![результат](./images/terraform-ansible-ok.png)
+![главная](images/overview_2024-08-29_22-56-07.png)
 ![ресурсы](./images/resources_2024-08-29_22-58-11.png)
 
 ## Задание выполнено!
