@@ -1367,7 +1367,9 @@ https://otus-node-x:2224
 
 
 ![главная](images/overview_2024-08-29_22-56-07.png)
+![ноды](images/nodes_2024-08-29_22-57-38.png)
 ![ресурсы](./images/resources_2024-08-29_22-58-11.png)
+![фенсинг](images/iscsi_shooter_2024-08-29_22-58-44.png)
 
 ## Задание выполнено!
 
