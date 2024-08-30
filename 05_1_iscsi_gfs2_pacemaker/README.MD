@@ -62,11 +62,95 @@ iscsi:
 #### cluster:
 data - 10.100.0.0/24
 
+
+
+
 Один таргет - два адреса для iscsi и один менеджмент
 
 Три ноды - два адреса для iscsi и один менеджмент
 
 Настроен MPIO
+
+### Стенд созданный opentofu
+
+``` shell
+
+otus-iscsitarget = [
+  {
+    "fqdn" = "otus-iscsitarget-1.ru-central1.internal"
+    "id" = "epd28atrqj8ftk8jhp63"
+    "internal_data_ip" = [
+      "10.100.0.254",
+    ]
+    "internal_iscsi_ip_1" = [
+      "10.200.0.254",
+    ]
+    "internal_iscsi_ip_2" = [
+      "10.201.0.254",
+    ]
+    "name" = "otus-iscsitarget-1"
+    "public_ip" = [
+      "51.250.110.224",
+    ]
+  },
+]
+otus-nodes = [
+  {
+    "fqdn" = "otus-node-1.ru-central1.internal"
+    "id" = "epdekbboijmlolvgqd45"
+    "internal_data_ip" = [
+      "10.100.0.10",
+    ]
+    "internal_iscsi_ip_0" = [
+      "10.200.0.10",
+    ]
+    "internal_iscsi_ip_1" = [
+      "10.201.0.10",
+    ]
+    "name" = "otus-node-1"
+    "public_ip" = [
+      "51.250.111.14",
+    ]
+  },
+  {
+    "fqdn" = "otus-node-2.ru-central1.internal"
+    "id" = "epde33o9414css580ohh"
+    "internal_data_ip" = [
+      "10.100.0.11",
+    ]
+    "internal_iscsi_ip_0" = [
+      "10.200.0.11",
+    ]
+    "internal_iscsi_ip_1" = [
+      "10.201.0.11",
+    ]
+    "name" = "otus-node-2"
+    "public_ip" = [
+      "89.169.166.240",
+    ]
+  },
+  {
+    "fqdn" = "otus-node-3.ru-central1.internal"
+    "id" = "epd52gh1plrb00ebpkj7"
+    "internal_data_ip" = [
+      "10.100.0.12",
+    ]
+    "internal_iscsi_ip_0" = [
+      "10.200.0.12",
+    ]
+    "internal_iscsi_ip_1" = [
+      "10.201.0.12",
+    ]
+    "name" = "otus-node-3"
+    "public_ip" = [
+      "84.252.137.218",
+    ]
+  },
+
+```
+
+
+### Дерево проекта
 
 ```shell
 
