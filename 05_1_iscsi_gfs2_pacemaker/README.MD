@@ -272,32 +272,32 @@ otus-nodes = [
 
 ```
 
- И являет собой классчиеский пример хорошего ansible и классического bashsible.
+ И являет собой классический пример хорошего ansible и классического bashsible.
 
 Разделен на пять частей
 
-00_all - установка chronyd и наполнение /etc/hosts нодами
-01_iscsi - создание iscsi таргета и подключение нод к таргету (использована коллекция ниже)
+- 00_all - установка chronyd и наполнение /etc/hosts нодами
+- 01_iscsi - создание iscsi таргета и подключение нод к таргету (использована коллекция ниже)
 
 ```shell
 
-sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/05_1_iscsi_gfs2_pacemaker/ansible$ cat requirements.yml 
----
-- src: ondrejhome.targetcli
-- src: ondrejhome.targetcli-modules
-- src: OndrejHome.iscsiadm
+  sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/05_1_iscsi_gfs2_pacemaker/ansible$ cat requirements.yml 
+  ---
+  - src: ondrejhome.targetcli
+  - src: ondrejhome.targetcli-modules
+  - src: OndrejHome.iscsiadm
 
 ```
 
-`ansible-galaxy install -r requirements.yml`
+  `ansible-galaxy install -r requirements.yml`
 
-02_mpio_configure - настроен multipath
-03_pacemaker - установка pacemaker и создание кластера hacluster с паролем password
-04_iscsifensing - реализация fencing на основе доступа ноды к iscsi таргету. При недоступности - нода отправляется в рестарт сервисом watchdog
-05_gfs2_cluster - создание кластерного ресурса shared_fs
+- 02_mpio_configure - настроен multipath
+- 03_pacemaker - установка pacemaker и создание кластера hacluster с паролем password
+- 04_iscsifensing - реализация fencing на основе доступа ноды к iscsi таргету. При недоступности - нода отправляется в рестарт сервисом watchdog
+- 05_gfs2_cluster - создание кластерного ресурса shared_fs
 
 
-Листинг работы opentofu и ansible
+#### Листинг работы opentofu и ansible
 
 <details>
 
