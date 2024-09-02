@@ -1,20 +1,9 @@
 ---
 - meta: end_play
-  when: (ansible_distribution != "CentOS")
+  when: (ansible_distribution != "Debian")
 
-#sed -i 's/^mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-#sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
 
-- name: Install epel-release
-  yum:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-    - epel-release
-
-- name: Check Base Packages
-  yum:
+  apt:
     name:         "{{ item.package }}"
     state:        "{{ item.state }}"
     update_cache: yes
@@ -28,29 +17,47 @@
   hostname: 
     name: "{{ ansible_hostname }}"
 
-# - name: Add my own IP address to /etc/hosts instead localhost
-#   replace:
+- name: Add IP address of all hosts to all hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item }}$'
+    line: "{{ hostvars[item].ansible_host }} {{item}}"
+    state: present
+  when: hostvars[item].ansible_host is defined
+  with_items: "{{ groups.all }}"
+
+# tasks/hosts.yml
+- name: Generate /etc/hosts file
+  template:
+    src=templates/hosts.j2
+    dest=/etc/hosts
+
+# - name: Add IP address of all hosts to all hosts
+#   lineinfile:
+#     dest: /etc/hosts
+#     regexp: '.*{{ item }}$'
+#     line: "{{ hostvars[item].ansible_host }} {{item}}"
+#     state: present
+#   when: hostvars[item].ansible_host is defined
+#   with_items: "{{ groups.all }}"
+
+# - name: Add node1 to /etc/hosts
+#   lineinfile:
 #     path: "/etc/hosts"
-#     regexp: '^127\.0\.1\.1(\s+){{ ansible_hostname }}(\s+){{ ansible_hostname }}.*'
-#     replace: "{{ ansible_host }} {{ ansible_hostname }} {{ ansible_hostname }}"
+#     state: present
+#     line: "10.100.0.10 otus-node-1"
+#   when: (ansible_hostname != "otus-node-1")
 
-- name: Add node1 to /etc/hosts
-  lineinfile:
-    path: "/etc/hosts"
-    state: present
-    line: "10.100.0.10 otus-node-1"
-  when: (ansible_hostname != "otus-node-1")
+# - name: Add node1 to /etc/hosts
+#   lineinfile:
+#     path: "/etc/hosts"
+#     state: present
+#     line: "10.100.0.11 otus-node-2"
+#   when: (ansible_hostname != "otus-node-2")
 
-- name: Add node1 to /etc/hosts
-  lineinfile:
-    path: "/etc/hosts"
-    state: present
-    line: "10.100.0.11 otus-node-2"
-  when: (ansible_hostname != "otus-node-2")
-
-- name: Add node1 to /etc/hosts
-  lineinfile:
-    path: "/etc/hosts"
-    state: present
-    line: "10.100.0.12 otus-node-3"
-  when: (ansible_hostname != "otus-node-3")
+# - name: Add node1 to /etc/hosts
+#   lineinfile:
+#     path: "/etc/hosts"
+#     state: present
+#     line: "10.100.0.12 otus-node-3"
+#   when: (ansible_hostname != "otus-node-3")

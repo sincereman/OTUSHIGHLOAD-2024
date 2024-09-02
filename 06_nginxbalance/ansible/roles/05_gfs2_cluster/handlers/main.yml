@@ -1,9 +1,0 @@
----
-# - name: "restart pservices"
-#   systemd:
-#     name: {{{ items}}}
-#     state: restarted
-#   with_items:
-#     - gfs2-utils
-#     - lvm2-lockd
-#     - dlm

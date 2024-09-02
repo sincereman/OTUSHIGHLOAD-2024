@@ -5,5 +5,5 @@
     - all
   become: true
   roles:
-    - role: '../roles/00_all'
+    - { role: '00_all.yml' }
 
