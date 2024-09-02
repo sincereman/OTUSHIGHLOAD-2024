@@ -70,3 +70,7 @@ cloud-init.yml
 #direnv
 
 .envrc
+
+#tips
+
+links.txt

@@ -1,0 +1,136 @@
+---
+
+- meta: end_play
+  when: (ansible_distribution != "CentOS")
+
+- name: Disable SELinux on all cluster nodes
+  selinux:
+    state: disabled
+
+- name: Install Pacemaker software
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    enablerepo: highavailability
+    state: present
+  vars:
+    packages:
+    - pcs
+    - pacemaker
+    - fence-agents-all
+
+- name: Set password for cluster user "hacluster"
+  user:
+    name: "hacluster"
+    password: "{{ pcm_password | string | password_hash('sha512') }}" 
+    state: present
+    update_password: always
+    create_home: yes
+
+  #no_log: true
+
+#- name: Allow cluster processes on SELinux
+#  seboolean:
+#    name: daemons_enable_cluster_mode
+#    state: yes
+#    persistent: yes
+
+- name: Enable Pacemaker service at startup
+  systemd:
+    name: pcsd.service
+    enabled: true
+
+#- name: Configuring firewall services
+#  firewalld:
+#    service: "{{ item }}"
+#    permanent: yes
+#    state: enabled
+#    immediate: yes
+#  with_items:
+#    - ssh
+#    - high-availability
+
+- name: "restart pcsd"
+  systemd:
+    name: pcsd.service
+    state: restarted
+
+
+
+##Configure
+
+  
+- name: Check for replay (/opt/pcs_config_done exists)
+  stat:
+    path: /etc/corosync/corosync.conf
+  register: pcs_config_done
+
+
+- name: Configuring cluster (step 1) - auth host
+  command: "{{ item }}"
+  with_items:
+    - "pcs host auth otus-node-1 otus-node-2 otus-node-3 -u hacluster -p {{ pcm_password }}"
+  # - "pcs cluster auth"
+  when: (pcs_config_done.stat.exists != True and ansible_hostname == "otus-node-1")
+  #no_log: true
+
+- name: Configuring cluster (step 2) - setup and sync authkey
+  command: "{{ item }}"
+  with_items:
+    - "pcs cluster setup {{ cluster_name }} otus-node-1 otus-node-2 otus-node-3"
+  when: (pcs_config_done.stat.exists != True and ansible_hostname == "otus-node-1")
+
+
+- name: Configuring cluster (step 3) - start and enabled cluster
+  command: "{{ item }}"
+  with_items:
+    - "pcs cluster enable --all"
+    - "pcs cluster start --all"
+  when: (ansible_hostname == "otus-node-1")
+
+
+# - name: Configuring cluster (step 4) - assign IP and resources
+#   command: "{{ item }}"
+#   with_items:
+#     - "pcs resource create virtual_ip ocf:heartbeat:IPaddr2 ip=10.100.0.100 cidr_netmask=32 op monitor interval=60s"
+#     - "pcs property set stonith-enabled=false"
+#   when: (ansible_hostname == "otus-node-1")
+
+
+
+
+###
+
+
+#pcs property set no-quorum-policy=ignore
+
+
+#- name: Wait a little
+#  pause:
+#    seconds: 10
+
+#- name: Check for replay (/opt/pcs_fence_config_done exists)
+#  stat:
+#    path: /opt/pcs_fence_config_done
+#  register: pcs_fence_config_done
+
+#- name: Configure fencing on Virtualbox
+#  command: "{{ item }}"
+#  with_items:
+#    - "pcs stonith create pcs1_fence_dev fence_vbox ipaddr=\"{{ virtualbox_host }}\" login=\"{{ virtualbox_host_username }}\" passwd=\"{{ virtualbox_host_password }}\" power_wait=\"10\" secure=\"1\" port=\"pcs1\" pcmk_host_list=\"pcs1.{{ domain }}\""
+#    - "pcs stonith create pcs2_fence_dev fence_vbox ipaddr=\"{{ virtualbox_host }}\" login=\"{{ virtualbox_host_username }}\" passwd=\"{{ virtualbox_host_password }}\" power_wait=\"10\" secure=\"1\" port=\"pcs2\" pcmk_host_list=\"pcs2.{{ domain }}\""
+#    - "pcs stonith create pcs3_fence_dev fence_vbox ipaddr=\"{{ virtualbox_host }}\" login=\"{{ virtualbox_host_username }}\" passwd=\"{{ virtualbox_host_password }}\" power_wait=\"10\" secure=\"1\" port=\"pcs3\" pcmk_host_list=\"pcs3.{{ domain }}\""
+#    - "pcs constraint location pcs1_fence_dev avoids pcs1.{{ domain }}"
+#    - "pcs constraint location pcs2_fence_dev avoids pcs2.{{ domain }}"
+#    - "pcs constraint location pcs3_fence_dev avoids pcs3.{{ domain }}"
+#  when: (ansible_virtualization_type == "virtualbox" and pcs_fence_config_done.stat.exists != True)
+#  no_log: true
+  
+#- name: Set replay protection (/opt/pcs_fence_config_done)
+#  file:
+#    path: /opt/pcs_fence_config_done
+#    state: touch
+#    owner: root
+#    group: root
+#    mode: '0744'
+#  when:
+#    - pcs_fence_config_done.stat.exists != True

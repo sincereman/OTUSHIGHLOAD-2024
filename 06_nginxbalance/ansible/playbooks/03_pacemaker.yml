@@ -1,0 +1,10 @@
+---
+
+- name: Playbook of Install Pacemaker
+  become: true
+  hosts: nodes
+  tags: pacemaker
+  roles:
+    - { role: '03_pacemaker' }
+
+    
