@@ -1,0 +1,10 @@
+---
+
+- name: Playbook of 000_start
+  hosts:
+    - all
+  become: true
+  roles:
+    - { role: '000_start' }
+    
+

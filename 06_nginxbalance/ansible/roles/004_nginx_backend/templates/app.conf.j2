@@ -1,0 +1,26 @@
+    server {
+        listen       {{ nginx_listen_port }} default_server;
+        server_name  {{ nginx_server_name }};
+        root         {{ nginx_app_folder }}/;
+
+        index index.php index.html index.htm;
+
+        location / {
+        index index.php index.html;
+        #try_files $uri /index.php$is_args$args;
+        #try_files $uri $uri/ =404;
+
+        }
+
+        location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+    
+    }
+
+
+

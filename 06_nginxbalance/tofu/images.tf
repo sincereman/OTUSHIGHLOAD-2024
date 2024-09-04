@@ -9,3 +9,8 @@ data "yandex_compute_image" "centos9" {
 data "yandex_compute_image" "centos8" {
   family = var.centos8
 }
+
+data "yandex_compute_image" "nat-instance-ubuntu" {
+  family = var.nat-instance-ubuntu
+}
+

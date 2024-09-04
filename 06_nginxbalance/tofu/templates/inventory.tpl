@@ -5,7 +5,8 @@ ${name} ansible_host=${bastion_external_ip_address[index]} ansible_ssh_user=devo
 
 [frontend]
 %{ for index, name in frontend_name ~}
-${name} ansible_host=${frontend_internal_ip_address[index]}
+
+${name} ansible_host=${frontend_external_ip_address[index]} ansible_ssh_user=devops ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519 ansible_ssh_port=22 ansible_ssh_transfer_method=smart
 %{ endfor ~}
 
 [nodesweb]
@@ -21,12 +22,12 @@ ${name} ansible_host=${nodedb_internal_ip_address[index]}
 
 
 %{ for index, name in bastion_name ~}
-[frontend:vars]
-ansible_ssh_user=devops 
-ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
-ansible_ssh_transfer_method=smart
-ansible_ssh_port=22
-ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} "'
+#[frontend:vars]
+#ansible_ssh_user=devops 
+#ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
+#ansible_ssh_transfer_method=smart
+#ansible_ssh_port=22
+#ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} "'
 
 [nodesweb:vars]
 nsible_ssh_user=devops 

@@ -16,6 +16,13 @@ variable "centos8" {
   description = "centos-stream-8"
 }
 
+variable "nat-instance-ubuntu" {
+  type        = string
+  default     = "nat-instance-ubuntu"
+  description = "nat-instance-ubuntu"
+}
+
+
 variable "yc_zone" {
   type        = string
   default     = "ru-central1-b"

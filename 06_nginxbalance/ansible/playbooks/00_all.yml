@@ -1,9 +1,0 @@
----
-
-- name: Playbook of 00_all
-  hosts:
-    - all
-  become: true
-  roles:
-    - { role: '00_all.yml' }
-

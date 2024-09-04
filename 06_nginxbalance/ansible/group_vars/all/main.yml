@@ -1,0 +1,10 @@
+---
+# group vars
+
+ip_address:
+otus-frontend-1-web: 10.100.0.200 
+otus-nodeweb-1-web: 10.100.0.10
+otus-nodeweb-1-db: 10.110.0.10 
+otus-nodeweb-2-web: 10.100.0.11
+otus-nodeweb-2-db: 10.110.0.11 
+otus-nodedb-1-db: 10.110.0.50 

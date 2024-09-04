@@ -5,6 +5,7 @@ resource "yandex_compute_instance" "bastion" {
     platform_id = "standard-v1"
     count = 1
 
+
   scheduling_policy {
     preemptible = true
   }
@@ -21,15 +22,17 @@ resource "yandex_compute_instance" "bastion" {
       name     = "boot-disk-bastion-${count.index + 1}"
       size     = "10"
       #image_id = "fd8p9iv9fkpds5pueviu"
-      image_id = data.yandex_compute_image.debian12.image_id
+      #image_id = data.yandex_compute_image.debian12.image_id
+      image_id = data.yandex_compute_image.nat-instance-ubuntu.image_id
     }
   }
 
   network_interface  { 
       index = "0"
-      subnet_id = yandex_vpc_subnet.subnet-manage.id
+      subnet_id = yandex_vpc_subnet.subnet-internet.id
       nat       = true
-      ip_address = "10.200.0.254"
+#      ip_address = "10.200.0.254"
+      security_group_ids = [yandex_vpc_security_group.nat-instance-sg.id]
   }
 
   metadata = {

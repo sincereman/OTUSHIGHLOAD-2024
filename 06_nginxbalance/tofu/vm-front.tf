@@ -1,5 +1,6 @@
 
 resource "yandex_compute_instance" "frontend" {
+  depends_on = [resource.yandex_compute_instance.bastion]
   name = "otus-frontend-${count.index + 1}"
   hostname="otus-frontend-${count.index + 1}"
     platform_id = "standard-v1"
@@ -36,6 +37,7 @@ resource "yandex_compute_instance" "frontend" {
       index = "1"
       subnet_id = yandex_vpc_subnet.subnet-manage.id
       ip_address = "10.200.0.200"
+      security_group_ids = [yandex_vpc_security_group.nat-instance-sg.id]
   }
 
 
