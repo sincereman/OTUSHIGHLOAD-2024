@@ -31,3 +31,4 @@ nginx_self_signed_cert_subj: "/C=RU/ST=Moscow/L=Moscow/O=TECH/CN={{ nginx_server
 
 
 
+

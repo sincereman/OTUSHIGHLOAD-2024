@@ -1,0 +1,68 @@
+---
+
+- meta: end_play
+  when: ansible_os_family != "Debian"
+
+
+- name: Wordpress | Remove elements from /var/www/html/
+  file:
+    path: /var/www/html/index.html
+    state: absent
+  when:
+    wp_install_dir == "/usr/share/nginx/html"
+
+- name: Wordpress | Create directory
+  file:
+    path: "{{ wp_install_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Wordpress | Extract archive in {{ wp_install_dir }}
+  unarchive:
+    src: "http://wordpress.org/wordpress-{{ wp_version }}.tar.gz"
+    dest: "{{ wp_install_dir }}"
+    remote_src: yes
+
+- name: Wordpress | Move files from {{ wp_install_dir }}/wordpress to {{ wp_install_dir }}
+  command: cp -rf . "{{ wp_install_dir }}"
+  args:
+    chdir: "{{ wp_install_dir }}/wordpress/"
+
+- name: Wordpress | Remove wordpress dir
+  file:
+    path: "{{ wp_install_dir }}/wordpress/"
+    state: absent
+
+- name: Wordpress | Fetch random salts for wp-config.php
+  delegate_to: localhost
+  uri:
+    url: https://api.wordpress.org/secret-key/1.1/salt/
+    return_content: yes
+  become: False
+  register: 'wp_salt_array'
+
+- name: set wp_salt fact
+  set_fact:
+    wp_salt: '{{ wp_salt_array.content }}'
+
+- name: Wordpress | Copy wp-config.php file
+  template:
+    src: wp-config.php.j2
+    dest: "{{ wp_install_dir }}/wp-config.php"
+
+- name: Wordpress | Change ownership of installation directory
+  file:
+    path: "{{ wp_install_dir }}"
+    owner: "{{ wwwnginxuser }}"
+    group: "{{ wwwnginxgroup }}"
+    state: directory
+    recurse: yes
+
+- name: Installing dependencies
+  apt:
+    pkg: [ 'php-mysql', 'python3-pymysql' ]
+    update_cache: yes
+    cache_valid_time: 86400
+    state: present
+  notify:
+    - restart nginx

@@ -22,6 +22,7 @@
   ansible.builtin.apt:
     name:
       - "php{{ php_version }}-fpm"
+      - "php{{ php_version }}-common"
       - "php{{ php_version }}-mysql"
       - "php{{ php_version }}-bcmath"
       - "php{{ php_version }}-ctype"
@@ -30,9 +31,18 @@
       - "php{{ php_version }}-pdo"
       - "php{{ php_version }}-tokenizer"
       - "php{{ php_version }}-xml"
+      - "php{{ php_version }}-xmlrpc"
+      - "php{{ php_version }}-gd"
+      - "php{{ php_version }}-imagick"
+      - "php{{ php_version }}-cli"
       - "php{{ php_version }}-curl"
+      - "php{{ php_version }}-dev"
+      - "php{{ php_version }}-imap"
+      - "php{{ php_version }}-soap"
     state: latest
     update_cache: yes
+
+
 
 # systemctl restart php-fpm.service
 - name: Start php-fpm service
