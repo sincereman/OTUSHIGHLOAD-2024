@@ -240,25 +240,15 @@ sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/06_nginxbalance$ tree
 
 Разделен на пять частей
 
-- 00_all - установка chronyd и наполнение /etc/hosts нодами
-- 01_iscsi - создание iscsi таргета и подключение нод к таргету (использована коллекция ниже)
+- 000_start - запуск всех gktq,erjd
+- 001_bastion - настройка хоста bastion - задел на будущее - в данной работе используется готовый nat instane
+- 002_base - базовые пакеты chronyd сетевая аналитика
+- 003_nginx-frontend - базовая настройка nginx для апстрим rr
+- 004_nginx_backend - базовая настройка бэкенда для rr  -  если выполнить плейбуки только 1,2,4,4 - то можно понаблюдать на публичном ip frontend что балансировка работает
+- 005_install_database - настройка mysql mariadb
+- 006_nginx_backend_wordpress - установка php-fpm и др. установка wordpress/
 
-```shell
 
-  sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/05_1_iscsi_gfs2_pacemaker/ansible$ cat requirements.yml 
-  ---
-  - src: ondrejhome.targetcli
-  - src: ondrejhome.targetcli-modules
-  - src: OndrejHome.iscsiadm
-
-```
-
-  `ansible-galaxy install -r requirements.yml`
-
-- 02_mpio_configure - настроен multipath
-- 03_pacemaker - установка pacemaker и создание кластера hacluster с паролем password
-- 04_iscsifensing - реализация fencing на основе доступа ноды к iscsi таргету. При недоступности - нода отправляется в рестарт сервисом watchdog
-- 05_gfs2_cluster - создание кластерного ресурса shared_fs
 
 
 #### Листинг работы opentofu и ansible
