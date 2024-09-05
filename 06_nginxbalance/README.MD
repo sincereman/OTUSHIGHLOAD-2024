@@ -41,22 +41,19 @@ export YC_FOLDER_ID=$(yc config get folder-id)
 ### Итоговый стенд приведен к виду
 
 #### Сети:
-iscsi:
-
-- iscsi1 - 10.200.0.0/24
-- iscsi2 - 10.201.0.0/24
-
-#### cluster:
-data - 10.100.0.0/24
 
 
 
+                                  otus-nodeweb-1-web: 10.100.0.10
+                                                otus-nodeweb-1-db: 10.110.0.10 
+otus-frontend-1-web: 10.100.0.200                                                       otus-nodedb-1-db: 10.110.0.50 
+                                                otus-nodeweb-2-db: 10.110.0.11 
+                                  otus-nodeweb-2-web: 10.100.0.11
 
-Один таргет - два адреса для iscsi и один менеджмент
+                                            
 
-Три ноды - два адреса для iscsi и один менеджмент
 
-Настроен MPIO
+ Сделана подсеть для менеджмента через bastion host и две отдельных подсети для web трафика и для трафика баз данных
 
 #### Стенд созданный opentofu
 
@@ -1631,25 +1628,17 @@ otus-nodeweb = [
   ```
 </details>
 
-Готовый кластер на любой из нод
-
-https://otus-node-x:2224
-
-Логин: hacluster
-Пароль: password
-
-В каталоге images несколько скринов кластера
 
 
-![главная](images/overview_2024-08-29_22-56-07.png)
+Итогом запуска станет настроенный wordpress на публичном интерфейсе otus-frontend-1
 
-![ноды](images/nodes_2024-08-29_22-57-38.png)
+В каталоге images несколько скринов
 
-![ресурсы](./images/resources_2024-08-29_22-58-11.png)
-
-![фенсинг](images/iscsi_shooter_2024-08-29_22-58-44.png)
+![alt text](<images/Screenshot from 2024-09-05 17-59-58.png>)
 
 
+
+![alt text](<images/Screenshot from 2024-09-05 18-02-06.png>)
 ## Задание выполнено!
 
 

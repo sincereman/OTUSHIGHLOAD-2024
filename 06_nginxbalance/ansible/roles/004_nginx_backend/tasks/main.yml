@@ -134,6 +134,7 @@
     mode: 0600
   notify:
     - restart nginx
+    - reload nginx
 #    - reload daemon
 
 
@@ -146,6 +147,7 @@
     mode: 0600
   notify:
     - restart nginx
+    - reload nginx    
 #    - reload daemon
 
 
@@ -157,8 +159,9 @@
     state:  link
     owner:  root
     group:  root
-  notify: restart nginx
-
+  notify:
+    - restart nginx
+    - reload nginx
 
 ## PHP Section
 - name: Include php-fpm service

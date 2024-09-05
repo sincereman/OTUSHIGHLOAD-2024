@@ -148,5 +148,11 @@
     group:  root
   notify: restart nginx
 
+- name: restart nginx
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
+
 
 
