@@ -1,0 +1,14 @@
+---
+
+- name: Playbook of 000_start
+  hosts:
+    - all
+  become: true
+  roles:
+    - 002_base
+    - { role: 003_nginx_frontend, when: "'frontend' in group_names" }
+    - { role: 004_nginx_backend, when: "'nodesweb' in group_names" }
+    - { role: 005_install_database, when: "'nodesdb' in group_names" }
+    - { role: 006_nginx_backend_wordpress, when: "'nodesweb' in group_names" }
+    
+

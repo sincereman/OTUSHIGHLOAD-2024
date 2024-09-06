@@ -1,0 +1,72 @@
+---
+
+- meta: end_play
+  when: ansible_os_family != "Debian"
+
+
+- name: Installing mariadb-server
+  apt:
+    pkg: mariadb-server
+    update_cache: yes
+    cache_valid_time: 86400
+    state: present
+
+- name: Start MariaDB
+  service:
+    name: mysql
+    state: started
+
+- name: Installing dependencies
+  apt:
+    pkg: [ 'php-mysql', 'python3-pymysql', 'acl']
+    update_cache: yes
+    cache_valid_time: 86400
+    state: present
+
+- name: Enable bind
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    regexp: '^bind-address'
+    insertafter: 'bind-address'    
+    line: 'bind-address = 10.110.0.50'
+  notify: restart mariadb
+  tags: 
+    - binddb
+
+- name: "Set the root password"
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mysql_password }}"
+    check_implicit_admin: yes
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  with_items:
+    - "{{ansible_host}}"
+    - "10.110.0.50"
+    - "127.0.0.1"
+    - "::1"
+    - "localhost"
+
+
+- name: Create mysql database
+  mysql_db:
+    name: "{{ wp_db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+
+- name: Create database user with name {{ wp_db_user}} and password from vars with all database privileges
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_password }}"
+    name: "{{ wp_db_user}}"
+    password: "{{ wp_db_password}}"
+    priv: '*.*:ALL,GRANT'
+    state: present
+    host: '%'
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+

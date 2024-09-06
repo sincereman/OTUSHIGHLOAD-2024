@@ -1,0 +1,17 @@
+   server {
+      listen 80;
+      
+      server_name {{ nginx_server_name }};
+
+      location / {
+          include proxy_params;
+          
+          proxy_pass http://app;
+          
+
+          proxy_redirect off;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+      }
+   }

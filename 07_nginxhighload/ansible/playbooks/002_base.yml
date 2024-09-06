@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 002_base
+  hosts:
+    - all
+  become: true
+  roles:
+    - { role: '002_base' }
