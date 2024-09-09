@@ -26,7 +26,7 @@ resource "yandex_lb_network_load_balancer" "nlb" {
       name = "http"
       http_options {
         port = 80
-        path = "/" #frontvip
+        path = "/index.html" #frontvip
       }
     }
   }

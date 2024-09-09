@@ -66,5 +66,5 @@ output "otus-nodedb"  {
 
 
 output "lb_ip_address" {
-  value = yandex_lb_network_load_balancer.nlb.*
+  value = yandex_lb_network_load_balancer.nlb.listener.*
 }  

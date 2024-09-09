@@ -1,9 +1,20 @@
+
+resource "yandex_compute_disk" "volumes" {
+  count = 3
+  name     = "disk-nodewebstatic-${count.index + 1}"
+  type     = "network-hdd"
+  size     = 1
+  zone     = var.yc_zone
+
+}
+
+
 resource "yandex_compute_instance" "nodeweb" {
   depends_on = [resource.yandex_compute_instance.bastion]
   name = "otus-nodeweb-${count.index + 1}"
   hostname="otus-nodeweb-${count.index + 1}"
     platform_id = "standard-v1"
-    count = 2
+    count = 3
 
   scheduling_policy {
     preemptible = true
@@ -23,6 +34,12 @@ resource "yandex_compute_instance" "nodeweb" {
       #image_id = "fd8p9iv9fkpds5pueviu"
       image_id = data.yandex_compute_image.debian12.image_id
     }
+  }
+
+ secondary_disk {
+      
+      disk_id = yandex_compute_disk.volumes[count.index].id
+
   }
 
   network_interface  { 

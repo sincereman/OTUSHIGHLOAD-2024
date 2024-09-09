@@ -1,8 +1,0 @@
----
-
-- name: Playbook of 006_nginx_backend_wordpress
-  hosts:
-    - nodesweb
-  become: true
-  roles:
-    - { role: '006_nginx_backend_wordpress' }

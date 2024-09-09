@@ -10,8 +10,8 @@
     update_cache: yes
   loop:
     - { package: "nginx",   state: "latest" }
-    - { package: "openssl", state: "present" }
-    - { package: "apache2-utils", state: "present" }
+#    - { package: "openssl", state: "present" }
+#    - { package: "apache2-utils", state: "present" }
 
 # add nginx user
 
@@ -92,7 +92,6 @@
   tags: conffolder
 
 
-
 - name: Create conf directory
   ansible.builtin.file:
     path: "{{ item }}"
@@ -166,3 +165,9 @@
 ## PHP Section
 - name: Include php-fpm service
   include_tasks: php-fpm.yml
+
+## Wordpress Section
+- name: Include wordpress section
+  include_tasks: wordpress.yml
+
+  when: wordpress_install == true

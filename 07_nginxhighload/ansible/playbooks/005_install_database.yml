@@ -1,8 +1,0 @@
----
-
-- name: Playbook of 005_install_database
-  hosts:
-    - nodesdb
-  become: true
-  roles:
-    - { role: '005_install_database' }
