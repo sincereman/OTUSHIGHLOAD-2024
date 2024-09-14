@@ -1,0 +1,16 @@
+---
+- name: check_vars
+  ansible.builtin.include_tasks: check_vars.yml
+  tags:
+    - proxysql
+    - check
+
+- name: install_proxysql
+  ansible.builtin.include_tasks: install_proxysql.yml
+  tags:
+    - install_proxysql
+
+- name: configure_proxysql
+  ansible.builtin.include_tasks: configure_proxysql.yml
+  tags:
+    - configure_proxysql

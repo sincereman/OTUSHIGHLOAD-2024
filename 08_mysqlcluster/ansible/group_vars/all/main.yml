@@ -11,3 +11,5 @@ otus-nodeweb-2-db: 10.110.0.11
 otus-nodeweb-3-web: 10.100.0.12
 otus-nodeweb-3-db: 10.110.0.12 
 otus-nodedb-1-db: 10.110.0.50 
+otus-nodedb-2-db: 10.110.0.51 
+otus-nodedb-3-db: 10.110.0.52 

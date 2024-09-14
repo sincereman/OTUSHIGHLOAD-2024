@@ -1,0 +1,108 @@
+---
+
+# WP
+wp_version: 5.0.3
+wp_install_dir: "/usr/share/nginx/html"
+wp_db_name: "wordpress"
+wp_db_user: "mysqluser"
+wp_db_password: "mysqlpass"
+#wp_db_host: "{{ ip_address['otus-nodedb-1-db'] }}"
+wp_db_charset: 'utf8'
+wp_db_collate: 'utf8_general_ci'
+wp_table_prefix: 'wp_'
+wp_debug: false
+wp_admin_email: 'admin@example.com'
+wp_webserver: nginx
+site_name: "otus-6"
+
+# Proxysql Users
+
+proxysqlmonitor_db_user: "psmonitoruser"
+proxysqlmonitor_db_password: "psqmonitorpass"
+
+#Nik Lavlinsky
+
+mysql_version_major: "8"
+mysql_version_minor: "0"
+mysql_version: "{{ mysql_version_major|int }}.{{ mysql_version_minor|int }}"
+
+# Basic settings
+mysql_root_password: "test2023!"
+mysql_port: "3306"
+mysql_bind_address: "0.0.0.0"
+mysql_language: "/usr/share/mysql/"
+mysql_datadir: "/var/lib/mysql"
+
+# Fine tuning
+mysql_key_buffer: "8M"
+mysql_max_allowed_packet: "256M"
+mysql_thread_stack: "192K"
+mysql_cache_size: "8"
+mysql_myisam_recover: "BACKUP"
+mysql_max_connections: "500"
+mysql_table_cache: "200"
+mysql_thread_concurrency: "8"
+mysql_query_cache_limit: "1M"
+mysql_query_cache_size: "16M"
+mysql_character_set_server: "utf8mb4"
+mysql_collation_server: "utf8mb4_ru_0900_as_cs"
+mysql_mysqldump_max_allowed_packet: "128M"
+mysql_isamchk_key_buffer: "16M"
+mysql_sort_buffer_size: "256K"
+
+# InnoDB tuning
+mysql_innodb_file_per_table: "1"
+mysql_innodb_flush_method: "fdatasync"
+mysql_innodb_buffer_pool_size: "256M"
+mysql_innodb_flush_log_at_trx_commit: "2"
+mysql_innodb_lock_wait_timeout: "50"
+mysql_innodb_log_buffer_size: "1M"
+mysql_innodb_log_file_size: "64M"
+
+mysql_character_set_client_handshake: "FALSE"
+
+mysql_timezone_info: "false"
+
+
+# Databases.
+mysql_databases:
+  - name: "{{ wp_db_name }}"
+    collation: "{{ wp_db_collate }}"
+    encoding: "{{ wp_db_charset }}"
+    # replicate: 1
+
+# Users
+mysql_users:
+  - name: "{{ wp_db_user }}"
+    host: "%"
+    password: "{{ wp_db_password }}"
+    priv: "*.*:ALL,GRANT"
+  - name: "{{ proxysqlmonitor_db_user}}"
+    host: "%"
+    password: "{{ proxysqlmonitor_db_password }}"
+    priv: "*.*:ALL,GRANT"
+
+# В идеале переделать права
+#CREATE USER 'monitor'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'Monitor123!';
+#GRANT SELECT on sys.* to 'monitor'@'%';
+#GRANT SELECT on performance_schema.* to 'monitor'@'%';
+#GRANT USAGE, REPLICATION CLIENT ON . TO 'monitor'@'%';
+
+
+install_rpm_repositories: "true"
+
+# To disable log_bin in percona >=8, enabled by default
+mysql_disable_log_bin: "true"
+
+# Default Auth Plugin
+# used in templates when Percona Server >= 5.7
+mysql_default_authentication_plugin: "caching_sha2_password"
+
+
+# host otus-nodedb-x ip
+
+otus_nodedb_1: "10.110.0.50"
+otus_nodedb_2: "10.110.0.51"
+otus_nodedb_3: "10.110.0.52"
+
+

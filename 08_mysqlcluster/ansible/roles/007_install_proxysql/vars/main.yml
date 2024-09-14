@@ -1,0 +1,89 @@
+---
+#nodes
+otus_nodedb_1: "10.110.0.50"
+otus_nodedb_2: "10.110.0.51"
+otus_nodedb_3: "10.110.0.52"
+
+
+proxysqlmonitor_db_user: "psmonitoruser"
+proxysqlmonitor_db_password: "psqmonitorpass"
+
+wp_db_user: "mysqluser"
+wp_db_password: "mysqlpass"
+
+
+
+
+proxysql_admin_user: admin
+proxysql_admin_password: admin
+
+proxysql_admin_interface: 127.0.0.1
+proxysql_admin_port: 6032
+
+# Force database wipe
+proxysql_initial: true
+
+proxysql_mysql_interface: 127.0.0.1
+proxysql_mysql_port: 6033
+
+# Query rules
+# Format:
+# proxysql_mysql_query_rules:
+#   - match_pattern: "^SELECT .* FOR UPDATE$"
+#     destination_hostgroup: 0
+#   - match_pattern: "^SELECT"
+#     destination_hostgroup: 1
+#
+proxysql_mysql_query_rules: []
+
+# Servers
+# Format:
+# proxysql_mysql_servers:
+#   - address: 127.0.0.1
+#     port: 3306
+#     hostgroup: 0
+#   - address: 1.2.3.4
+#     port: 3306
+#     hostgroup: 1
+proxysql_mysql_servers:
+  - address: "{{ otus_nodedb_1 }}"
+    port: 3306
+    hostgroup: 0
+  - address: "{{ otus_nodedb_2 }}"
+    port: 3306
+    hostgroup: 0
+  - address: "{{ otus_nodedb_3 }}"
+    port: 3306
+    hostgroup: 0
+
+# Users
+# Format:
+# proxysql_mysql_users:
+#   - username: foo
+#     password: bar
+#     default_hostgroup: 0  # default: 0
+
+
+proxysql_mysql_users: 
+  - username: "{{ wp_db_user }}"
+    password: "{{ wp_db_password }}"
+    default_hostgroup: 0  # default: 0
+
+
+
+
+proxysql_cluster_name: false
+proxysql_cluster_password: false
+
+# mysql_version_major: "8"
+# mysql_version_minor: "0"
+# mysql_version: "{{ mysql_version_major|int }}.{{ mysql_version_minor|int }}"
+
+# proxysql_mysql_server_version: "{{ mysql_version }}"
+proxysql_mysql_server_version: "5.5.30"
+
+proxysql_version: "2.7"
+
+
+
+
