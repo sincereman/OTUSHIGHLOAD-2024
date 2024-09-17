@@ -1,0 +1,99 @@
+---
+
+- meta: end_play
+  when: (ansible_distribution != "Debian")
+
+
+### Set hostname
+- name: Set hostname
+  hostname: 
+    name: "{{ ansible_hostname }}"
+
+##Set timezone
+- name: set timezone
+  shell: timedatectl set-timezone Europe/Moscow
+
+## Install Chrony
+- name: Synchronize datetime | Install chrony
+  apt:
+    name: chrony
+    state: latest
+
+#Enable Chrony Services to time Sync
+
+- name: Synchronize datetime | Turn on chronyd
+  service:
+    name: chronyd
+    enabled: yes
+    state: started
+  notify:
+    - systemctl daemon reload
+
+# Устанавливаем инструменты анализа сети
+- name: install base tools
+  apt:
+    name:
+      - traceroute
+      - tcpdump
+      - net-tools
+      - mtr
+      - curl
+      - iperf3
+      - tree
+    state: present
+    update_cache: true
+  tags:
+    - netanalize
+
+
+### Sert bastion Host as a router
+
+ #enable forwarding for interfaces
+- name: set up forward packages across routers
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+  notify:
+    - systemctl daemon reload
+
+
+#enable forwarding for interfaces
+- name: set up forward packages across routers
+  sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: '1'
+    state: present
+  notify:
+    - systemctl daemon reload
+
+#enable forwarding 6 for interfaces
+- name: set up forward 6 packages across routers
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: '1'
+    state: present
+  notify:
+    - systemctl daemon reload
+
+
+#disable do not accept ICMP redirects 
+- name: disable do not accept ICMP redirects 
+  sysctl:
+    name: net.ipv4.conf.all.accept_redirects
+    value: '0'
+    state: present
+  notify:
+    - systemctl daemon reload
+
+
+#disable do not accept ICMP redirects 
+- name: disable do not accept ICMP redirects 
+  sysctl:
+    name: net.ipv4.conf.all.send_redirects
+    value: '0'
+    state: present
+  notify:
+    - systemctl daemon reload
+
+
