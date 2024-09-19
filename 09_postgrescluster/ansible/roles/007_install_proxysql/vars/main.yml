@@ -11,7 +11,8 @@ proxysqlmonitor_db_password: "psqmonitorpass"
 wp_db_user: "mysqluser"
 wp_db_password: "mysqlpass"
 
-
+jm_db_user: "mysqluser"
+jm_db_password: "mysqlpass"
 
 
 proxysql_admin_user: admin
@@ -68,7 +69,9 @@ proxysql_mysql_users:
   - username: "{{ wp_db_user }}"
     password: "{{ wp_db_password }}"
     default_hostgroup: 0  # default: 0
-
+  - username: "{{ jm_db_user }}"
+    password: "{{ jm_db_password }}"
+    default_hostgroup: 0  # default: 0
 
 
 
@@ -80,7 +83,7 @@ proxysql_cluster_password: false
 # mysql_version: "{{ mysql_version_major|int }}.{{ mysql_version_minor|int }}"
 
 # proxysql_mysql_server_version: "{{ mysql_version }}"
-proxysql_mysql_server_version: "5.5.30"
+proxysql_mysql_server_version: "8.0.13"
 
 proxysql_version: "2.7"
 

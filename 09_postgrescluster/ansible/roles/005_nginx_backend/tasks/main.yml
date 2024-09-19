@@ -171,3 +171,9 @@
   include_tasks: wordpress.yml
   when: wordpress_install == true
   tags: wordpress
+
+## Joomla Section
+- name: Include joomla section
+  include_tasks: joomla.yml
+  when: joomla_install == true
+  tags: joomla

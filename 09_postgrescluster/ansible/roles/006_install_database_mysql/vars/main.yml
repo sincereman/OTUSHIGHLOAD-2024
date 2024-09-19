@@ -1,5 +1,9 @@
 ---
 
+# Common site
+
+site_name: "otus-6"
+
 # WP
 wp_version: 5.0.3
 wp_install_dir: "/usr/share/nginx/html"
@@ -13,7 +17,28 @@ wp_table_prefix: 'wp_'
 wp_debug: false
 wp_admin_email: 'admin@example.com'
 wp_webserver: nginx
-site_name: "otus-6"
+
+
+
+# JM
+joomla_install: true
+jm_version: "5-1-4"
+jm_install_dir: "{{ nginx_app_folder }}"
+jm_db_name: "joomla"
+jm_db_user: "mysqluser"
+jm_db_password: "mysqlpass"
+#wp_db_host: "{{ ip_address['otus-nodedb-1-db'] }}"
+#wp_db_host: "10.110.0.50"
+jm_db_host: "127.0.0.1"
+jm_db_port: "6033"
+jm_db_charset: 'utf8'
+jm_db_collate: 'utf8_general_ci'
+jm_table_prefix: 'jm_'
+jm_debug: false
+jm_admin_email: 'admin@example.com'
+jm_webserver: nginx
+
+
 
 # Proxysql Users
 
@@ -66,9 +91,13 @@ mysql_timezone_info: "false"
 
 # Databases.
 mysql_databases:
-  - name: "{{ wp_db_name }}"
-    collation: "{{ wp_db_collate }}"
-    encoding: "{{ wp_db_charset }}"
+  # - name: "{{ wp_db_name }}"
+  #   collation: "{{ wp_db_collate }}"
+  #   encoding: "{{ wp_db_charset }}"
+  #   # replicate: 1
+  - name: "{{ jm_db_name }}"
+    collation: "{{ jm_db_collate }}"
+    encoding: "{{ jm_db_charset }}"
     # replicate: 1
 
 # Users
@@ -77,6 +106,10 @@ mysql_users:
     host: "%"
     password: "{{ wp_db_password }}"
     priv: "*.*:ALL,GRANT"
+  - name: "{{ jm_db_user }}"
+    host: "%"
+    password: "{{ jm_db_password }}"
+    priv: "*.*:ALL,GRANT"    
   - name: "{{ proxysqlmonitor_db_user}}"
     host: "%"
     password: "{{ proxysqlmonitor_db_password }}"
@@ -96,8 +129,8 @@ mysql_disable_log_bin: "true"
 
 # Default Auth Plugin
 # used in templates when Percona Server >= 5.7
-mysql_default_authentication_plugin: "caching_sha2_password"
-
+#mysql_default_authentication_plugin: "caching_sha2_password"
+mysql_default_authentication_plugin: "mysql_native_password"
 
 # host otus-nodedb-x ip
 

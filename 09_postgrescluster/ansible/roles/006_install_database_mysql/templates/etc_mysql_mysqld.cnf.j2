@@ -53,7 +53,9 @@ wsrep_cluster_name=pxc-cluster
 wsrep_node_name={{ ansible_hostname }}
 
 #pxc_strict_mode allowed values: DISABLED,PERMISSIVE,ENFORCING,MASTER
-pxc_strict_mode=ENFORCING
+#pxc_strict_mode=ENFORCING
+pxc_strict_mode=PERMISSIVE
+
 
 # SST method
 wsrep_sst_method=xtrabackup-v2

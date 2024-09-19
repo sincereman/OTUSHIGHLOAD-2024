@@ -30,17 +30,17 @@ resource "yandex_compute_instance" "nodehaproxybackend" {
 
   network_interface  { 
       index = "0"
-      subnet_id = yandex_vpc_subnet.subnet-web.id
-      ip_address = "10.110.0.${count.index + 20}"
-      nat       = true
-  }
-
-  network_interface  { 
-      index = "1"
       subnet_id = yandex_vpc_subnet.subnet-manage.id
       ip_address = "10.200.0.${count.index + 20}"
       security_group_ids = [yandex_vpc_security_group.nat-instance-sg.id]
   }
+
+  network_interface  { 
+      index = "1"
+      subnet_id = yandex_vpc_subnet.subnet-db.id
+      ip_address = "10.110.0.${count.index + 20}"
+  }
+
 
   metadata = {
     ssh-keys  = "devops:${file("~/.ssh/id_otus_ed25519.pub")}"

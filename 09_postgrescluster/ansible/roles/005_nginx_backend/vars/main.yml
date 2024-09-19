@@ -12,7 +12,7 @@ wwwnginxgroup: "www-data"
 nginx_listen_port: 80
 nginx_listen_httpsport: 443
 #nginx_server_name: "{{ ansible_host }}"
-nginx_server_name: "wordpress"
+nginx_server_name: "cms"
 web_dns: 8.8.8.8
 
 nginx_config_template: "nginx.conf.j2"
@@ -33,11 +33,17 @@ nginx_self_signed_cert_subj: "/C=RU/ST=Moscow/L=Moscow/O=TECH/CN={{ nginx_server
 
 # PHP
 
-php_version: 8.2
+php_version: "{{ jm_php_version}}"
 nginx_index_php_template: "index.php.j2"
 
+
+# Common site
+
+site_name: "otus-9-joomla"
+
 # WP
-wordpress_install: true
+wordpress_install: false
+wp_php_version: 8.2
 wp_version: 6.6.2
 wp_install_dir: "{{ nginx_app_folder }}"
 wp_db_name: "wordpress"
@@ -53,8 +59,28 @@ wp_table_prefix: 'wp_'
 wp_debug: false
 wp_admin_email: 'admin@example.com'
 wp_webserver: nginx
-site_name: "otus-6"
 
+
+
+# JM
+
+joomla_install: true
+joomla_force_reinstall: true
+jm_php_version: 8.2
+jm_version: "5.1.4"
+jm_install_dir: "{{ nginx_app_folder }}"
+jm_db_name: "joomla"
+jm_db_user: "mysqluser"
+jm_db_password: "mysqlpass"
+#wp_db_host: "{{ ip_address['otus-nodedb-1-db'] }}"
+#wp_db_host: "10.110.0.50"
+jm_db_host: "127.0.0.1"
+jm_db_port: "6033" 
+jm_db_collate: 'utf8_general_ci'
+jm_table_prefix: 'jm_'
+jm_debug: false
+jm_admin_email: 'admin@example.com'
+jm_webserver: nginx
 
 
 

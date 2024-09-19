@@ -79,5 +79,5 @@
       state: present
     notify:
       - restart nginx
-
+      - reload nginx
   when: wordpress_install == true

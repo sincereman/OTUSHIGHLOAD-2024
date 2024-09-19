@@ -9,7 +9,7 @@
 #   register: mysql_service
 #   run_once: true
 
-- name: "Start bootstap service"
+- name: "Start bootstrap service"
   ansible.builtin.service:
     name: "mysql@bootstrap"
     state: "started"

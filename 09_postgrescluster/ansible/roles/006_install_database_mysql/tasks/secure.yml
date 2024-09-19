@@ -97,3 +97,9 @@
     name: "{{ wp_db_name }}"
     state: absent
   run_once: true
+
+- name: "Remove the {{ jm_db_name }} database"
+  mysql_db:
+    name: "{{ jm_db_name }}"
+    state: absent
+  run_once: true  

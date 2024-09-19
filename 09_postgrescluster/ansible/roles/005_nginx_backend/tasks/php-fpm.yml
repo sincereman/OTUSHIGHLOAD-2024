@@ -5,13 +5,13 @@
 
 
 ## PHP template
-- name: Copy Nginx index PHP file.
-  template:
-    src: "templates/{{ nginx_index_php_template }}"
-    dest: "{{nginx_app_folder}}/index.php"
-    owner: '{{ wwwnginxuser }}'
-    group: '{{ wwwnginxgroup }}'
-    mode: '774'
+# - name: Copy Nginx index PHP file.
+#   template:
+#     src: "templates/{{ nginx_index_php_template }}"
+#     dest: "{{nginx_app_folder}}/index.php"
+#     owner: '{{ wwwnginxuser }}'
+#     group: '{{ wwwnginxgroup }}'
+#     mode: '774'
 
 
 ### install additional package for nginx 
@@ -39,6 +39,7 @@
       - "php{{ php_version }}-dev"
       - "php{{ php_version }}-imap"
       - "php{{ php_version }}-soap"
+      - "php{{ php_version }}-pgsql"
     state: latest
     update_cache: yes
 
