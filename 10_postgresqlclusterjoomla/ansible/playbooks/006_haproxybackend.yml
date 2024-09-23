@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 006_haproxybackend
+  hosts:
+    - nodeshaproxybackend
+  become: true
+  roles:
+    - { role: '006_haproxybackend' }

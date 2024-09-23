@@ -1,0 +1,90 @@
+---
+
+- name: Install, configure, and start Apache
+  block:
+
+
+  - name: Joomla | Remove elements from /var/www/html/
+    file:
+      path: /var/www/html/index.html
+      state: absent
+    when:
+      jm_install_dir == "/var/www/html"
+
+  - name: Joomla | Create directory
+    file:
+      path: "{{ jm_install_dir }}"
+      state: directory
+      mode: 0755
+    when: (ansible_hostname == "otus-nodeweb-1")   
+
+
+
+  - name: Joomla | Extract archive in {{ jm_install_dir }}
+    unarchive:
+#https://downloads.joomla.org/cms/joomla5/5-1-4/Joomla_5-1-4-Stable-Full_Package.tar.gz?format=gz
+#https://github.com/joomla/joomla-cms/releases/download/5.1.4/Joomla_5.1.4-Stable-Full_Package.tar.gz
+      src: "https://github.com/joomla/joomla-cms/releases/download/{{ jm_version }}/Joomla_{{ jm_version }}-Stable-Full_Package.zip"
+      dest: "{{ jm_install_dir }}"
+      remote_src: yes
+    when: (ansible_hostname == "otus-nodeweb-1" and joomla_force_reinstall == true)
+
+
+
+  # - name: Joomla | Move files from {{ jm_install_dir }}/joomla to {{ jm_install_dir }}
+  #   command: cp -rf . "{{ jm_install_dir }}"
+  #   args:
+  #     chdir: "{{ jm_install_dir }}/joomla/"
+  #   when: (ansible_hostname == "otus-nodeweb-1")
+ 
+
+  # - name: Joomla | Remove joomla dir
+  #   file:
+  #     path: "{{ jm_install_dir }}/joomla/"
+  #     state: absent
+  #   when: (ansible_hostname == "otus-nodeweb-1") 
+
+  # - name: Joomla | Fetch random salts for wp-config.php
+  #   delegate_to: localhost
+  #   uri:
+  #     url: https://api.wordpress.org/secret-key/1.1/salt/
+  #     return_content: yes
+  #   become: False
+  #   register: 'wp_salt_array'
+  #   when: (ansible_hostname == "otus-nodeweb-1") 
+  #   tags: wpconfig   
+
+  # - name: set wp_salt fact
+  #   set_fact:
+  #     wp_salt: '{{ wp_salt_array.content }}'
+  #   when: (ansible_hostname == "otus-nodeweb-1") 
+  #   tags: wpconfig   
+
+  # - name: Joomla | Copy wp-config.php file
+  #   template:
+  #     src: wp-config.php.j2
+  #     dest: "{{ wp_install_dir }}/wp-config.php"
+  #   when: (ansible_hostname == "otus-nodeweb-1")
+  #   tags: wpconfig   
+
+  - name: Joomla | Change ownership of installation directory
+    file:
+      path: "{{ jm_install_dir }}"
+      owner: "{{ wwwnginxuser }}"
+      group: "{{ wwwnginxgroup }}"
+      state: directory
+      mode: '2775'
+      recurse: yes
+    when: (ansible_hostname == "otus-nodeweb-1") 
+
+  - name: Installing dependencies
+    apt:
+      pkg: [ 'php-mysql', 'python3-pymysql' ]
+      update_cache: yes
+      cache_valid_time: 86400
+      state: present
+    notify:
+      - restart nginx
+      - reload nginx
+
+  when: joomla_install == true

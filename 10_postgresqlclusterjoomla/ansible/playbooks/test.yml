@@ -1,0 +1,47 @@
+---
+
+- name: Playbook of test_002
+  hosts:
+    - all
+  become: true
+  roles:
+    - { role: 002_base }
+
+
+- name: Playbook of test_003
+  hosts:
+    - frontend
+  become: true
+  roles:
+    - { role: 003_nginx_frontend }
+
+    
+- name: Playbook of test_004
+  hosts:
+    - nodesweb
+  become: true
+  roles:
+    - { role: 004_backend_glusterfs }    
+  
+
+- name: Playbook of test_005
+  hosts:
+    - nodesweb
+  become: true
+  roles:
+    - { role: 005_nginx_backend }
+
+
+# - name: Playbook of test_006
+#   hosts:
+#     - nodesdb
+#   become: true
+#   roles:
+#     - { role: 006_install_database_mysql }
+
+# - name: Playbook of test_007
+#   hosts:
+#     - nodesweb
+#   become: true
+#   roles:
+#     - { role: 007_install_proxysql }

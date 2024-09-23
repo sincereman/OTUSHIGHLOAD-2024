@@ -1,0 +1,12 @@
+---
+- name: "Install PostgreSQL"
+  ansible.builtin.include_tasks: consul.yml
+  when: dcs == "consul"
+
+- name: "Install PostgreSQL"
+  ansible.builtin.include_tasks: postgresql.yml
+
+
+- name: "Install Patroni"
+  ansible.builtin.include_tasks: patroni.yml
+

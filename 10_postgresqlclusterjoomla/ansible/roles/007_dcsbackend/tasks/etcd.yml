@@ -1,0 +1,140 @@
+---
+
+- name: Uninstall etcd server
+  package:
+    name: etcd-server
+    state: absent
+    purge: true
+  when: ( etcd_reinstall  == "on")  
+
+
+
+
+- name: Install etcd server
+  package:
+    name: etcd-server
+    state: present
+# when: ((ansible_distribution_release != "stretch") and (ansible_distribution_release != "xenial"))
+
+- name: Install etcd client
+  package:
+    name: etcd-client
+    state: present
+
+
+- name: Set member name
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_NAME=\"{{ ansible_hostname }}\""
+#    line: "ETCD_NAME=\"{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}\""
+    regexp: ".*ETCD_NAME.*"
+  tags:
+    - config
+
+- name: Set data directory
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_DATA_DIR=\"/var/lib/etcd/patroni\""
+    regexp: ".*ETCD_DATA_DIR.*"
+  tags:
+    - config
+
+- name: Listen for other cluster peers
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_LISTEN_PEER_URLS=\"http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2380\""
+    regexp: ".*ETCD_LISTEN_PEER_URLS.*"
+  tags:
+    - config
+
+- name: Setup advertised peer communication URL
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_INITIAL_ADVERTISE_PEER_URLS=\"http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2380\""
+    regexp: ".*ETCD_INITIAL_ADVERTISE_PEER_URLS.*"
+  tags:
+    - config
+
+- name: Enable client listen interface
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_LISTEN_CLIENT_URLS=\"http://localhost:2379,http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2379\""
+#    line: "ETCD_LISTEN_CLIENT_URLS=\"http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2379\""    
+    regexp: ".*ETCD_LISTEN_CLIENT_URLS.*"
+  tags:
+    - config
+
+- name: Advertise client interface
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_ADVERTISE_CLIENT_URLS=\"http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2379\""
+    regexp: ".*ETCD_ADVERTISE_CLIENT_URLS.*"
+  tags:
+    - config
+
+- name: Setup URLs of initials members
+  lineinfile:
+    dest: "/etc/default/etcd"
+#    line: "ETCD_INITIAL_CLUSTER=\"{% for ip in dcs_server_ips %}=http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2380{% if not loop.last %},{% endif %}{% endfor %}\""
+#    line: "ETCD_INITIAL_CLUSTER=\"{% for ip in dcs_server_ips %}{}=http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2380{% if not loop.last %},{% endif %}{% endfor %}\""
+    line: "ETCD_INITIAL_CLUSTER=\"{% for item in dcs_server_ips %}{{ item.host }}=http://{{ item.ip }}:2380{% if not loop.last %},{% endif %}{% endfor %}\""
+    regexp: ".*ETCD_INITIAL_CLUSTER.*"
+  tags:
+    - config
+
+
+# Settings
+
+
+- name: Set ETCD Cluster Token
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_INITIAL_CLUSTER_TOKEN=\"ETCDCluster\""
+    regexp: ".*ETCD_INITIAL_CLUSTER_TOKEN.*"
+  tags:
+    - config
+
+# - name: Set ETCD Cluster Initial State
+#   lineinfile:
+#     dest: "/etc/default/etcd"
+#     line: "ETCD_INITIAL_CLUSTER_STATE=\"new\""
+#     regexp: ".*ETCD_INITIAL_CLUSTER_STATE.*"
+#   when: (etcd_initial_master == "otus-backend-etcd-1")  
+#   tags:
+#     - config
+
+# - name: Set ETCD Cluster Initial State
+#   lineinfile:
+#     dest: "/etc/default/etcd"
+#     line: "ETCD_INITIAL_CLUSTER_STATE=\"existing\""
+#     regexp: ".*ETCD_INITIAL_CLUSTER_STATE.*"
+#   when: (etcd_initial_master != "otus-backend-etcd-1")  
+#   tags:
+#     - config
+
+
+
+- name: Set ETCD Election Timeout
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_ELECTION_TIMEOUT=\"5000\""
+    regexp: ".*ETCD_ELECTION_TIMEOUT.*"
+  tags:
+    - config
+
+
+- name: Set ETCD_HEARTBEAT_INTERVAL
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_HEARTBEAT_INTERVAL=\"1000\""
+    regexp: ".*ETCD_HEARTBEAT_INTERVAL.*"
+  tags:
+    - config
+
+
+- name: systemctl daemon-reload / start etcd
+  systemd:
+    daemon_reload: yes
+    name: etcd
+    state: restarted
+    enabled: yes

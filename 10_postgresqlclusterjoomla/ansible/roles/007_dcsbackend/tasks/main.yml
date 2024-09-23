@@ -1,0 +1,4 @@
+---
+
+- name: "Add Needed dcs service"
+  ansible.builtin.include_tasks: "{{ dcs }}.yml"

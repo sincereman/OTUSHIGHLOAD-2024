@@ -1,0 +1,32 @@
+---
+
+etcd_reinstall: ""
+
+dcs: "etcd"
+
+etcd_initial_master: "otus-backend-etcd-1"
+
+dcs_server_ips:
+  - { name: "etcd1", host: "otus-backend-etcd-1", ip: "10.110.0.30" }
+  - { name: "etcd2", host: "otus-backend-etcd-2", ip: "10.110.0.31" }
+  - { name: "etcd3", host: "otus-backend-etcd-3", ip: "10.110.0.32" }
+
+  
+dcs_client_ips:
+  - name: "etcd1"
+  - host: "otus-backend-etcd-1"
+  - ip: "10.110.0.30"
+  - name: "etcd2"
+  - host: "otus-backend-etcd-2"
+  - ip: "10.110.0.31"
+  - name: "etcd3"
+  - host: "otus-backend-etcd-3"
+  - ip: "10.110.0.32"
+
+
+
+dcs_port:
+  consul:    8500
+  zookeeper: 2181
+  etcd:      2379
+  etcd3:     2379

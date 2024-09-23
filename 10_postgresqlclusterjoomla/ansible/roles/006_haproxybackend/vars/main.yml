@@ -1,0 +1,34 @@
+---
+
+
+
+#PGSQL_Nodes
+# pgsql_server_ips:
+#   - name: "pgsql1"
+#     host: "10.110.0.50"
+#   - name: "pgsql2"
+#     host: "10.110.0.51"
+#   - name: "pgsql3"
+#     host: "10.110.0.52"    
+pgsql_server_ips:
+  - "10.110.0.50"
+  - "10.110.0.51"
+  - "10.110.0.52"  
+
+
+postgresql_port: "5432"
+patroni_port: "8008"
+
+# If HAProxy is to be deployed on one of the servers, add a "[haproxy_server]"
+# section to the inventory, make sure "postgresql_port" and "patroni_port" are
+# set and uncomment/edit the following HAProxy ports to be used by
+# clients/applications:
+haproxy_write_port: 5432
+haproxy_read_port: 5433
+# Uncomment this if the primary should also get read-only queries
+#haproxy_primary_read_scale: "on"
+# By default HAProxy uses the "haproxy" user for the read-only health check if
+# haproxy_primary_read_scale is enabled. If this user does not exist, error
+# messages will be logged in the Postgres log. Alternatively, another can be
+# specified:
+haproxy_health_check_user: "haproxy"
