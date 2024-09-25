@@ -9,7 +9,6 @@
 
 
 
-
 - name: Install etcd server
   package:
     name: etcd-server
@@ -20,6 +19,8 @@
   package:
     name: etcd-client
     state: present
+
+
 
 
 - name: Set member name
@@ -94,23 +95,23 @@
   tags:
     - config
 
-# - name: Set ETCD Cluster Initial State
-#   lineinfile:
-#     dest: "/etc/default/etcd"
-#     line: "ETCD_INITIAL_CLUSTER_STATE=\"new\""
-#     regexp: ".*ETCD_INITIAL_CLUSTER_STATE.*"
-#   when: (etcd_initial_master == "otus-backend-etcd-1")  
-#   tags:
-#     - config
+- name: Set ETCD Cluster Initial State
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_INITIAL_CLUSTER_STATE=\"new\""
+    regexp: ".*ETCD_INITIAL_CLUSTER_STATE.*"
+  when: (etcd_initial_master == "otus-backend-etcd-1")  
+  tags:
+    - config
 
-# - name: Set ETCD Cluster Initial State
-#   lineinfile:
-#     dest: "/etc/default/etcd"
-#     line: "ETCD_INITIAL_CLUSTER_STATE=\"existing\""
-#     regexp: ".*ETCD_INITIAL_CLUSTER_STATE.*"
-#   when: (etcd_initial_master != "otus-backend-etcd-1")  
-#   tags:
-#     - config
+- name: Set ETCD Cluster Initial State
+  lineinfile:
+    dest: "/etc/default/etcd"
+    line: "ETCD_INITIAL_CLUSTER_STATE=\"new\""
+    regexp: ".*ETCD_INITIAL_CLUSTER_STATE.*"
+  when: (etcd_initial_master != "otus-backend-etcd-1")  
+  tags:
+    - config
 
 
 
@@ -138,3 +139,60 @@
     name: etcd
     state: restarted
     enabled: yes
+
+- name: Wait for port 2379 to become open on the host
+  ansible.builtin.wait_for:
+    port: 2379
+    host: 127.0.0.1
+    state: started
+    timeout: 120
+    delay: 10
+  ignore_errors: false
+  tags: etcd, etcd_start
+
+
+- block:
+    - name: Wait until the etcd cluster is healthy
+      ansible.builtin.command: >
+        /usr/bin/etcdctl endpoint health
+        --endpoints=http://{{ ansible_hostname }}:2379
+      environment:
+        ETCDCTL_API: "3"
+      register: etcd_health_result
+      until: >
+        'is healthy' in etcd_health_result.stdout or
+        'is healthy' in etcd_health_result.stderr
+      retries: 10
+      delay: 10
+      changed_when: false
+      ignore_errors: false
+
+    - name: cluster health
+      ansible.builtin.debug:
+        msg: >
+          {{ etcd_health_result.stdout
+          if etcd_health_result.stdout | length > 0
+          else etcd_health_result.stderr }}
+  when: not ansible_check_mode
+  tags: etcd, etcd_start, etcd_status
+
+
+- block:
+    - name: Info about the etcd cluster is state
+      ansible.builtin.command: >
+        /usr/bin/etcdctl endpoint status -w table
+        --endpoints=http://{{ ansible_hostname }}:2379
+      environment:
+        ETCDCTL_API: "3"
+      register: etcd_clusterstate_result
+      changed_when: false
+      ignore_errors: false
+
+    - name: cluster state
+      ansible.builtin.debug:
+        msg: >
+          {{ etcd_clusterstate_result.stdout
+          if etcd_clusterstate_result.stdout | length > 0
+          else etcd_clusterstate_result.stderr }}
+  when: not ansible_check_mode
+  tags: etcd, etcd_start, etcd_status

@@ -1,5 +1,13 @@
 # Домашнее задание 08_ mysql cluster (ProxySQL + Percona XtraDB Cluster)
 
+
+ENDPOINTS=otus-backend-etcd-1:2379,otus-backend-etcd-2:2379,otus-backend-etcd-3:2379
+etcdctl --endpoints=$ENDPOINTS endpoint health
+etcdctl --write-out=table --endpoints=$ENDPOINTS endpoint status
+
+
+
+
 Развернуть InnoDB или PXC кластер
 
 ## Цель:

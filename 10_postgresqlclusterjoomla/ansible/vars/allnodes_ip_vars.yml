@@ -1,0 +1,36 @@
+---
+# nodes_vars_ip
+
+allnodes_ip_address:
+  - name: otus-frontend-1-web
+    ip: 10.100.0.200
+  - name: otus-frontend-2-web
+    ip: 10.100.0.201
+  - name: otus-nodeweb-1-web
+    ip: 10.100.0.10
+#  - name: otus-nodeweb-1-db
+#    ip: 10.110.0.10
+  - name: otus-nodeweb-2-web
+    ip: 10.100.0.11
+#  - name: otus-nodeweb-2-db
+#    ip: 10.110.0.11
+  - name: otus-nodeweb-3-web
+    ip: 10.100.0.12
+#  - name: otus-nodeweb-3-db
+#    ip: 10.110.0.12
+  - name: otus-nodedb-1-db
+    ip: 10.110.0.50
+  - name: otus-nodedb-2-db
+    ip: 10.110.0.51
+  - name: otus-nodedb-3-db
+    ip: 10.110.0.52
+  - name: otus-backend-haproxy-1-db
+    ip: 10.110.0.20
+  - name: otus-backend-haproxy-2-db
+    ip: 10.110.0.21
+  - name: otus-backend-etcd-1-db
+    ip: 10.110.0.30
+  - name: otus-backend-etcd-2-db
+    ip: 10.110.0.31
+  - name: otus-backend-etcd-3-db
+    ip: 10.110.0.32

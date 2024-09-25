@@ -1,5 +1,14 @@
 ---
 
+#install etcd client
+
+- name: Install etcd client
+  package:
+    name: etcd-client
+    state: present
+
+##Install Patroni
+
 - name: Install patroni package
   package:
     name: patroni
@@ -19,9 +28,9 @@
 
 - name: Install etcd client package
   package:
-    name: python3-etcd
+    name: python3-etcd3
     state: present
-  when: dcs == "etcd"
+  when: dcs == "etcd3"
 
 - name: Install vip-manager2 package
   package:
@@ -50,7 +59,7 @@
     - config
 
 - name: Create patroni configuration
-  command: pg_createconfig_patroni --force --hostip={{ ansible_default_ipv4.address }} {% if postgresql_port is defined %}--port={{ postgresql_port }}{% endif %} {% if vip is defined %}--vip={{ vip }} {% if dcs_ips | length > 1 %}--endpoint=http://{{ ansible_default_ipv4.address }}:2379{% endif %}{% endif %} {{ postgresql_major_version }} {{ postgresql_cluster_name }}
+  command: pg_createconfig_patroni --force --hostip={{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }} {% if vip is defined %}--vip={{ vip }} {% if dcs_server_ips | length > 1 %}--endpoint=http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2379{% endif %}{% endif %} {{ postgresql_major_version }} {{ postgresql_cluster_name }}
   tags:
     - config
 

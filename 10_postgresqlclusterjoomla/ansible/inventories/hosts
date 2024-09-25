@@ -1,11 +1,11 @@
 [bastions]
-otus-bastion-1 ansible_host=158.160.19.189 ansible_ssh_user=devops ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519 ansible_ssh_port=22 ansible_ssh_transfer_method=smart
+otus-bastion-1 ansible_host=158.160.26.153 ansible_ssh_user=devops ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519 ansible_ssh_port=22 ansible_ssh_transfer_method=smart
 
 [frontend]
 #otus-frontend-1 ansible_host=10.100.0.200
-otus-frontend-1 ansible_host=130.193.55.93 ansible_ssh_user=devops ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519 ansible_ssh_port=22 ansible_ssh_transfer_method=smart
+otus-frontend-1 ansible_host=89.169.162.43 ansible_ssh_user=devops ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519 ansible_ssh_port=22 ansible_ssh_transfer_method=smart
 #otus-frontend-2 ansible_host=10.100.0.201
-otus-frontend-2 ansible_host=89.169.175.177 ansible_ssh_user=devops ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519 ansible_ssh_port=22 ansible_ssh_transfer_method=smart
+otus-frontend-2 ansible_host=89.169.166.103 ansible_ssh_user=devops ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519 ansible_ssh_port=22 ansible_ssh_transfer_method=smart
 
 
 [nodesweb]
@@ -35,32 +35,32 @@ otus-backend-etcd-3 ansible_host=10.200.0.32
 #ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
 #ansible_ssh_transfer_method=smart
 #ansible_ssh_port=22
-#ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.19.189 " -o ServerAliveInterval=15'
+#ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.26.153 " -o ServerAliveInterval=15'
 
 [nodesweb:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
 ansible_ssh_transfer_method=smart
 ansible_ssh_port=22
-ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.19.189 " -o ServerAliveInterval=15'
+ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.26.153 " -o ServerAliveInterval=15'
 
 [nodesdb:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
 ansible_ssh_transfer_method=smart
 ansible_ssh_port=22
-ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.19.189 " -o ServerAliveInterval=15'
+ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.26.153 " -o ServerAliveInterval=15'
 
 [nodeshaproxybackend:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
 ansible_ssh_transfer_method=smart
 ansible_ssh_port=22
-ansible_ssh_common_args='-o  ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.19.189 " -o ServerAliveInterval=15'
+ansible_ssh_common_args='-o  ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.26.153 " -o ServerAliveInterval=15'
 
 [nodesetcdbackend:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
 ansible_ssh_transfer_method=smart
 ansible_ssh_port=22
-ansible_ssh_common_args='-o  ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.19.189 " -o ServerAliveInterval=15'
+ansible_ssh_common_args='-o  ProxyCommand="ssh -p 22 -W %h:%p -q devops@158.160.26.153 " -o ServerAliveInterval=15'

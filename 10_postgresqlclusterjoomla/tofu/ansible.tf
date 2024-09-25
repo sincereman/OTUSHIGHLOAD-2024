@@ -68,10 +68,10 @@ resource "local_file" "inventory" {
  }
 
 
-resource "local_file" "group_vars" {
+resource "local_file" "allnodes_ip_vars" {
 
 
-  content = templatefile("${path.module}/templates/group_vars_all.tpl",
+  content = templatefile("${path.module}/templates/allnodes_ip_address.tpl",
   
      {
 
@@ -93,7 +93,7 @@ resource "local_file" "group_vars" {
       
     }
   )
-  filename = "${path.module}/../ansible/group_vars/all/main.yml"
+  filename = "${path.module}/../ansible/vars/allnodes_ip_vars.yml"
   file_permission  = "0644"
 }
 

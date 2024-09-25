@@ -32,16 +32,24 @@
     - { role: 005_nginx_backend }
 
 
-# - name: Playbook of test_006
+- name: Playbook of 006_haproxybackend
+  hosts:
+    - nodeshaproxybackend
+  become: true
+  roles:
+    - { role: '006_haproxybackend' }
+
+- name: Playbook of 007_dcsbackend
+  hosts:
+    - nodesetcdbackend
+  become: true
+  roles:
+    - { role: '007_dcsbackend' }
+
+
+# - name: Playbook of 008_postgrespatroni
 #   hosts:
 #     - nodesdb
 #   become: true
 #   roles:
-#     - { role: 006_install_database_mysql }
-
-# - name: Playbook of test_007
-#   hosts:
-#     - nodesweb
-#   become: true
-#   roles:
-#     - { role: 007_install_proxysql }
+#     - { role: '008_postgrespatroni' }

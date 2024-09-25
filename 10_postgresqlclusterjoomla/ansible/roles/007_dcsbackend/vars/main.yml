@@ -1,8 +1,8 @@
 ---
 
-etcd_reinstall: ""
+etcd_reinstall: "" #"on" for force reinstall
 
-dcs: "etcd"
+dcs: "etcd3"
 
 etcd_initial_master: "otus-backend-etcd-1"
 
@@ -27,6 +27,4 @@ dcs_client_ips:
 
 dcs_port:
   consul:    8500
-  zookeeper: 2181
-  etcd:      2379
   etcd3:     2379

@@ -1,4 +1,7 @@
 ---
 
+- name: Make sure handlers are flushed immediately
+  ansible.builtin.meta: flush_handlers
+
 - name: "Add Needed dcs service"
   ansible.builtin.include_tasks: "{{ dcs }}.yml"
