@@ -1,11 +1,25 @@
 ---
 
-- name: Playbook of test_002
+- name: Playbook of 002_base
   hosts:
     - all
   become: true
+
+  pre_tasks:
+    - name: Include main variables
+      ansible.builtin.include_vars: "../vars/allnodes_ip_vars.yml"
+      tags: always
+
+    # - name: Include system variables
+    #   ansible.builtin.include_vars: "vars/system.yml"
+    #   tags: always
+
+    # - name: Include OS-specific variables
+    #   ansible.builtin.include_vars: "vars/{{ ansible_os_family }}.yml"
+    #   tags: always
+
   roles:
-    - { role: 002_base }
+    - { role: '002_base' }
 
 
 - name: Playbook of test_003
@@ -47,9 +61,9 @@
     - { role: '007_dcsbackend' }
 
 
-# - name: Playbook of 008_postgrespatroni
-#   hosts:
-#     - nodesdb
-#   become: true
-#   roles:
-#     - { role: '008_postgrespatroni' }
+- name: Playbook of 008_postgrespatroni
+  hosts:
+    - nodesdb
+  become: true
+  roles:
+    - { role: '008_postgrespatroni' }

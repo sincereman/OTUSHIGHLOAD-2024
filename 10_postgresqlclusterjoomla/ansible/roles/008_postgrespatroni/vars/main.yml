@@ -20,6 +20,7 @@ consul_group: "consul"
 postgresql_cluster_name: "main"
 postgresql_major_version: "16"
 postgresql_port: "5432"
+postgresql_data_dir_base: "/data/patroni"
 # PostgreSQL base directory. If not set, @DATADIR_BASE@ is used, which is
 # evaluated by pg_createconfig_patroni to either the default
 # (/var/lib/postgresql) or what the data_directory variable (without %v/%c) in

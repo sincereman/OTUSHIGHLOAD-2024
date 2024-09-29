@@ -2,6 +2,7 @@
 
 # stage
 
+# https://help.1forma.ru/Maintenance/patroni.htm
 
 - name: "Install PostgreSQL"
   ansible.builtin.include_tasks: consul.yml

@@ -1,6 +1,12 @@
-scope: "{{ postgresql_cluster_name }}-{{ postgresql_major_version }}"
-namespace: "/postgresql-common/"
 name: {{ansible_hostname}}
+scope: "{{ postgresql_cluster_name }}-{{ postgresql_major_version }}"
+#namespace: "/postgresql-common/"
+
+
+
+restapi:
+  listen: 0.0.0.0:{{patroni_port}}
+  connect_address: {{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:{{patroni_port}}
 
 {% if dcs == 'zookeeper' or dcs == 'etcd' or dcs == 'etcd3' %}
 {{ dcs }}:
@@ -13,86 +19,45 @@ name: {{ansible_hostname}}
 {% endif %}
 
 
-restapi:
-  listen: 0.0.0.0:{{patroni_port}}
-  connect_address: {{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:{{patroni_port}}
-#  certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
-#  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
-#  authentication:
-#    username: username
-#    password: password
-
-# ctl:
-#   insecure: false # Allow connections to SSL sites without certs
-#   certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
-#   cacert: /etc/ssl/certs/ssl-cacert-snakeoil.pem
 
 bootstrap:
-  # Custom bootstrap method
-  # The options --scope= and --datadir= are passed to the custom script by
-  # patroni and passed on to pg_createcluster by pg_createcluster_patroni
-  method: pg_createcluster
-  pg_createcluster:
-    command: /usr/share/patroni/pg_createcluster_patroni
+      dcs:
+        ttl: 30
+        loop_wait: 10
+        retry_timeout: 10
+        maximum_lag_on_failover: 1048576
+        postgresql:
+          use_pg_rewind: true
+          use_slots: true
+          parameters:
+            wal_level: replica
+            hot_standby: "on"
+            logging_collector: "on"
+            max_wal_senders: 5
+            max_replication_slots: 5
 
-  # this section will be written into Etcd:/<namespace>/<scope>/config after initializing new cluster
-  # and all other cluster members will use it as a `global configuration`
-  dcs:
-    ttl: &ttl 30
-    loop_wait: &loop_wait 10
-    maximum_lag_on_failover: 1048576 # 1 megabyte in bytes
-    postgresql:
-      use_pg_rewind: true
-      use_slots: true
-      parameters:
-        archive_mode: "on"
-        wal_level: hot_standby
-        archive_command: mkdir -p ../wal_archive && cp %p ../wal_archive/%f
-        max_wal_senders: 10
-        wal_keep_segments: 8
-        archive_timeout: 1800s
-        max_replication_slots: 5
-        hot_standby: "on"
-        wal_log_hints: "on"
+initdb:
+  - encoding: UTF8
+  - data-checksums
 
-      pg_hba:
+pg_hba:
       - local   all             all                                     peer
       - host    all             all             127.0.0.1/32            md5
       - host    all             all             ::1/128                 md5
       - host    all             all             10.110.0.0/24           md5
       - local   replication     all                                     peer
-      - host    replication     all             127.0.0.1/32            md5
+      - host    replication     all             127.0.0.1/32            trust
       - host    replication     all             ::1/128                 md5
       - host    replication     all             10.110.0.0/24           md5
-#  # Some possibly desired options for 'initdb'
-#  initdb:  # Note: It needs to be a list (some options need values, others are switches)
-#  - encoding: UTF8
-#  - data-checksums
-#  # Additional users to be created after initializing the cluster
-#  users:
-#    foo:
-#      password: bar
-#      options:
-#        - createrole
-#        - createdb
+
+
 
 postgresql:
-  # Custom clone method
-  # The options --scope= and --datadir= are passed to the custom script by
-  # patroni and passed on to pg_createcluster by pg_clonecluster_patroni
-  create_replica_method:
-    - pg_clonecluster
-  pg_clonecluster:
-    command: /usr/share/patroni/pg_clonecluster_patroni
-
-  # Listen to all interfaces by default, this makes vip-manager work
-  # out-of-the-box without having to set net.ipv4.ip_nonlocal_bind or similar.
-  # If you prefer to only listen on some interfaces, edit the below:
-  #listen: "@HOSTIP@@LISTEN_VIP@,127.0.0.1:@PORT@"
-  listen: "*:{{postgresql_port}}"
+  listen: 0.0.0.0:{{postgresql_port}}
   connect_address: {{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:{{postgresql_port}}
   use_unix_socket: true
-  data_dir: {{ postgresql_data_dir_base | default("@DATADIR_BASE@") }}/{{ postgresql_major_version }}/{{ postgresql_cluster_name }}"
+
+  data_dir: {{ postgresql_data_dir_base }}/{{ postgresql_major_version }}/{{ postgresql_cluster_name }}"
   bin_dir: /usr/lib/postgresql/{{ postgresql_major_version }}/bin
   config_dir: /etc/postgresql/{{ postgresql_major_version }}{{ postgresql_cluster_name }}
   pgpass: /var/lib/postgresql/{{ postgresql_major_version }}-{{ postgresql_cluster_name }}.pgpass
@@ -100,15 +65,10 @@ postgresql:
     replication:
       username: "{{ patroni_replication_user }}"
       password: "{{ patroni_replication_pass }}"
-# A superuser role is required in order for Patroni to manage the local
-# Postgres instance.  If the option `use_unix_socket' is set to `true', then
-# specifying an empty password results in no md5 password for the superuser
-# being set and sockets being used for authentication. The `password:' line is
-# nevertheless required.  Note that pg_rewind will not work if no md5 password
-# is set.
     superuser:
       username: postgres
       password: {% if patroni_postgres_pass|length %}"{{ patroni_postgres_pass }}"{% endif %}
+
 
 # A rewind role can be specified in order for Patroni to use on PostgreSQL 11
 # or later for pg_rewind, i.e. rewinding a former primary after failover
@@ -124,9 +84,8 @@ postgresql:
 #      password: "rewind-pass"
 {% endif %}
 
-  parameters:
-    unix_socket_directories: '/var/run/postgresql/'
-    # Emulate default Debian/Ubuntu logging
-    logging_collector: 'on'
-    log_directory: '/var/log/postgresql'
-    log_filename: 'postgresql-@VERSION@-@CLUSTER@.log'
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false

@@ -47,7 +47,7 @@ bootstrap:
       # The following parameters are given as command line options
       # overriding the settings in postgresql.conf.
       parameters:
-#        wal_level: hot_standby
+         wal_level: replica
 #        hot_standby: "on"
 #        wal_keep_segments: 8
 #        max_wal_senders: 10
