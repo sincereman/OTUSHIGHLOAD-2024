@@ -1,0 +1,5 @@
+apt purge patroni postgresql -y
+rm -rf /etc/postgresql
+chown -R root:root /data
+rm -rf /data
+rm -rf /etc/patroni 

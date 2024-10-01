@@ -1,6 +1,6 @@
 ---
 
-etcd_reinstall: "" #"on" for force reinstall
+etcd_reinstall: "on" #"on" for force reinstall
 
 dcs: "etcd3"
 

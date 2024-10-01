@@ -92,13 +92,13 @@
 #     enabled: true
 
 
-- name: Copy pgpass from template
-  template:
-    src: templates/postgres_pgpass
-    dest: "/var/lib/postgresql/{{ postgresql_major_version }}-{{ postgresql_cluster_name }}.pgpass"
-    mode: 0600
-    owner: "postgres"
-    group: "postgres"
+# - name: Copy pgpass from template
+#   template:
+#     src: templates/postgres_pgpass
+#     dest: "/var/lib/postgresql/{{ postgresql_major_version }}-{{ postgresql_cluster_name }}.pgpass"
+#     mode: 0600
+#     owner: "postgres"
+#     group: "postgres"
 
 
   

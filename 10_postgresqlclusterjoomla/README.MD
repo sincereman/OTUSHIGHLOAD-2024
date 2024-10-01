@@ -6,6 +6,14 @@ etcdctl --endpoints=$ENDPOINTS endpoint health
 etcdctl --write-out=table --endpoints=$ENDPOINTS endpoint status
 
 
+По умолчанию, для ввода команд patronictl необходимо указывать путь до конфигурационного файла, например, мы вводили команду:
+
+patronictl -c /etc/patroni/config.yml list
+
+Чтобы этого не делать, мы можем указать путь до конфига с помощью системной переменной PATRONICTL_CONFIG_FILE:
+
+export PATRONICTL_CONFIG_FILE=/etc/patroni/config.yml
+
 
 
 Развернуть InnoDB или PXC кластер

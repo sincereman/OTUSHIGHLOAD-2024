@@ -147,12 +147,39 @@
 #     group: root
 #     mode: '0644'
 
-- name: force systemd to reread configs and patroni start
-  systemd:
-    daemon_reload: yes
-    name: patroni
-    state: restarted
-    enabled: yes
+# - name: force systemd to reread configs and patroni start
+#   systemd:
+#     daemon_reload: yes
+#     name: patroni
+#     state: restarted
+#     enabled: yes
+#   when: (ansible_hostname == "otus-nodedb-1")
+
+# - name: Wait for port 5432 to become open on the host
+#   ansible.builtin.wait_for:
+#     port: 5432
+#     host: 127.0.0.1
+#     state: started
+#     timeout: 120
+#     delay: 10
+#   ignore_errors: false
+#   tags: patroni postgress port
+#   when: (ansible_hostname == "otus-nodedb-1")
+
+
+- name: "Pause 20 seconds to let bootstrap start"
+  ansible.builtin.pause:
+    seconds: 20  
+
+
+
+# - name: force systemd to reread configs and patroni start
+#   systemd:
+#     daemon_reload: yes
+#     name: patroni
+#     state: restarted
+#     enabled: yes
+#   when: (ansible_hostname != "otus-nodedb-1")
 
 # - name: Deploy patroni DCS config
 #   template:

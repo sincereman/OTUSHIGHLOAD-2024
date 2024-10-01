@@ -1,5 +1,12 @@
 ---
 
+- name: Playbook of 001_bastion
+  hosts:
+    - bastions
+  become: true
+  roles:
+    - { role: '001_bastion' }
+
 - name: Playbook of 002_base
   hosts:
     - all
