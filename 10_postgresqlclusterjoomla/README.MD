@@ -1,4 +1,15 @@
-# Домашнее задание 08_ mysql cluster (ProxySQL + Percona XtraDB Cluster)
+# Домашнее задание: реализация кластера postgreSQL с помощью patroni
+
+## Цель: Перевести БД веб проекта на кластер postgreSQL с ипользованием patroni, etcd/consul/zookeeper и haproxy/pgbouncer
+
+## Описание/Пошаговая инструкция выполнения домашнего задания:
+
+Перевести БД веб проекта на кластер postgreSQL с ипользованием patroni, etcd/consul/zookeeper и haproxy/pgbouncer.
+
+## Критерии оценки:
+
+Статус "Принято" ставится при выполнении перечисленных требований.
+
 
 
 ENDPOINTS=otus-backend-etcd-1:2379,otus-backend-etcd-2:2379,otus-backend-etcd-3:2379
@@ -12,9 +23,13 @@ patronictl -c /etc/patroni/config.yml list
 
 Чтобы этого не делать, мы можем указать путь до конфига с помощью системной переменной PATRONICTL_CONFIG_FILE:
 
+
+
 export PATRONICTL_CONFIG_FILE=/etc/patroni/config.yml
 
+su - postgres -c "psql -c '\list'"
 
+/usr/lib/postgresql/17/bin/pg_controldata -D /var/lib/postgresql/17/main | grep "Database system identifier"
 
 Развернуть InnoDB или PXC кластер
 

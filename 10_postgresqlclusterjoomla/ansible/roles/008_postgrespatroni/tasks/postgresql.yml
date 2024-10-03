@@ -57,12 +57,25 @@
     path: /var/lib/postgresql/{{ postgresql_major_version }}/main/pg_stat
   register: stat_result
 
+# Выполняем удаление дефолтной базы
 
-- name: Install postgresql-common
-  package:
-    name: postgresql-common
-    default_release: "{{ ansible_lsb.codename }}-{{ pgdg_repo | default('pgdg') }}"
-    state: present
+- name: Recursively remove directory postgres database
+  ansible.builtin.file:
+    path: "{{ postgresql_data_dir_base }}/{{ postgresql_major_version }}/main"
+    state: absent
+  when: stat_result.stat.exists
+
+
+# Выполняем проверку что каталог дефолтной базы существует 
+
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{ postgresql_data_dir_base }}/{{ postgresql_major_version }}/main"
+    owner: "postgres"
+    group: "postgres"
+    mode: '0700'
+    state: directory
+  when: stat_result.stat.exists
 
 - name: Disable auto creation of PostgreSQL clusters
   lineinfile:
@@ -78,27 +91,7 @@
     state: stopped
     enabled: false
 
-# # Выполняем инициализацию postgres
-# - name: initialization setup
-#   shell: /usr/lib/postgresql/16/bin/initdb
-#   when: not stat_result.stat.exists
-#   become: true
-  
-# # Запускаем postgresql
-# - name: enable and start service
-#   service:
-#     name: postgresql
-#     state: started
-#     enabled: true
 
-
-# - name: Copy pgpass from template
-#   template:
-#     src: templates/postgres_pgpass
-#     dest: "/var/lib/postgresql/{{ postgresql_major_version }}-{{ postgresql_cluster_name }}.pgpass"
-#     mode: 0600
-#     owner: "postgres"
-#     group: "postgres"
 
 
   
