@@ -1,21 +1,12 @@
 ---
 
-- name: Install haproxy package
-  package:
-    name: haproxy
-    state: present
 
-- name: Deploy haproxy configuration
-  template:
-    src: templates/haproxy.cfg
-    dest: /etc/haproxy/haproxy.cfg
-    mode: 0644
-  tags:
-    - config
+- name: Make sure handlers are flushed immediately
+  ansible.builtin.meta: flush_handlers
 
-- name: systemctl daemon-reload / start haproxy
-  systemd:
-    daemon_reload: yes
-    name: haproxy
-    state: restarted
-    enabled: yes
+- name: "HAPROXY"
+  ansible.builtin.include_tasks: "haproxy.yml"
+
+
+- name: "KEEPALIVED"
+  ansible.builtin.include_tasks: "keepalived.yml"  

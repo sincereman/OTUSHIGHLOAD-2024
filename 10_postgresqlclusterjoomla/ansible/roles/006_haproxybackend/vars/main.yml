@@ -32,3 +32,8 @@ haproxy_read_port: 5433
 # messages will be logged in the Postgres log. Alternatively, another can be
 # specified:
 haproxy_health_check_user: "haproxy"
+
+
+#keepalived
+
+cluster_virtual_ip: 10.110.0.100
