@@ -1,16 +1,76 @@
 ---
 
-- name: Playbook of 000_start
+- name: Playbook of 001_bastion
+  hosts:
+    - bastions
+  become: true
+  roles:
+    - { role: '001_bastion' }
+
+- name: Playbook of 002_base
   hosts:
     - all
   become: true
+
+  pre_tasks:
+    - name: Include main variables
+      ansible.builtin.include_vars: "../vars/allnodes_ip_vars.yml"
+      tags: always
+
+    # - name: Include system variables
+    #   ansible.builtin.include_vars: "vars/system.yml"
+    #   tags: always
+
+    # - name: Include OS-specific variables
+    #   ansible.builtin.include_vars: "vars/{{ ansible_os_family }}.yml"
+    #   tags: always
+
   roles:
-    - 002_base
-    - { role: 003_nginx_frontend, when: "'frontend' in group_names" }
-    - { role: 004_backend_glusterfs, when: "'nodesweb' in group_names" }    
-    - { role: 005_nginx_backend, when: "'nodesweb' in group_names" }
-    - { role: 006_install_database_mysql, when: "'nodesdb' in group_names" }
-    - { role: 007_install_proxysql, when: "'nodesweb' in group_names" }
+    - { role: '002_base' }
+
+
+- name: Playbook of test_003
+  hosts:
+    - frontend
+  become: true
+  roles:
+    - { role: 003_nginx_frontend }
 
     
+- name: Playbook of test_004
+  hosts:
+    - nodesweb
+  become: true
+  roles:
+    - { role: 004_backend_glusterfs }    
+  
 
+- name: Playbook of test_005
+  hosts:
+    - nodesweb
+  become: true
+  roles:
+    - { role: 005_nginx_backend }
+
+
+- name: Playbook of 006_haproxybackend
+  hosts:
+    - nodeshaproxybackend
+  become: true
+  roles:
+    - { role: '006_haproxybackend' }
+
+- name: Playbook of 007_dcsbackend
+  hosts:
+    - nodesetcdbackend
+  become: true
+  roles:
+    - { role: '007_dcsbackend' }
+
+
+- name: Playbook of 008_postgrespatroni
+  hosts:
+    - nodesdb
+  become: true
+  roles:
+    - { role: '008_postgrespatroni' }
