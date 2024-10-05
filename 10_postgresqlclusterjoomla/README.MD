@@ -1564,7 +1564,6 @@ sudo rm /opt/gfsvol/cms/installation/_JoomlaJwexDRtp444AsWwRWH0nR.txt
 ```
 
 ![alt text](<images/Screenshot from 2024-10-05 15-35-18.png>)
-![alt text](<images/Screenshot from 2024-10-05 15-37-21.png>)
 ![alt text](<images/Screenshot from 2024-10-05 15-38-43.png>)
 
 Тут техническое замечание - на yc keepalived невозможно заставить работать придется укзхаать в качестве адреса бд один из haproxy 10.110.0.20 вместо 10.110.0.100 - судя по всем потому что режут протокол 112
@@ -1615,6 +1614,7 @@ root@otus-backend-haproxy-1:/home/devops# systemctl status keepalived
 
 ```
 
+![alt text](<images/Screenshot from 2024-10-05 15-37-21.png>)
 
 Ну и сделаем patroni failover
 
