@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 007_install_proxysql
+  hosts:
+    - nodesweb
+  become: true
+  roles:
+    - { role: '007_install_proxysql' }

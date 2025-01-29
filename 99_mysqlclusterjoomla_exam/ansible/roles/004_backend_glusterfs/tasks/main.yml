@@ -1,0 +1,153 @@
+---
+
+- meta: end_play
+  when: ansible_os_family != "Debian"
+
+#hosts
+
+
+- name: Add node1 to /etc/hosts
+  lineinfile:
+    path: "/etc/hosts"
+    state: present
+    line: "10.100.0.10 otus-nodeweb-1"
+  #when: (ansible_hostname != "otus-nodeweb-1")
+
+- name: Add node1 to /etc/hosts
+  lineinfile:
+    path: "/etc/hosts"
+    state: present
+    line: "10.100.0.11 otus-nodeweb-2"
+  #when: (ansible_hostname != "otus-nodeweb-2")
+
+- name: Add node1 to /etc/hosts
+  lineinfile:
+    path: "/etc/hosts"
+    state: present
+    line: "10.100.0.12 otus-nodeweb-3"
+  #when: (ansible_hostname != "otus-nodeweb-3")
+
+
+  #xfs
+
+
+- name: Install mkfs.xfs
+  apt:
+    name:         "{{ item.package }}"
+    state:        "{{ item.state }}"
+    update_cache: yes
+  loop:
+    - { package: "xfsprogs",   state: "latest" }
+
+
+# Create Glusterfs brick
+
+
+#sudo mkfs.xfs /dev/vdb
+
+- name: Configuring xfs on /dev/{{ secondary_disk }}
+  shell: |
+    sudo mkfs.xfs /dev/{{ secondary_disk }}
+    exit 0
+
+# - name: Create a xfs filesystem on /dev/{{ secondary_disk }}
+#   filesystem:
+#     fstype: xfs
+#     dev: /dev/{{ secondary_disk }}
+
+
+#sudo mkdir -p /glusterfs
+#sudo mkdir /glusterfs/br0
+
+- name: Ensure Gluster mount directories exist.
+  file: "path={{ item }} state=directory mode=0775"
+  with_items:
+    - "{{ gluster_mount_dir }}"
+    - "{{ gluster_brick_dir }}"
+
+
+
+#sudo echo '/dev/vdb /glusterfs/br0 xfs defaults 1 2' >> /etc/fstab
+#sudo systemctl daemon-reload
+#sudo mount -a
+
+- name: Ensure Gluster disk is mounted.
+  mount:
+    path: "{{ gluster_brick_dir }}"
+    src: "/dev/{{ secondary_disk }}"
+    fstype: xfs
+    opts: defaults
+    state: mounted
+  notify: daemon-reload
+
+
+# Create Glusterfs cluster
+
+
+- name: Install GlusterFS server & client
+  ansible.builtin.apt:
+    pkg:
+      - glusterfs-server
+      - glusterfs-client
+    state: present
+    update_cache: true
+  register: service_install
+
+- name: Restart GlusterFS
+  ansible.builtin.service:
+    name: glusterd
+    state: restarted
+    enabled: yes
+  when: service_install.changed
+
+- name: Create a trusted storage pool
+  gluster.gluster.gluster_peer:
+    state: present
+    nodes: "{{ groups.nodesweb | join(',') }}"
+  when: (ansible_hostname == "otus-nodeweb-1") 
+
+
+# - name: Ensure Gluster brick and mount directories exist.
+#   file: "path={{ item }} state=directory mode=0775"
+#   with_items:
+#     - "{{ gluster_volume_mountpoint }}"
+
+- name: Ensure Gluster mount volume directories exist.
+  file: "path={{ item }} state=directory mode=0775"
+  with_items:
+    - "{{ gluster_brick_dir }}/{{ gluster_volume_name }}"
+    - "{{ gluster_volume_mountpoint }}"
+
+
+- name: Create gluster volume
+  gluster.gluster.gluster_volume:
+    state: present
+    name: "{{ gluster_volume_name }}"
+    bricks: "{{ gluster_brick_dir }}/{{ gluster_volume_name }}"
+    replicas: "{{ replicas_count }}"
+    cluster: "{{ groups.nodesweb | join(',') }}"
+    force: yes
+  #run_once: true
+  when: (ansible_hostname == "otus-nodeweb-1") 
+
+- name: Start gluster volume
+  gluster.gluster.gluster_volume:
+    state: started
+    name: "{{ gluster_volume_name }}"
+  when: (ansible_hostname == "otus-nodeweb-1") 
+
+
+
+- name: Ensure Gluster volume is mounted.
+  mount:
+    name: "{{ gluster_volume_mountpoint }}"
+    src: "{{ inventory_hostname }}:/{{ gluster_volume_name }}"
+    fstype: glusterfs
+    opts: "defaults,_netdev"
+    state: mounted
+
+
+#sudo gluster pool list
+#sudo gluster volume info
+#sudo gluster volume status
+#gluster volume heal g0 info

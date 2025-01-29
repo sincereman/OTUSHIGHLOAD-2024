@@ -1,0 +1,111 @@
+---
+
+- meta: end_play
+  when: ansible_os_family != "Debian"
+
+
+### Set hostname
+- name: Set hostname
+  hostname: 
+    name: "{{ ansible_hostname }}"
+
+## Set timezone
+- name: set timezone
+  shell: timedatectl set-timezone Europe/Moscow
+
+## Update system packages
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    #upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+
+## Install Chrony
+- name: Synchronize datetime | Install chrony
+  apt:
+    name: chrony
+    state: present
+
+
+#Enable Chrony Services to time Sync
+
+- name: Synchronize datetime | Turn on chronyd
+  service:
+    name: chronyd
+    enabled: yes
+    state: started
+  notify:
+    - systemctl daemon reload
+
+# Устанавливаем инструменты анализа сети
+- name: install base tools
+  apt:
+    name:
+      - traceroute
+      - tcpdump
+      - net-tools
+      - mtr
+      - curl
+      - iperf3
+      - tree
+    state: present
+    update_cache: yes
+  tags:
+    - netanalize
+
+# - name: Install Base App
+#   apt:
+#     name:         "{{ item.package }}"
+#     state:        "{{ item.state }}"
+#     update_cache: yes
+#   loop:
+#     - { package: "chrony",   state: "present" }
+#     - { package: "tree",   state: "present" }
+#     - { package: "tcpdump",   state: "present" }
+
+
+# - name: Add IP address of all hosts to all hosts
+#   lineinfile:
+#     dest: /etc/hosts
+#     regexp: '.*{{ item }}$'
+#     line: "{{ hostvars[item].ansible_host }} {{item}}"
+#     state: present
+#   when: hostvars[item].ansible_host is defined
+#   with_items: "{{ groups.all }}"
+
+# # tasks/hosts.yml
+# - name: Generate /etc/hosts file
+#   template:
+#     src=templates/hosts.j2
+#     dest=/etc/hosts
+
+# - name: Add IP address of all hosts to all hosts
+#   lineinfile:
+#     dest: /etc/hosts
+#     regexp: '.*{{ item }}$'
+#     line: "{{ hostvars[item].ansible_host }} {{item}}"
+#     state: present
+#   when: hostvars[item].ansible_host is defined
+#   with_items: "{{ groups.all }}"
+
+# - name: Add node1 to /etc/hosts
+#   lineinfile:
+#     path: "/etc/hosts"
+#     state: present
+#     line: "10.100.0.10 otus-node-1"
+#   when: (ansible_hostname != "otus-node-1")
+
+# - name: Add node1 to /etc/hosts
+#   lineinfile:
+#     path: "/etc/hosts"
+#     state: present
+#     line: "10.100.0.11 otus-node-2"
+#   when: (ansible_hostname != "otus-node-2")
+
+# - name: Add node1 to /etc/hosts
+#   lineinfile:
+#     path: "/etc/hosts"
+#     state: present
+#     line: "10.100.0.12 otus-node-3"
+#   when: (ansible_hostname != "otus-node-3")

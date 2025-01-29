@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 005_nginx_backend
+  hosts:
+    - nodesweb
+  become: true
+  roles:
+    - { role: '005_nginx_backend' }

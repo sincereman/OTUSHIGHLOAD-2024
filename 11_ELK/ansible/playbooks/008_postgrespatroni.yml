@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 008_postgrespatroni
+  hosts:
+    - nodesdb
+  become: true
+  roles:
+    - { role: '008_postgrespatroni' }

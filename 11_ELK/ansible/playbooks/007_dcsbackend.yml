@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 007_dcsbackend
+  hosts:
+    - nodesetcdbackend
+  become: true
+  roles:
+    - { role: '007_dcsbackend' }

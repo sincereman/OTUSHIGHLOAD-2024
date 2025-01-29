@@ -1,0 +1,229 @@
+---
+
+- name: Make sure handlers are flushed immediately
+  ansible.builtin.meta: flush_handlers
+
+#install etcd client
+
+# - name: Install etcd client
+#   package:
+#     name: etcd-client
+#     state: present
+
+
+
+##Install Patroni
+
+- name: install python3-psycopg2
+  apt:
+    name:
+      - python3-psycopg2
+    state: present
+    update_cache: true
+
+- name: Install generally useful packages python3 for patroni
+  package:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: Install patroni
+  package:
+    name:
+      - patroni
+    state: present
+
+- name: Install multi python packages with version specifiers  - testresources
+  ansible.builtin.pip:
+    name: testresources
+    state: latest
+    executable: pip3    
+    extra_args: --upgrade
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin:/usr/bin"
+    PIP_BREAK_SYSTEM_PACKAGES: "1"    
+
+- name: Install multi python packages with version specifiers  - setuptools
+  ansible.builtin.pip:
+    name: setuptools
+    state: latest
+    executable: pip3    
+    extra_args: --upgrade
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin:/usr/bin"
+    PIP_BREAK_SYSTEM_PACKAGES: "1"  
+
+# - name: Install multi python packages with version specifiers virtualenv
+#   ansible.builtin.pip:
+#     name: virtualenv
+#     state: latest
+#     executable: pip3    
+#     extra_args: --upgrade
+#   environment:
+#     PATH: "{{ ansible_env.PATH }}:/usr/local/bin:/usr/bin"
+#     PIP_BREAK_SYSTEM_PACKAGES: "1"  
+
+
+# - name: Install multi python packages with version specifiers python-etcd
+#   ansible.builtin.pip:
+#     name: python-etcd
+#     state: latest
+#     executable: pip3    
+#     extra_args: --upgrade
+#   environment:
+#     PATH: "{{ ansible_env.PATH }}:/usr/local/bin:/usr/bin"
+#     PIP_BREAK_SYSTEM_PACKAGES: "1"  
+
+# - name: Install multi python packages with version specifiers python-consul
+#   ansible.builtin.pip:
+#     name: python-consul
+#     state: latest
+#     executable: pip3    
+#     extra_args: --upgrade
+#   environment:
+#     PATH: "{{ ansible_env.PATH }}:/usr/local/bin:/usr/bin"
+#     PIP_BREAK_SYSTEM_PACKAGES: "1"  
+
+
+# - name: Install multi python packages with version specifiers patroni
+#   ansible.builtin.pip:
+#     name: patroni
+#     state: latest
+#     executable: pip3    
+#     extra_args: --upgrade
+#   environment:
+#     PATH: "{{ ansible_env.PATH }}:/usr/local/bin:/usr/bin"
+#     PIP_BREAK_SYSTEM_PACKAGES: "1"  
+
+
+- name: Install consul client package
+  package:
+    name: python3-consul
+    state: present
+  when: dcs == "consul"
+
+- name: Install zookeeper client package
+  package:
+    name: python3-kazoo
+    state: present
+  when: dcs == "zookeeper"
+
+- name: Install etcd client package
+  package:
+    name: python3-etcd3
+    state: present
+  when: dcs == "etcd3"
+
+
+
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{ postgresql_data_dir_base }}/{{ postgresql_major_version }}/main"
+    owner: "postgres"
+    group: "postgres"
+    mode: '0700'
+    state: directory
+  tags: patroniconfig
+
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{ patroni_var_dirlog }}"
+    owner: "postgres"
+    group: "postgres"
+    mode: '0744'
+    state: directory
+  tags: patroniconfig
+
+- name: Set patroni.yml template
+  template:
+    src: templates/patroni.yml.j2
+    dest: /etc/patroni/config.yml
+    owner: root
+    group: root
+    mode: '0644'
+  tags: patroniconfig
+
+# - name: copy patroni.service
+#   copy:
+#     src: files/patroni.service
+#     dest: /etc/systemd/system/patroni.service
+#     owner: root
+#     group: root
+#     mode: '0644'
+
+
+#-----
+- name: force systemd to reread configs and patroni start
+  systemd:
+    daemon_reload: yes
+    name: patroni
+    state: restarted
+    enabled: yes
+  when: (ansible_hostname == "otus-nodedb-1")
+
+- name: Wait for port 5432 to become open on the host
+  ansible.builtin.wait_for:
+    port: 5432
+    host: 127.0.0.1
+    state: started
+    timeout: 120
+    delay: 10
+  ignore_errors: false
+  tags: patroni postgress port
+  when: (ansible_hostname == "otus-nodedb-1")
+
+
+- name: "Pause 10 seconds to let bootstrap start"
+  ansible.builtin.pause:
+    seconds: 10
+
+
+
+- name: force systemd to reread configs and patroni start
+  systemd:
+    daemon_reload: yes
+    name: patroni
+    state: restarted
+    enabled: yes
+  when: (ansible_hostname != "otus-nodedb-1")
+
+
+# ---------------------
+
+
+
+# - name: Deploy patroni DCS config
+#   template:
+#     src: templates/dcs.yml
+#     dest: /etc/patroni/dcs.yml
+#     mode: 0640
+#     owner: "postgres"
+#     group: "postgres"
+#   tags:
+#     - config
+
+# - name: Deploy patroni config templates
+#   template:
+#     src: templates/config.yml.in
+#     dest: /etc/patroni/config.yml.in
+#     mode: 0640
+#     owner: "postgres"
+#     group: "postgres"
+#   tags:
+#     - config
+
+# - name: Create patroni configuration
+#   command: pg_createconfig_patroni --force --hostip={{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }} {% if vip is defined %}--vip={{ vip }} {% if dcs_server_ips | length > 1 %}--endpoint=http://{{ hostvars[ansible_hostname]['ansible_eth1']['ipv4']['address'] }}:2379{% endif %}{% endif %} {{ postgresql_major_version }} {{ postgresql_cluster_name }}
+#   tags:
+#     - config
+
+# - name: systemctl daemon-reload / start patroni
+#   systemd:
+#     daemon_reload: yes
+#     name: patroni@{{ postgresql_major_version }}-{{ postgresql_cluster_name }}
+#     state: restarted
+#     enabled: yes
+#   tags:
+#     - config
+

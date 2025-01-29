@@ -1,0 +1,20 @@
+---
+
+
+
+## GlusterFS Section
+secondary_disk: "vdb"
+replicas_count: 3
+gluster_mount_dir: "/glusterfs"
+gluster_brick_dir: "/glusterfs/br0"
+gluster_volume_name: "g0"
+gluster_volume_mountpoint: "/opt/gfsvol"
+
+
+
+
+
+
+
+
+

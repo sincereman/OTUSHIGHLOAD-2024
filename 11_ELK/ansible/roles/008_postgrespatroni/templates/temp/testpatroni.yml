@@ -1,0 +1,102 @@
+---
+
+name: otus-nodedb-1
+scope: "main-16"
+
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 10.110.0.50:8008
+
+etcd3:
+  hosts:
+    - 10.110.0.30:2379
+    - 10.110.0.31:2379
+    - 10.110.0.32:2379
+
+bootstrap:
+  # Configuration parameters for distributed configuration store (DCS)
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      # Use pg_rewind during bootstrap    
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        hot_standby: "on"
+        logging_collector: "on"
+        max_wal_senders: 5
+        max_replication_slots: 5
+        wal_log_hints: "on"
+  # Initdb configuration
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+
+  # pg_hba.conf entries for replication and general access
+  pg_hba:
+      - local   all             postgres                                peer
+      - host    all             all             0.0.0.0/0               md5      
+      - local   all             all                                     peer
+      - host    all             all             127.0.0.1/32            md5
+      - host    all             all             ::1/128                 md5
+      - host    all             all             10.110.0.0/24           md5
+      - local   replication     all                                     peer
+      - host    replication     all             127.0.0.1/32            trust
+      - host    replication     all             ::1/128                 md5
+      - host    replication     all             10.110.0.0/24           md5
+      
+  # Some additional users which needs to be created after initializing new cluster
+  users:
+      admin:
+          password: qaz123
+          options:
+              - createrole
+              - createdb
+
+# Patroni PostgreSQL Configuration
+postgresql:
+  # PostgreSQL server listening address and port
+  listen: 0.0.0.0:5432
+  # Connect address for PostgreSQL clients
+  connect_address: 10.110.0.50:5432
+  use_unix_socket: true
+  
+  # Data directory for PostgreSQL  
+  data_dir: /data/patroni/16/main"
+  bin_dir: /usr/lib/postgresql/16/bin
+  config_dir: /etc/postgresql/16/main
+  # Path to the pgpass file  
+  pgpass: /var/lib/postgresql/16-main.pgpass
+
+  # Authentication configuration  
+  authentication:
+    # Replication of user credentials  
+    replication:
+      username: "replicator"
+      password: "replicator"
+    # Superuser credentials      
+    superuser:
+      username: postgres
+      password: "otus"# A rewind role can be specified in order for Patroni to use on PostgreSQL 11
+# or later for pg_rewind, i.e. rewinding a former primary after failover
+# without having to re-clone it. Patroni will assign this user the necessary
+# permissions (that only exist from PostgreSQL)
+    pg_rewind:
+      username: "postgres_rewind"
+      password: "postgres_rewind"
+
+# Patroni Tags Configuration
+tags:
+    # Prevents a node from being promoted in case of failure
+    nofailover: false
+    # Prevents the load balancer from considering this node
+    noloadbalance: false
+    # Prevents a replica from being created by cloning
+    clonefrom: false
+    # Prevents synchronous replication from being enforced
+    nosync: false

@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 004_backend_glusterfs
+  hosts:
+    - nodesweb
+  become: true
+  roles:
+    - { role: '004_backend_glusterfs' }

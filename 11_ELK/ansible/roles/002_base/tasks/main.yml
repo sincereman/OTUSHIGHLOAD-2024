@@ -1,0 +1,71 @@
+---
+
+- meta: end_play
+  when: ansible_os_family != "Debian"
+
+
+### Set hostname
+- name: Set hostname
+  hostname: 
+    name: "{{ ansible_hostname }}"
+
+## Set timezone
+- name: set timezone
+  shell: timedatectl set-timezone Europe/Moscow
+
+
+#hosts
+
+- name: "Fill /etc/hosts from allnodes_ip_vars"
+  lineinfile:
+    path: "/etc/hosts"
+    state: present
+    line: "{{ item.ip }} {{ item.name }}"
+  with_items: "{{ allnodes_ip_address }}"
+
+
+# Update system packages
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  register: apt_status
+  until: apt_status is success
+  delay: 5
+  retries: 3
+  when: ansible_os_family == "Debian"
+
+
+## Install Chrony
+- name: Synchronize datetime | Install chrony
+  apt:
+    name: chrony
+    state: present
+
+
+#Enable Chrony Services to time Sync
+
+- name: Synchronize datetime | Turn on chronyd
+  systemd:
+    daemon_reload: yes
+    name: chronyd
+    state: started
+    enabled: yes
+
+
+# Устанавливаем инструменты анализа сети
+- name: install base tools
+  apt:
+    name:
+      - traceroute
+      - tcpdump
+      - net-tools
+      - mtr
+      - curl
+      - iperf3
+      - tree
+    state: present
+    update_cache: yes
+  tags:
+    - netanalize

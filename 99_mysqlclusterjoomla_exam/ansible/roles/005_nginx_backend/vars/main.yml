@@ -1,0 +1,88 @@
+---
+
+nginx_ssl_path: "/etc/nginx/ssl"
+#nginx_www_folder: "/usr/share/nginx/html"
+nginx_www_folder: "/opt/gfsvol"
+nginx_app_folder: "{{ nginx_www_folder }}/{{ nginx_server_name }}"
+
+wwwnginxuser: "nginxuser"
+wwwnginxgroup: "www-data"
+
+
+nginx_listen_port: 80
+nginx_listen_httpsport: 443
+#nginx_server_name: "{{ ansible_host }}"
+nginx_server_name: "cms"
+web_dns: 8.8.8.8
+
+nginx_config_template: "nginx.conf.j2"
+nginx_app_template: "app.conf.j2"
+nginx_index_template: "index.html.j2"
+
+# SSL Configuration
+nginx_redirect_http_to_https: true
+nginx_ssl_certificate: "/etc/nginx/ssl/{{ nginx_server_name }}.crt"
+nginx_ssl_certificate_key: "/etc/nginx/ssl/{{ nginx_server_name }}.key"
+nginx_ssl_protocols: "TLSv1.2 TLSv1.3"
+
+# SSL Self-signed Certificate Configuration
+nginx_create_self_signed_cert: true
+nginx_self_signed_cert_subj: "/C=RU/ST=Moscow/L=Moscow/O=TECH/CN={{ nginx_server_name }}"
+
+
+
+# PHP
+
+php_version: "{{ jm_php_version}}"
+nginx_index_php_template: "index.php.j2"
+
+
+# Common site
+
+site_name: "otus-9-joomla"
+
+# WP
+wordpress_install: false
+wp_php_version: 8.2
+wp_version: 6.6.2
+wp_install_dir: "{{ nginx_app_folder }}"
+wp_db_name: "wordpress"
+wp_db_user: "mysqluser"
+wp_db_password: "mysqlpass"
+#wp_db_host: "{{ ip_address['otus-nodedb-1-db'] }}"
+#wp_db_host: "10.110.0.50"
+wp_db_host: "127.0.0.1"
+wp_db_port: "6033"
+wp_db_charset: 'utf8'
+wp_db_collate: 'utf8_general_ci'
+wp_table_prefix: 'wp_'
+wp_debug: false
+wp_admin_email: 'admin@example.com'
+wp_webserver: nginx
+
+
+
+# JM
+
+joomla_install: true
+joomla_force_reinstall: true
+jm_php_version: 8.2
+jm_version: "5.1.4"
+jm_install_dir: "{{ nginx_app_folder }}"
+jm_db_name: "joomla"
+jm_db_user: "mysqluser"
+jm_db_password: "mysqlpass"
+#wp_db_host: "{{ ip_address['otus-nodedb-1-db'] }}"
+#wp_db_host: "10.110.0.50"
+jm_db_host: "127.0.0.1"
+jm_db_port: "6033" 
+jm_db_collate: 'utf8_general_ci'
+jm_table_prefix: 'jm_'
+jm_debug: false
+jm_admin_email: 'admin@example.com'
+jm_webserver: nginx
+
+
+
+
+
