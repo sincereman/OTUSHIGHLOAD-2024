@@ -22,9 +22,9 @@ http {
         include /etc/nginx/sites-enabled/*;
 
    upstream haproxybackend{
-      ip_hash; #two least_conn;
-      server 10.200.0.20:{{nginx_haproxybackend_port}} max_fails=1 fail_timeout=90s;
-      server 10.200.0.21:{{nginx_haproxybackend_port}} max_fails=1 fail_timeout=90s;
+      #ip_hash; #two least_conn;
+      server 10.100.0.150:{{nginx_haproxybackend_port}};
+      #server 10.200.0.21:{{nginx_haproxybackend_port}} max_fails=1 fail_timeout=90s;
    }
 
    # Этот сервер принимает весь трафик на порт {{nginx_haproxybackend_port}} и передает его вышестоящему потоку.

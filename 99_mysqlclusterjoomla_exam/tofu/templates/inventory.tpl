@@ -41,6 +41,14 @@ ansible_ssh_transfer_method=smart
 ansible_ssh_port=22
 ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
 
+[nodeselk:vars]
+ansible_ssh_user=devops 
+ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
+ansible_ssh_transfer_method=smart
+ansible_ssh_port=22
+ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
+
+
 [nodesdb:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519

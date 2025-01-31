@@ -1,17 +1,8 @@
 
-resource "yandex_compute_disk" "volumes" {
-  count = 3
-  name     = "disk-nodewebstatic-${count.index + 1}"
-  type     = "network-hdd"
-  size     = 1
-  zone     = var.yc_zone
-
-}
-
-resource "yandex_compute_instance" "nodeweb" {
+resource "yandex_compute_instance" "nodeelk" {
   depends_on = [resource.yandex_compute_instance.bastion]
-  name = "otus-nodeweb-${count.index + 1}"
-  hostname="otus-nodeweb-${count.index + 1}"
+  name = "otus-nodeelk-${count.index + 1}"
+  hostname="otus-nodeelk-${count.index + 1}"
     platform_id = "standard-v1"
     count = 1
 
@@ -21,43 +12,37 @@ resource "yandex_compute_instance" "nodeweb" {
 
   resources {
     cores  = 2
-    memory = 2
-    core_fraction = 5
+    memory = 6
+    core_fraction = 20
   }
 
    
   boot_disk {
     initialize_params {
-      name     = "boot-disk-nodeweb-${count.index + 1}"
+      name     = "boot-disk-nodeelk-${count.index + 1}"
       size     = "10"
       #image_id = "fd8p9iv9fkpds5pueviu"
       image_id = data.yandex_compute_image.debian12.image_id
     }
   }
 
- secondary_disk {
-      
-      disk_id = yandex_compute_disk.volumes[count.index].id
-
-  }
-
   network_interface  { 
       index = "0"
       subnet_id = yandex_vpc_subnet.subnet-manage.id
-      ip_address = "10.200.0.${count.index + 10}"
+      ip_address = "10.200.0.${count.index + 150}"
       security_group_ids = [yandex_vpc_security_group.nat-instance-sg.id]
   }
 
   network_interface  { 
       index = "1"
       subnet_id = yandex_vpc_subnet.subnet-web.id
-      ip_address = "10.100.0.${count.index + 10}"
+      ip_address = "10.100.0.${count.index + 150}"
   }
 
   network_interface {
       index = "2"    
       subnet_id = yandex_vpc_subnet.subnet-db.id
-      ip_address = "10.110.0.${count.index + 10}"
+      ip_address = "10.110.0.${count.index + 150}"
   }
 
   

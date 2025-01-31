@@ -12,7 +12,7 @@ nginx_listen_port: 80
 nginx_listen_httpsport: 443
 
 nginx_upstream_port: 80
-nginx_haproxybackend_port: 7000
+nginx_haproxybackend_port: 5601
 nginx_server_name: "{{ ansible_host }}"
 web_dns: 8.8.8.8
 

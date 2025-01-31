@@ -1,7 +1,7 @@
    server {
       #haproxy
-      listen {{nginx_haproxybackend_port}};
-      
+      #listen {{nginx_haproxybackend_port}};
+      listen 80;      
       server_name {{ nginx_server_name }};
 
       location / {

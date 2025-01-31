@@ -18,6 +18,12 @@ resource "local_file" "inventory" {
       nodeweb_name               = yandex_compute_instance.nodeweb.*.name,
       nodeweb_internal_ip_address = yandex_compute_instance.nodeweb.*.network_interface.0.ip_address,
 
+      nodeelk_name               = yandex_compute_instance.nodeelk.*.name,
+      nodeelk_internal_ip_address = yandex_compute_instance.nodeelk.*.network_interface.0.ip_address,
+
+      nodeprom_name               = yandex_compute_instance.nodeprom.*.name,
+      nodeprom_internal_ip_address = yandex_compute_instance.nodeprom.*.network_interface.0.ip_address,            
+
       # nodehaproxybackend_name               = yandex_compute_instance.nodehaproxybackend.*.name,
       # nodehaproxybackend_internal_ip_address = yandex_compute_instance.nodehaproxybackend.*.network_interface.0.ip_address,   
 
@@ -82,8 +88,17 @@ resource "local_file" "group_vars" {
       nodeweb_internal_ip_web = yandex_compute_instance.nodeweb.*.network_interface.1.ip_address,
       nodeweb_internal_ip_db = yandex_compute_instance.nodeweb.*.network_interface.2.ip_address,
 
+      nodeelk_name               = yandex_compute_instance.nodeelk.*.name,
+      nodeelk_internal_ip_web = yandex_compute_instance.nodeelk.*.network_interface.1.ip_address,
+      nodeelk_internal_ip_db = yandex_compute_instance.nodeelk.*.network_interface.2.ip_address,  
+
+      nodeprom_name               = yandex_compute_instance.nodeprom.*.name,
+      nodeprom_internal_ip_web = yandex_compute_instance.nodeprom.*.network_interface.1.ip_address,
+      nodeprom_internal_ip_db = yandex_compute_instance.nodeprom.*.network_interface.2.ip_address,     
+
       # nodehaproxybackend_name               = yandex_compute_instance.nodehaproxybackend.*.name,
       # nodehaproxybackend_internal_ip_db = yandex_compute_instance.nodehaproxybackend.*.network_interface.1.ip_address,   
+
 
       nodeetcdbackend_name               = yandex_compute_instance.nodeetcdbackend.*.name,
       nodeetcdbackend_internal_ip_db = yandex_compute_instance.nodeetcdbackend.*.network_interface.1.ip_address,    
