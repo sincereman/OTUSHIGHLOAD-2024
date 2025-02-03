@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of 009_install_elk
+  hosts:
+    - nodeselk
+  become: true
+  roles:
+    - { role: '009_install_elk' }

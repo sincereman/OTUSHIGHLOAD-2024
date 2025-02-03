@@ -1,0 +1,24 @@
+
+input {
+  file {
+    path => ["/var/log/logstash/*.log"]
+    start_position => "beginning"
+  }
+}
+
+filter {
+  grok {
+    match => { "message" => "\[%{TIMESTAMP_ISO8601:timestamp}\]\[%{DATA:severity}%{SPACE}\]\[%{DATA:source}%{SPACE}\]%{SPACE}%{GREEDYDATA:message}" }
+    overwrite => [ "message" ]
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["https://localhost:9200"]
+    index => "logstash-logs-%{+YYYY.MM}"
+            user => "elastic"
+            password => "{{ elastic_password }}"
+            cacert => "/etc/logstash/certs/http_ca.crt"
+  }
+}

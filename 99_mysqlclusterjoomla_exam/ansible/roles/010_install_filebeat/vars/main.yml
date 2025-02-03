@@ -1,0 +1,10 @@
+---
+
+
+#logstash
+
+logstash_ip: "10.100.0.150"
+
+#filebeat
+
+#

@@ -1,4 +1,24 @@
 ---
+
+#JVM
+
+jvm_memory_restrict: 2
+
+#elastic
+elastic_user: "elastic"
+elastic_password: "DrwVWCY-Jd*GhempEHo5"
+
+#kibana
+
+kibana_user: "kibana_system"
+kibana_password: "mtbg5rIwh*E*eWuBCECG"
+
+#logstash
+
+logstash_ip: "10.100.0.150"
+
+#filebeat
+
 #nodes
 otus_nodedb_1: "10.110.0.50"
 otus_nodedb_2: "10.110.0.51"

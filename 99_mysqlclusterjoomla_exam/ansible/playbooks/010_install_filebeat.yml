@@ -1,0 +1,9 @@
+---
+
+- name: Playbook of 010_install_filebeat
+  hosts:
+    - nodesweb
+    - bastions
+  become: true
+  roles:
+    - { role: '010_install_filebeat' }

@@ -1,3 +1,7 @@
+
+https://itproblog.ru/сбор-журналов-nginx-в-elasticsearch/
+
+
 apt install apt-transport-https -y
 apt install gnupg2 -y
 

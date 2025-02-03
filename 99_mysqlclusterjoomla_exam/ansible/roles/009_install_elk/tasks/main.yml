@@ -1,16 +1,24 @@
 ---
-- name: check_vars
-  ansible.builtin.include_tasks: check_vars.yml
+- name: install_elastic
+  ansible.builtin.include_tasks: install_elastic.yml
   tags:
-    - proxysql
-    - check
+    - install_elastic
+    - passwordreset
 
-- name: install_proxysql
-  ansible.builtin.include_tasks: install_proxysql.yml
+- name: install_kibana
+  ansible.builtin.include_tasks: install_kibana.yml
   tags:
-    - install_proxysql
+    - install_kibana
+    - passwordresetkibana
 
-- name: configure_proxysql
-  ansible.builtin.include_tasks: configure_proxysql.yml
+- name: install_logstash
+  ansible.builtin.include_tasks: install_logstash.yml
   tags:
-    - configure_proxysql
+    - install_logstash
+
+
+# - name: install_filebeat
+#   ansible.builtin.include_tasks: install_filebeat.yml
+#   tags:
+#     - install_filebeat
+ 
