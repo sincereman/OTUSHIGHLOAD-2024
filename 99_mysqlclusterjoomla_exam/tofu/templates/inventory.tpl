@@ -26,6 +26,11 @@ ${name} ansible_host=${nodedb_internal_ip_address[index]}
 ${name} ansible_host=${nodeetcdbackend_internal_ip_address[index]}
 %{ endfor ~}
 
+[nodeselk]
+%{ for index, name in nodeelk_name ~}
+${name} ansible_host=${nodeelk_internal_ip_address[index]}
+%{ endfor ~}
+
 %{ for index, name in bastion_name ~}
 [frontend:vars]
 #ansible_ssh_user=devops 
@@ -49,6 +54,7 @@ ansible_ssh_port=22
 ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
 
 
+#
 [nodesdb:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
@@ -56,11 +62,28 @@ ansible_ssh_transfer_method=smart
 ansible_ssh_port=22
 ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
 
-
 [nodesetcdbackend:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
 ansible_ssh_transfer_method=smart
 ansible_ssh_port=22
 ansible_ssh_common_args='-o  ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
+
+[nodeselk:vars]
+ansible_ssh_user=devops 
+ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
+ansible_ssh_transfer_method=smart
+ansible_ssh_port=22
+ansible_ssh_common_args='-o  ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
+
+
+
+
+# ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "${nodeelk_internal_ip_address[index]}"
+# ssh -J devops@${bastion_external_ip_address[index]} devops@${nodeelk_internal_ip_address[index]} -i ~/.ssh/id_otus_ed25519
+
 %{ endfor ~}
+
+
+
+

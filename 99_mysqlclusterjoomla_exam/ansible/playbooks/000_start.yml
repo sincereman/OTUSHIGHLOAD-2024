@@ -18,11 +18,27 @@
     - all
   become: true
   roles:
-    - { role: 003_nginx_frontend, when: "'frontend' in group_names" }
+    - { role: 003_haproxy_frontend, when: "'frontend' in group_names" }
     - { role: 004_backend_glusterfs, when: "'nodesweb' in group_names" }    
     - { role: 005_nginx_backend, when: "'nodesweb' in group_names" }
     - { role: 006_install_database_mysql, when: "'nodesdb' in group_names" }
     - { role: 007_install_proxysql, when: "'nodesweb' in group_names" }
+    - { role: 009_install_elk, when: "'nodeselk' in group_names" }
 
-    
+
+- name: Playbook of 009_install_elk
+  hosts:
+    - nodeselk
+  become: true
+  roles:
+    - { role: '009_install_elk' }
+
+
+- name: Playbook of 010_install_filebeat
+  hosts:
+    - nodesweb
+    - bastions
+  become: true
+  roles:
+    - { role: '010_install_filebeat' }
 

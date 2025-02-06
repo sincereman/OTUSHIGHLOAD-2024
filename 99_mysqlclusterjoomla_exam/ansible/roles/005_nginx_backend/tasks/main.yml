@@ -122,6 +122,13 @@
     group: '{{ wwwnginxgroup }}'
     mode: '774'
 
+- name: Copy Nginx check file.
+  template:
+    src: "templates/{{ nginx_check_template }}"
+    dest: "{{nginx_app_folder}}/check.php"
+    owner: '{{ wwwnginxuser }}'
+    group: '{{ wwwnginxgroup }}'
+    mode: '774'
 
 
 - name: Copy Nginx site-configuration file.

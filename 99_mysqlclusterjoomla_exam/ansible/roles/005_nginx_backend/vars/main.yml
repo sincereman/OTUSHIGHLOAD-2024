@@ -18,6 +18,7 @@ web_dns: 8.8.8.8
 nginx_config_template: "nginx.conf.j2"
 nginx_app_template: "app.conf.j2"
 nginx_index_template: "index.html.j2"
+nginx_check_template: "check.php.j2"
 
 # SSL Configuration
 nginx_redirect_http_to_https: true
@@ -67,7 +68,7 @@ wp_webserver: nginx
 joomla_install: true
 joomla_force_reinstall: true
 jm_php_version: 8.2
-jm_version: "5.1.4"
+jm_version: "5.2.3"
 jm_install_dir: "{{ nginx_app_folder }}"
 jm_db_name: "joomla"
 jm_db_user: "mysqluser"

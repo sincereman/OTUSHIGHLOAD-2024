@@ -1,0 +1,37 @@
+global_defs {
+   router_id {{ ansible_hostname}}
+}
+
+vrrp_script chk_haproxy {
+        script "killall -0 haproxy"
+        interval 1
+        weight -20
+        debug
+        fall 2
+        rise 2
+}
+
+
+
+vrrp_instance {{ ansible_hostname}} {
+        interface eth1
+        state {% if ansible_hostname == 'otus-backend-haproxy-1' %} MASTER {% else %} BACKUP
+        {% endif %}
+
+        virtual_router_id 150
+        priority {% if ansible_hostname == 'otus-backend-haproxy-1' %} 100 {% else %} 101 
+        {% endif %}
+
+        authentication {
+            auth_type PASS
+            auth_pass otus
+        }
+        track_script {
+                chk_haproxy weight 20
+        }
+        virtual_ipaddress {
+                {{ cluster_virtual_ip }}/32 dev eth1
+        }
+
+
+}

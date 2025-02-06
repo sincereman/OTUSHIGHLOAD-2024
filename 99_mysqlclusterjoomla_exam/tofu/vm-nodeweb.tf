@@ -2,7 +2,7 @@
 resource "yandex_compute_disk" "volumes" {
   count = 3
   name     = "disk-nodewebstatic-${count.index + 1}"
-  type     = "network-hdd"
+  type     = "network-ssd"
   size     = 1
   zone     = var.yc_zone
 
@@ -13,7 +13,7 @@ resource "yandex_compute_instance" "nodeweb" {
   name = "otus-nodeweb-${count.index + 1}"
   hostname="otus-nodeweb-${count.index + 1}"
     platform_id = "standard-v1"
-    count = 1
+    count = 3
 
   scheduling_policy {
     preemptible = true
@@ -22,7 +22,7 @@ resource "yandex_compute_instance" "nodeweb" {
   resources {
     cores  = 2
     memory = 2
-    core_fraction = 5
+    core_fraction = 20
   }
 
    
