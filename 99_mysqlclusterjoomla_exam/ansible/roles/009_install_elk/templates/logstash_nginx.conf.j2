@@ -13,11 +13,38 @@ filter {
   date {
         match => [ "timestamp" , "dd/MMM/YYYY:HH:mm:ss Z" ]
   }
-#   geoip {
-#          source => "remote_ip"
-#          target => "geoip"
-#          add_tag => [ "nginx-geoip" ]
-#   }
+  geoip {
+        source => "remote_ip"
+        target => "geoip"
+        database => "/etc/logstash/GeoLite2-City.mmdb"
+        add_tag => [ "nginx-geoip" ]
+  }
+
+
+
+  if [type] == "haproxy_access" {
+     grok {
+          match => ["message",  "%{HAPROXYHTTP}"]
+          }
+     grok {
+          match => ["message", "%{HAPROXYDATE:accept_date}"]
+          }
+     date {
+          match => ["accept_date", "dd/MMM/yyyy:HH:mm:ss.SSS"]
+          }
+    #  if [host] == "varnish1" {
+    #             mutate {
+    #                     add_field => { "SrvName" => "varnish2" }
+    #                     }
+    #                                     }
+     geoip {
+          source => "client_ip"
+          target => "geoip"
+          database => "/etc/logstash/GeoLite2-City.mmdb"
+          add_tag => [ "haproxy-geoip" ]          
+       }
+    }
+
 }
 
 

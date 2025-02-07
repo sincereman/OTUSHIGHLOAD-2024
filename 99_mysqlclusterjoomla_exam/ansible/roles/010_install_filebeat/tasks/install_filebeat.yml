@@ -27,13 +27,7 @@
   with_items:
     - filebeat
 
-- name: restart filebeat
-  systemd:
-    name: filebeat
-    state: restarted
-    enabled: yes
-
-- name: Copy filebeat-configuration file.
+- name: Copy filebeat-configuration file nginx.
   template:
     src: "templates/modules_nginx.yml.j2"
     dest: /etc/filebeat/modules.d/nginx.yml
@@ -43,10 +37,37 @@
   become: true
   notify:
     - restart filebeat
+  when: "'nodesweb' in group_names"
 
-- name: Copy filebeat-configuration file.
+- name: Copy filebeat-configuration file nginx.
   template:
-    src: "templates/filebeat.yml.j2"
+    src: "templates/modules_nginx.yml.j2"
+    dest: /etc/filebeat/modules.d/nginx.yml
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify:
+    - restart filebeat
+  when: "'bastions' in group_names"
+
+
+- name: Copy filebeat-configuration file haproxy.
+  template:
+    src: "templates/modules_haproxy.yml.j2"
+    dest: /etc/filebeat/modules.d/haproxy.yml
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify:
+    - restart filebeat
+  when: "'frontend' in group_names"
+
+
+- name: Copy filebeat-configuration file nginx.
+  template:
+    src: "templates/filebeat_nginx.yml.j2"
     dest: /etc/filebeat/filebeat.yml 
     owner: root
     group: root
@@ -54,5 +75,35 @@
   become: true
   notify:
     - restart filebeat
+  when: "'nodesweb' in group_names"    
+
+- name: Copy filebeat-configuration file nginx.
+  template:
+    src: "templates/filebeat_nginx.yml.j2"
+    dest: /etc/filebeat/filebeat.yml 
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  notify:
+    - restart filebeat
+  when: "'bastions' in group_names"   
+
+- name: Copy filebeat-configuration file haproxy.
+  template:
+    src: "templates/filebeat_haproxy.yml.j2"
+    dest: /etc/filebeat/filebeat.yml 
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  notify:
+    - restart filebeat
+  when: "'frontend' in group_names"  
 
 
+- name: restart filebeat
+  systemd:
+    name: filebeat
+    state: restarted
+    enabled: yes

@@ -47,6 +47,16 @@
     - restart logstash
 
 
+- name: Download elastic-logstash geoip  file.
+  ansible.builtin.get_url:
+    url: https://git.io/GeoLite2-City.mmdb
+    dest: /etc/logstash/GeoLite2-City.mmdb
+    owner: root
+    group: logstash
+  become: true
+  notify:
+    - restart logstash
+
 # - name: Copy elastic-logstash geoip  file.
 #   copy:
 #     src: /var/lib/logstash/geoip_database_management/1738342717/GeoLite2-City.mmdb 

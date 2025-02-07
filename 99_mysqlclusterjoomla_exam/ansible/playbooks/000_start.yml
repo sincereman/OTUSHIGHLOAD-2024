@@ -38,6 +38,7 @@
   hosts:
     - nodesweb
     - bastions
+    - frontend
   become: true
   roles:
     - { role: '010_install_filebeat' }
