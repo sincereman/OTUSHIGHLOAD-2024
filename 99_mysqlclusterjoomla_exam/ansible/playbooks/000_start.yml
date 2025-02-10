@@ -23,7 +23,6 @@
     - { role: 005_nginx_backend, when: "'nodesweb' in group_names" }
     - { role: 006_install_database_mysql, when: "'nodesdb' in group_names" }
     - { role: 007_install_proxysql, when: "'nodesweb' in group_names" }
-    - { role: 009_install_elk, when: "'nodeselk' in group_names" }
 
 
 - name: Playbook of 009_install_elk

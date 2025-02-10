@@ -1,28 +1,14 @@
 # ============================== Filebeat modules ==============================
 
-#filebeat.config.modules:
-#  # Glob pattern for configuration loading
-#  path: ${path.config}/modules.d/*.yml##
-#
-#  # Set to true to enable config reloading
-#  reload.enabled: true
-#
-#  # Period on which files under path should be checked for changes
-#  reload.period: 5s
+filebeat.config.modules:
+  # Glob pattern for configuration loading
+  path: ${path.config}/modules.d/*.yml
 
+  # Set to true to enable config reloading
+  reload.enabled: true
 
-
-filebeat.inputs:
-- type: log
-  enabled: true
-  paths:
-      - /var/log/haproxy*.log
-  fields:
-    type: haproxy
-  fields_under_root: true
-  scan_frequency: 5s
-
-
+  # Period on which files under path should be checked for changes
+  reload.period: 5s
 
 # ======================= Elasticsearch template setting =======================
 
@@ -33,22 +19,16 @@ setup.template.settings:
 
 
 # ================================== General ===================================
-tags: ["nlb", "haproxy"]
+tags: ["web", "nginx"]
 
 # ================================== Outputs ===================================
 
 # Configure what output to use when sending the data collected by the beat.
 
-
-# Output to console 
-
-#output.console:
-#  pretty: true
-
 # ------------------------------ Logstash Output -------------------------------
 output.logstash:
   # The Logstash hosts  
-  hosts: ["10.100.0.150:5044"]
+  hosts: ["{{ logstash_ip }}:5044"]
 
 # ================================= Processors =================================
 processors:
@@ -57,6 +37,7 @@ processors:
   - add_cloud_metadata: ~
   - add_docker_metadata: ~
   - add_kubernetes_metadata: ~
+
 
 
 

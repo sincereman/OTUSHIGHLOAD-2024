@@ -22,7 +22,7 @@ filter {
 
 
 
-  if [type] == "haproxy_access" {
+  if [type] == "haproxy" {
      grok {
           match => ["message",  "%{HAPROXYHTTP}"]
           }

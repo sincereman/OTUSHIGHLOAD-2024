@@ -2,7 +2,7 @@
 
 - name: restart elastic
   systemd:
-    name: elastic
+    name: elasticsearch
     state: restarted
     enabled: yes
 
