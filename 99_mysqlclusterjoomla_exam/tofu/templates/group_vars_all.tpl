@@ -20,9 +20,6 @@ ${name}-db: ${nodeprom_internal_ip_db[index]}
 %{ for index, name in nodedb_name ~}
 ${name}-db: ${nodedb_internal_ip_db[index]} 
 %{ endfor ~}
-%{ for index, name in nodeetcdbackend_name ~}
-${name}-db: ${nodeetcdbackend_internal_ip_db[index]} 
-%{ endfor ~}
 %{ for index, name in nodeelk_name ~}
 ${name}-web: ${nodeelk_internal_ip_web[index]}
 ${name}-db: ${nodeelk_internal_ip_db[index]} 

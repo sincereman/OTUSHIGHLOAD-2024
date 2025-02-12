@@ -1,0 +1,20 @@
+table ip filter {
+	chain INPUT {
+		type filter hook input priority filter; policy drop;
+		ct state established,related counter packets 90 bytes 3744 accept
+		ct state new tcp dport 22 counter packets 0 bytes 0 accept comment "SSH"
+        tcp dport {22} counter accept
+		ip protocol icmp accept
+		iifname "lo" counter packets 0 bytes 0 accept
+		ct state new tcp dport 80 counter packets 0 bytes 0 accept comment "HTTP"
+		ct state new tcp dport 443 counter packets 0 bytes 0 accept comment "HTTPS"
+	}
+
+	chain FORWARD {
+		type filter hook forward priority filter; policy accept;
+	}
+
+	chain OUTPUT {
+		type filter hook output priority filter; policy accept;
+	}
+}

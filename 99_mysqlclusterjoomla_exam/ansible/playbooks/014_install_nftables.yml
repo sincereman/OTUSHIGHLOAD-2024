@@ -1,0 +1,10 @@
+---
+
+- name: Playbook of 014_install_nftables
+  hosts:
+    - nodesweb
+    - frontend
+    - nodesdb
+  become: true
+  roles:
+    - { role: '014_install_nftables' }

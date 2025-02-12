@@ -134,7 +134,7 @@
   gluster.gluster.gluster_volume:
     state: started
     name: "{{ gluster_volume_name }}"
-  when: (ansible_hostname == "otus-nodeweb-1") 
+  when: (ansible_hostname == "otus-nodeweb-1")
 
 
 

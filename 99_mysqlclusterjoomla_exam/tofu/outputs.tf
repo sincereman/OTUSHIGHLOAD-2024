@@ -80,21 +80,21 @@ output "otus-nodedb"  {
 
 # }
 
-output "otus-nodeetcdbackend"  {
-  value       = [ 
-    for i in yandex_compute_instance.nodeetcdbackend :
-    {
-        name  = i.name
-        id    = i.id
-        fqdn  = i.fqdn
-        #link = "ssh devops@".${i.*.network_interface.0.}." -i ~/.ssh/id_otus_ed25519"  
-        internal_data_ip_manage = i.*.network_interface.0.ip_address           
-        internal_data_ip_db = i.*.network_interface.1.ip_address        
-    }
-  ]
-  description = "info-etcdbackend-node"
+# output "otus-nodeetcdbackend"  {
+#   value       = [ 
+#     for i in yandex_compute_instance.nodeetcdbackend :
+#     {
+#         name  = i.name
+#         id    = i.id
+#         fqdn  = i.fqdn
+#         #link = "ssh devops@".${i.*.network_interface.0.}." -i ~/.ssh/id_otus_ed25519"  
+#         internal_data_ip_manage = i.*.network_interface.0.ip_address           
+#         internal_data_ip_db = i.*.network_interface.1.ip_address        
+#     }
+#   ]
+#   description = "info-etcdbackend-node"
 
-}
+# }
 
 
 output "lb_ip_address" {
