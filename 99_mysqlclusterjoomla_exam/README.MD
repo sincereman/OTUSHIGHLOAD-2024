@@ -1,4 +1,4 @@
-# Домашнее задание 08_ mysql cluster (ProxySQL + Percona XtraDB Cluster)
+# Домашнее задание 99 отказоустойчивый кластер c Joomla на mysql cluster (ProxySQL + Percona XtraDB Cluster) с мониторингом и бэкапом
 
 Развернуть InnoDB или PXC кластер
 
@@ -18,6 +18,9 @@
 Статус "Принято" ставится при успешном запуске одного из вариантов кластера с базой данных.
 
 
+Схема стенда
+
+![alt text](docs/Highload.jpg)
 
 
 ## Выполнение
@@ -31,6 +34,7 @@ export YC_TOKEN=$(yc iam create-token)
 export YC_CLOUD_ID=$(yc config get cloud-id)
 export YC_FOLDER_ID=$(yc config get folder-id)
 ```
+
 
 
 Склонировать к себе  домашнее задание git clone URL
@@ -57,19 +61,26 @@ otus-frontend-1 10.100.0.200 to nodeweb
 otus-frontend-2: 10.100.0.201 to nodeweb
 }
 
-nodeweb {
+nodesweb {
 
 otus-nodeweb-1: 10.100.0.10 / otus-nodeweb-1-db: 10.110.0.10 to nodedb
 otus-nodeweb-2: 10.100.0.11 / otus-nodeweb-1-db: 10.110.0.11 to nodedb
 otus-nodeweb-3: 10.100.0.12 / otus-nodeweb-1-db: 10.110.0.12 to nodedb
 }
 
-nodedb {
+nodesdb {
 otus-nodedb-1: 10.110.0.50
 otus-nodedb-1: 10.110.0.51
 otus-nodedb-1: 10.110.0.52
 }
 
+nodeselk {
+otus-nodeelk-1: 10.110.0.150
+}
+
+nodesbackup {
+otus-nodebackup-1: 10.110.0.220
+}
 
 ```                               
 
@@ -84,262 +95,395 @@ otus-nodedb-1: 10.110.0.52
 
 Outputs:
 
-lb_ip_address = [
-    {
-        external_address_spec = [
-            {
-                address    = "51.250.42.190"
-                ip_version = "ipv4"
-            },
-        ]
-        internal_address_spec = []
-        name                  = "http"
-        port                  = 80
-        protocol              = "tcp"
-        target_port           = 80
-    },
-]
+lb_ip_address = tolist([
+  {
+    "external_address_spec" = toset([
+      {
+        "address" = "158.160.134.110"
+        "ip_version" = "ipv4"
+      },
+    ])
+    "internal_address_spec" = toset([])
+    "name" = "http"
+    "port" = 80
+    "protocol" = "tcp"
+    "target_port" = 80
+  },
+])
 otus-bastion = [
-    {
-        fqdn                    = "otus-bastion-1.ru-central1.internal"
-        id                      = "epd19me381o2q13ld9eg"
-        internal_data_ip_manage = [
-            "10.201.0.13",
-        ]
-        name                    = "otus-bastion-1"
-        public_ip               = [
-            "89.169.163.70",
-        ]
-    },
+  {
+    "fqdn" = "otus-bastion-1.ru-central1.internal"
+    "id" = "epdrmh9cnksihc3pa99j"
+    "internal_data_ip_manage" = [
+      "10.201.0.16",
+    ]
+    "name" = "otus-bastion-1"
+    "public_ip" = [
+      "158.160.21.73",
+    ]
+  },
 ]
 otus-frontend = [
-    {
-        fqdn                    = "otus-frontend-1.ru-central1.internal"
-        id                      = "epdm2giej1qb8pkkj8o5"
-        internal_data_ip_manage = [
-            "10.200.0.200",
-        ]
-        internal_data_ip_web    = [
-            "10.100.0.200",
-        ]
-        name                    = "otus-frontend-1"
-        public_ip               = [
-            "89.169.160.62",
-        ]
-    },
-    {
-        fqdn                    = "otus-frontend-2.ru-central1.internal"
-        id                      = "epd9m0a9tnarr49g388e"
-        internal_data_ip_manage = [
-            "10.200.0.201",
-        ]
-        internal_data_ip_web    = [
-            "10.100.0.201",
-        ]
-        name                    = "otus-frontend-2"
-        public_ip               = [
-            "89.169.161.130",
-        ]
-    },
+  {
+    "fqdn" = "otus-frontend-1.ru-central1.internal"
+    "id" = "epdr1uipuqlm92j620f3"
+    "internal_data_ip_manage" = [
+      "10.200.0.200",
+    ]
+    "internal_data_ip_web" = [
+      "10.100.0.200",
+    ]
+    "name" = "otus-frontend-1"
+    "public_ip" = [
+      "158.160.87.27",
+    ]
+  },
+  {
+    "fqdn" = "otus-frontend-2.ru-central1.internal"
+    "id" = "epdcqmg3ca4j4ctnfblk"
+    "internal_data_ip_manage" = [
+      "10.200.0.201",
+    ]
+    "internal_data_ip_web" = [
+      "10.100.0.201",
+    ]
+    "name" = "otus-frontend-2"
+    "public_ip" = [
+      "158.160.70.225",
+    ]
+  },
+]
+otus-nodebackup = [
+  {
+    "fqdn" = "otus-nodebackup-1.ru-central1.internal"
+    "id" = "epdmq13albtk0b2c30ql"
+    "internal_data_ip_db" = [
+      "10.110.0.220",
+    ]
+    "internal_data_ip_manage" = [
+      "10.200.0.220",
+    ]
+    "internal_data_ip_web" = [
+      "10.100.0.220",
+    ]
+    "name" = "otus-nodebackup-1"
+  },
 ]
 otus-nodedb = [
-    {
-        fqdn                    = "otus-nodedb-1.ru-central1.internal"
-        id                      = "epdlu8r7pdp5pp448sqr"
-        internal_data_ip_db     = [
-            "10.110.0.50",
-        ]
-        internal_data_ip_manage = [
-            "10.200.0.50",
-        ]
-        name                    = "otus-nodedb-1"
-    },
-    {
-        fqdn                    = "otus-nodedb-2.ru-central1.internal"
-        id                      = "epd4a1skrv8ji681gogl"
-        internal_data_ip_db     = [
-            "10.110.0.51",
-        ]
-        internal_data_ip_manage = [
-            "10.200.0.51",
-        ]
-        name                    = "otus-nodedb-2"
-    },
-    {
-        fqdn                    = "otus-nodedb-3.ru-central1.internal"
-        id                      = "epd8ia9hu3q78aqod194"
-        internal_data_ip_db     = [
-            "10.110.0.52",
-        ]
-        internal_data_ip_manage = [
-            "10.200.0.52",
-        ]
-        name                    = "otus-nodedb-3"
-    },
+  {
+    "fqdn" = "otus-nodedb-1.ru-central1.internal"
+    "id" = "epdu7egnv11pfnjeijvm"
+    "internal_data_ip_db" = [
+      "10.110.0.50",
+    ]
+    "internal_data_ip_manage" = [
+      "10.200.0.50",
+    ]
+    "name" = "otus-nodedb-1"
+  },
+  {
+    "fqdn" = "otus-nodedb-2.ru-central1.internal"
+    "id" = "epdkmp7i3jtjod8ngh24"
+    "internal_data_ip_db" = [
+      "10.110.0.51",
+    ]
+    "internal_data_ip_manage" = [
+      "10.200.0.51",
+    ]
+    "name" = "otus-nodedb-2"
+  },
+  {
+    "fqdn" = "otus-nodedb-3.ru-central1.internal"
+    "id" = "epda4j5u6g1qoabu8fim"
+    "internal_data_ip_db" = [
+      "10.110.0.52",
+    ]
+    "internal_data_ip_manage" = [
+      "10.200.0.52",
+    ]
+    "name" = "otus-nodedb-3"
+  },
 ]
 otus-nodeweb = [
-    {
-        fqdn                    = "otus-nodeweb-1.ru-central1.internal"
-        id                      = "epdc2sg063s4r5qfnuvk"
-        internal_data_ip_db     = [
-            "10.110.0.10",
-        ]
-        internal_data_ip_manage = [
-            "10.200.0.10",
-        ]
-        internal_data_ip_web    = [
-            "10.100.0.10",
-        ]
-        name                    = "otus-nodeweb-1"
-    },
-    {
-        fqdn                    = "otus-nodeweb-2.ru-central1.internal"
-        id                      = "epdg6115b282jgdj7kr0"
-        internal_data_ip_db     = [
-            "10.110.0.11",
-        ]
-        internal_data_ip_manage = [
-            "10.200.0.11",
-        ]
-        internal_data_ip_web    = [
-            "10.100.0.11",
-        ]
-        name                    = "otus-nodeweb-2"
-    },
-    {
-        fqdn                    = "otus-nodeweb-3.ru-central1.internal"
-        id                      = "epd4205ifgs7to3buug2"
-        internal_data_ip_db     = [
-            "10.110.0.12",
-        ]
-        internal_data_ip_manage = [
-            "10.200.0.12",
-        ]
-        internal_data_ip_web    = [
-            "10.100.0.12",
-        ]
-        name                    = "otus-nodeweb-3"
-    },
+  {
+    "fqdn" = "otus-nodeweb-1.ru-central1.internal"
+    "id" = "epdts1fh2nvsvu8gqr88"
+    "internal_data_ip_db" = [
+      "10.110.0.10",
+    ]
+    "internal_data_ip_manage" = [
+      "10.200.0.10",
+    ]
+    "internal_data_ip_web" = [
+      "10.100.0.10",
+    ]
+    "name" = "otus-nodeweb-1"
+  },
+  {
+    "fqdn" = "otus-nodeweb-2.ru-central1.internal"
+    "id" = "epdcpcq1hcusitpn99fe"
+    "internal_data_ip_db" = [
+      "10.110.0.11",
+    ]
+    "internal_data_ip_manage" = [
+      "10.200.0.11",
+    ]
+    "internal_data_ip_web" = [
+      "10.100.0.11",
+    ]
+    "name" = "otus-nodeweb-2"
+  },
+  {
+    "fqdn" = "otus-nodeweb-3.ru-central1.internal"
+    "id" = "epd4vj5u4kq6k6jlmlne"
+    "internal_data_ip_db" = [
+      "10.110.0.12",
+    ]
+    "internal_data_ip_manage" = [
+      "10.200.0.12",
+    ]
+    "internal_data_ip_web" = [
+      "10.100.0.12",
+    ]
+    "name" = "otus-nodeweb-3"
+  },
 ]
 
 
 ```
 
-
 ### Дерево проекта
 
 ```shell
 
-sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/08_mysqlcluster$ tree
 .
 ├── ansible
-│   ├── ansible.cfg
-│   ├── group_vars
-│   │   └── all
-│   │       └── main.yml
-│   ├── inventories
-│   │   └── hosts
-│   ├── playbooks
-│   │   ├── 000_start.yml
-│   │   ├── 001_bastion.yml
-│   │   ├── 002_base.yml
-│   │   ├── 003_nginx_frontend.yml
-│   │   ├── 004_backend_glusterfs.yml
-│   │   ├── 005_nginx_backend.yml
-│   │   ├── 006_install_database_mysql.yml
-│   │   ├── 007_install_proxysql.yml
-│   │   └── test.yml
-│   ├── requirements.yml
-│   ├── roles
-│   │   ├── 001_bastion
-│   │   │   ├── handlers
-│   │   │   │   └── main.yml
-│   │   │   └── tasks
-│   │   │       └── main.yml
-│   │   ├── 002_base
-│   │   │   ├── handlers
-│   │   │   │   └── main.yml
-│   │   │   ├── tasks
-│   │   │   │   └── main.yml
-│   │   │   └── templates
-│   │   │       └── hosts.j2
-│   │   ├── 003_nginx_frontend
-│   │   │   ├── handlers
-│   │   │   │   └── main.yml
-│   │   │   ├── tasks
-│   │   │   │   └── main.yml
-│   │   │   ├── templates
-│   │   │   │   ├── app.conf.j2
-│   │   │   │   └── nginx.conf.j2
-│   │   │   └── vars
-│   │   │       └── main.yml
-│   │   ├── 004_backend_glusterfs
-│   │   │   ├── handlers
-│   │   │   │   └── main.yml
-│   │   │   ├── tasks
-│   │   │   │   └── main.yml
-│   │   │   ├── templates
-│   │   │   │   └── nginx.conf.j2
-│   │   │   └── vars
-│   │   │       └── main.yml
-│   │   ├── 005_nginx_backend
-│   │   │   ├── handlers
-│   │   │   │   └── main.yml
-│   │   │   ├── tasks
-│   │   │   │   ├── main.yml
-│   │   │   │   ├── php-fpm.yml
-│   │   │   │   └── wordpress.yml
-│   │   │   ├── templates
-│   │   │   │   ├── app.conf.j2
-│   │   │   │   ├── index.html.j2
-│   │   │   │   ├── index.php.j2
-│   │   │   │   ├── nginx.conf.j2
-│   │   │   │   └── wp-config.php.j2
-│   │   │   └── vars
-│   │   │       └── main.yml
-│   │   ├── 006_install_database_mysql
-│   │   │   ├── etc
-│   │   │   │   ├── LICENSE
-│   │   │   │   └── ssl
-│   │   │   │       ├── ca.pem
-│   │   │   │       ├── server-cert.pem
-│   │   │   │       └── server-key.pem
-│   │   │   ├── handlers
-│   │   │   │   └── main.yml
-│   │   │   ├── tasks
-│   │   │   │   ├── bootstrap_cluster.yml
-│   │   │   │   ├── check-settings-centos.yml
-│   │   │   │   ├── check-settings.yml
-│   │   │   │   ├── configure-centos.yml
-│   │   │   │   ├── configure.yml
-│   │   │   │   ├── databases.yml
-│   │   │   │   ├── install-centos.yml
-│   │   │   │   ├── install.yml
-│   │   │   │   ├── main.yml
-│   │   │   │   ├── secure.yml
-│   │   │   │   └── users.yml
-│   │   │   ├── templates
-│   │   │   │   ├── etc_my.cnf-centos.j2
-│   │   │   │   ├── etc_mysql_my.cnf.j2
-│   │   │   │   ├── etc_mysql_mysqld.cnf.j2
-│   │   │   │   └── root-my-cnf.j2
-│   │   │   └── vars
-│   │   │       └── main.yml
-│   │   └── 007_install_proxysql
-│   │       ├── handlers
-│   │       │   └── main.yml
-│   │       ├── tasks
-│   │       │   ├── check_vars.yml
-│   │       │   ├── configure_proxysql.yml
-│   │       │   ├── install_proxysql.yml
-│   │       │   └── main.yml
-│   │       ├── templates
-│   │       │   ├── proxysql.cnf.j2
-│   │       │   ├── proxysql.logrotate.conf.j2
-│   │       │   └── proxysql.my.cnf.j2
-│   │       └── vars
-│   │           └── main.yml
-│   └── terraform.tfstate
+│   ├── ansible.cfg
+│   ├── group_vars
+│   │   └── all
+│   │       └── main.yml
+│   ├── inventories
+│   │   ├── hosts
+│   │   └── hostsmanual
+│   ├── playbooks
+│   │   ├── 000_start.yml
+│   │   ├── 001_bastion.yml
+│   │   ├── 002_base.yml
+│   │   ├── 003_haproxy_frontend.yml
+│   │   ├── 003_nginx_frontend.yml
+│   │   ├── 004_backend_glusterfs.yml
+│   │   ├── 005_nginx_backend.yml
+│   │   ├── 006_install_database_mysql.yml
+│   │   ├── 007_install_proxysql.yml
+│   │   ├── 009_install_elk.yml
+│   │   ├── 010_install_filebeat.yml
+│   │   ├── 014_install_nftables.yml
+│   │   ├── 015_backupserver.yml
+│   │   ├── 015_dataservers.yml
+│   │   └── test.yml
+│   ├── requirements.yml
+│   ├── roles
+│   │   ├── 001_bastion
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   ├── main.yml
+│   │   │   │   └── nginx.yml
+│   │   │   ├── templates
+│   │   │   │   ├── app.conf.j2
+│   │   │   │   └── nginx.conf.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 002_base
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   └── main.yml
+│   │   │   └── templates
+│   │   │       └── hosts.j2
+│   │   ├── 003_haproxy_frontend
+│   │   │   ├── handlers
+│   │   │   ├── tasks
+│   │   │   │   ├── haproxy.yml
+│   │   │   │   ├── keepalived.yml
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   │   ├── haproxy.cfg
+│   │   │   │   ├── keepalived.conf.j2
+│   │   │   │   └── rsyslog_49_haproxy.conf
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 003_nginx_frontend
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   │   ├── app.conf.j2
+│   │   │   │   └── nginx.conf.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 004_backend_glusterfs
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 005_nginx_backend
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   ├── joomla.yml
+│   │   │   │   ├── main.yml
+│   │   │   │   ├── php-fpm.yml
+│   │   │   │   └── wordpress.yml
+│   │   │   ├── templates
+│   │   │   │   ├── app.conf.j2
+│   │   │   │   ├── check.php.j2
+│   │   │   │   ├── index.html.j2
+│   │   │   │   ├── index.php.j2
+│   │   │   │   ├── nginx.conf.j2
+│   │   │   │   └── wp-config.php.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 006_install_database_mysql
+│   │   │   ├── etc
+│   │   │   │   ├── LICENSE
+│   │   │   │   └── ssl
+│   │   │   │       ├── ca.pem
+│   │   │   │       ├── server-cert.pem
+│   │   │   │       └── server-key.pem
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   ├── bootstrap_cluster.yml
+│   │   │   │   ├── check-settings-centos.yml
+│   │   │   │   ├── check-settings.yml
+│   │   │   │   ├── configure-centos.yml
+│   │   │   │   ├── configure.yml
+│   │   │   │   ├── databases.yml
+│   │   │   │   ├── install-centos.yml
+│   │   │   │   ├── install.yml
+│   │   │   │   ├── main.yml
+│   │   │   │   ├── secure.yml
+│   │   │   │   └── users.yml
+│   │   │   ├── templates
+│   │   │   │   ├── etc_my.cnf-centos.j2
+│   │   │   │   ├── etc_mysql_my.cnf.j2
+│   │   │   │   ├── etc_mysql_mysqld.cnf.j2
+│   │   │   │   └── root-my-cnf.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 007_install_proxysql
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   ├── check_vars.yml
+│   │   │   │   ├── configure_proxysql.yml
+│   │   │   │   ├── install_proxysql.yml
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   │   ├── proxysql.cnf.j2
+│   │   │   │   ├── proxysql.logrotate.conf.j2
+│   │   │   │   └── proxysql.my.cnf.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 009_install_elk
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── README.MD
+│   │   │   ├── tasks
+│   │   │   │   ├── install_elastic.yml
+│   │   │   │   ├── install_filebeat.yml
+│   │   │   │   ├── install_kibana.yml
+│   │   │   │   ├── install_logstash.yml
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   │   ├── elasticsearch.yml.j2
+│   │   │   │   ├── filebeat.yml.j2
+│   │   │   │   ├── jvm_mem.options.j2
+│   │   │   │   ├── kibana.yml.j2
+│   │   │   │   ├── logstash_itself.conf.j2
+│   │   │   │   └── logstash_nginx.conf.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 010_install_filebeat
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── README.MD
+│   │   │   ├── tasks
+│   │   │   │   ├── install_filebeat.yml
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   │   ├── filebeat_haproxy.yml.j2
+│   │   │   │   ├── filebeat_nginx.yml.j2
+│   │   │   │   ├── modules_haproxy.yml.j2
+│   │   │   │   └── modules_nginx.yml.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 012_install_prometeus
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── README.MD
+│   │   │   ├── tasks
+│   │   │   │   ├── install_filebeat.yml
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   │   ├── filebeat_haproxy.yml.j2
+│   │   │   │   ├── filebeat_nginx.yml.j2
+│   │   │   │   ├── modules_haproxy.yml.j2
+│   │   │   │   └── modules_nginx.yml.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 014_install_nftables
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── README.MD
+│   │   │   ├── tasks
+│   │   │   │   ├── install_nftables.yml
+│   │   │   │   └── main.yml
+│   │   │   ├── templates
+│   │   │   │   ├── nftables_frontend.conf.j2
+│   │   │   │   ├── nftables_nodesdb.conf.j2
+│   │   │   │   └── nftables_nodesweb.conf.j2
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   ├── 015_backupserver
+│   │   │   ├── files
+│   │   │   │   ├── id_rsa.pub
+│   │   │   │   └── nftables.conf
+│   │   │   ├── handlers
+│   │   │   │   └── main.yml
+│   │   │   ├── tasks
+│   │   │   │   └── main.yml
+│   │   │   └── vars
+│   │   │       └── main.yml
+│   │   └── 015_dataservers
+│   │       ├── files
+│   │       │   ├── borg-backup-frontend.sh
+│   │       │   ├── borg-backup-nodesdb.sh
+│   │       │   ├── borg-backup-nodesweb.sh
+│   │       │   ├── borg-backup.service
+│   │       │   ├── borg-backup.timer
+│   │       │   ├── id_rsa
+│   │       │   ├── id_rsa.pub
+│   │       │   └── old
+│   │       │       ├── borg-backup-database.sh
+│   │       │       ├── borg-backup-node222.sh
+│   │       │       ├── borg-backup-node225.sh
+│   │       │       ├── borg-backup-nodeX.sh
+│   │       │       ├── borg-backup-rsyslog1.sh
+│   │       │       ├── borg-backup-web2.sh
+│   │       │       └── borg-backup-zabbix.sh
+│   │       ├── handlers
+│   │       │   └── main.yml
+│   │       ├── tasks
+│   │       │   └── main.yml
+│   │       └── vars
+│   │           └── main.yml
+│   └── terraform.tfstate
 ├── images
 ├── opentofu.sh
 ├── README.MD
@@ -353,22 +497,25 @@ sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/08_mysqlcluster$ tree
     ├── providers.tf
     ├── route-table.tf
     ├── scripts
-    │   └── waitssh.sh
+    │   └── waitssh.sh
     ├── security-group.tf
     ├── templates
-    │   ├── group_vars_all.tpl
-    │   └── inventory.tpl
+    │   ├── group_vars_all.tpl
+    │   └── inventory.tpl
     ├── terraform.tfstate
     ├── terraform.tfstate.backup
     ├── variables.tf
+    ├── vm-backend_etcd.tf.notuse
     ├── vm-bastion.tf
     ├── vm-frontend.tf
     ├── vm-nlb.tf
+    ├── vm-nodebackup.tf
     ├── vm-nodedb.tf
+    ├── vm-nodeelk.tf
+    ├── vm-nodeprom.tf
     └── vm-nodeweb.tf
 
-44 directories, 90 files
-
+82 directories, 175 files
 
 ```
 
@@ -377,11 +524,18 @@ sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/08_mysqlcluster$ tree
 - 000_start - запуск всех плейбуков
 - 001_bastion - настройка хоста bastion - задел на будущее - в данной работе используется готовый nat instane
 - 002_base - базовые пакеты chronyd сетевая аналитика
-- 003_nginx-frontend - базовая настройка nginx для апстрим  - используется round-robin
-- 004_backend_glusterfs - создание кластеризованой реплицируемой fs на базе glusterfs - несколько отошел от ДЗ - не хотелось повторять ДЗ 2
-- 005_nginx_backend - относительно предыдущего ДЗ схлопнул в одну роль установку wordpress (можно и не ставить WP управляется переменной в var)
+- 003_haproxy-frontend - базовая настройка haproxy для апстрим  - используется ip hash
+- 004_backend_glusterfs - создание кластеризованой реплицируемой fs на базе glusterfs 
+- 005_nginx_backend - ставится joomla (есть опция развернуть wordpress)
 - 006_install_database_mysql - Установка и настройка Percona XtraDB Cluster, создание пользователей для ProxySQL, Wordpress и создание БД для wordpres. 
 - 007_install_proxysql - установка ProxySQL - обратите внимание что ProxySQL ставится на nginx backend  -чтобы избежать необходимости установки еще одного промежуточного балансировщика. На мой взягляд отказоустойчивость обеспечена в этом случае в полном объеме.
+- 009_install_elk - установка некластеризованного elk
+- 010_install_filebeat - установка filebeat и настройка выгрузки на elk (через logstash)
+- 014_install_nftables - настройка firewall на нодах
+- 015_backupserver - настройка borgbackup сервера
+- 015_dataservers - настройка borg-backup клиента и конфигурирование.
+
+
 
 
 
@@ -391,1073 +545,18 @@ sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/08_mysqlcluster$ tree
 
 ```shell
 
-sincere@sincere-ubuntuotus:~/otus/02_highload/lessons/08_mysqlcluster/ansible$ ansible-playbook playbooks/000_start.yml 
+Очень большой лог и не стал добавлять
 
-PLAY [Playbook of 000_start] *******************************************************************************************************************************************************************************
-
-TASK [Gathering Facts] *************************************************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-frontend-1]
-ok: [otus-frontend-2]
-ok: [otus-bastion-1]
-ok: [otus-nodeweb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-
-TASK [002_base : Set hostname] *****************************************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-ok: [otus-bastion-1]
-ok: [otus-frontend-1]
-ok: [otus-frontend-2]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-3]
-
-TASK [002_base : set timezone] *****************************************************************************************************************************************************************************
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-2]
-changed: [otus-bastion-1]
-changed: [otus-frontend-2]
-changed: [otus-frontend-1]
-changed: [otus-nodeweb-3]
-changed: [otus-nodedb-1]
-changed: [otus-nodedb-2]
-changed: [otus-nodedb-3]
-
-TASK [002_base : Update and upgrade apt packages] **********************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-ok: [otus-frontend-1]
-ok: [otus-frontend-2]
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-ok: [otus-bastion-1]
-
-TASK [002_base : Synchronize datetime | Install chrony] ****************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-ok: [otus-frontend-2]
-ok: [otus-frontend-1]
-ok: [otus-nodedb-3]
-ok: [otus-bastion-1]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [002_base : Synchronize datetime | Turn on chronyd] ***************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-frontend-1]
-ok: [otus-bastion-1]
-ok: [otus-frontend-2]
-ok: [otus-nodeweb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-
-TASK [002_base : install base tools] ***********************************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-ok: [otus-frontend-1]
-ok: [otus-frontend-2]
-ok: [otus-bastion-1]
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [003_nginx_frontend : Check Base Packages] ************************************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-bastion-1] => (item={'package': 'openssl', 'state': 'present'}) 
-skipping: [otus-nodeweb-1] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodeweb-1] => (item={'package': 'openssl', 'state': 'present'}) 
-skipping: [otus-nodeweb-2] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodeweb-2] => (item={'package': 'openssl', 'state': 'present'}) 
-skipping: [otus-nodeweb-3] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodeweb-3] => (item={'package': 'openssl', 'state': 'present'}) 
-skipping: [otus-nodedb-1] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodedb-1] => (item={'package': 'openssl', 'state': 'present'}) 
-skipping: [otus-nodedb-2] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodedb-2] => (item={'package': 'openssl', 'state': 'present'}) 
-skipping: [otus-nodedb-3] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodedb-3] => (item={'package': 'openssl', 'state': 'present'}) 
-ok: [otus-frontend-1] => (item={'package': 'nginx', 'state': 'latest'})
-ok: [otus-frontend-2] => (item={'package': 'nginx', 'state': 'latest'})
-ok: [otus-frontend-1] => (item={'package': 'openssl', 'state': 'present'})
-ok: [otus-frontend-2] => (item={'package': 'openssl', 'state': 'present'})
-
-TASK [003_nginx_frontend : Create a user nginx with a home directory] **************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-frontend-1]
-ok: [otus-frontend-2]
-
-TASK [003_nginx_frontend : adding existing user 'nginxuser' to group sudo] *********************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-frontend-2]
-ok: [otus-frontend-1]
-
-TASK [003_nginx_frontend : Remove DefaultSite (delete file)] ***********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-frontend-1]
-ok: [otus-frontend-2]
-
-TASK [003_nginx_frontend : Delete content & directory] *****************************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodeweb-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodeweb-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodeweb-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodeweb-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodeweb-3] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodeweb-3] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-enabled) 
-changed: [otus-frontend-2] => (item=/etc/nginx/sites-available)
-changed: [otus-frontend-1] => (item=/etc/nginx/sites-available)
-changed: [otus-frontend-1] => (item=/etc/nginx/sites-enabled)
-changed: [otus-frontend-2] => (item=/etc/nginx/sites-enabled)
-
-TASK [003_nginx_frontend : Create conf directory] **********************************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodeweb-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodeweb-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodeweb-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodeweb-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodeweb-3] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodeweb-3] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-enabled) 
-changed: [otus-frontend-1] => (item=/etc/nginx/sites-available)
-changed: [otus-frontend-2] => (item=/etc/nginx/sites-available)
-changed: [otus-frontend-2] => (item=/etc/nginx/sites-enabled)
-changed: [otus-frontend-1] => (item=/etc/nginx/sites-enabled)
-
-TASK [003_nginx_frontend : Create an app directory if it does not exist] ***********************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-frontend-1]
-ok: [otus-frontend-2]
-
-TASK [003_nginx_frontend : Copy Nginx site-configuration file.] ********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-frontend-2]
-ok: [otus-frontend-1]
-
-TASK [003_nginx_frontend : Copy Nginx site-configuration file.] ********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-changed: [otus-frontend-2]
-changed: [otus-frontend-1]
-
-TASK [003_nginx_frontend : Check Nginx Sites File Symlink] *************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-changed: [otus-frontend-2]
-changed: [otus-frontend-1]
-
-TASK [003_nginx_frontend : restart nginx] ******************************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-changed: [otus-frontend-1]
-changed: [otus-frontend-2]
-
-TASK [004_backend_glusterfs : Add node1 to /etc/hosts] *****************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [004_backend_glusterfs : Add node1 to /etc/hosts] *****************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-
-TASK [004_backend_glusterfs : Add node1 to /etc/hosts] *****************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [004_backend_glusterfs : Install mkfs.xfs] ************************************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item={'package': 'xfsprogs', 'state': 'latest'}) 
-skipping: [otus-frontend-1] => (item={'package': 'xfsprogs', 'state': 'latest'}) 
-skipping: [otus-frontend-2] => (item={'package': 'xfsprogs', 'state': 'latest'}) 
-skipping: [otus-nodedb-1] => (item={'package': 'xfsprogs', 'state': 'latest'}) 
-skipping: [otus-nodedb-2] => (item={'package': 'xfsprogs', 'state': 'latest'}) 
-skipping: [otus-nodedb-3] => (item={'package': 'xfsprogs', 'state': 'latest'}) 
-ok: [otus-nodeweb-2] => (item={'package': 'xfsprogs', 'state': 'latest'})
-ok: [otus-nodeweb-3] => (item={'package': 'xfsprogs', 'state': 'latest'})
-ok: [otus-nodeweb-1] => (item={'package': 'xfsprogs', 'state': 'latest'})
-
-TASK [004_backend_glusterfs : Configuring xfs on /dev/vdb] *************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-[WARNING]: Consider using 'become', 'become_method', and 'become_user' rather than running sudo
-changed: [otus-nodeweb-2]
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-3]
-
-TASK [004_backend_glusterfs : Ensure Gluster mount directories exist.] *************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item=/glusterfs) 
-skipping: [otus-bastion-1] => (item=/glusterfs/br0) 
-skipping: [otus-frontend-1] => (item=/glusterfs) 
-skipping: [otus-frontend-1] => (item=/glusterfs/br0) 
-skipping: [otus-frontend-2] => (item=/glusterfs) 
-skipping: [otus-frontend-2] => (item=/glusterfs/br0) 
-skipping: [otus-nodedb-1] => (item=/glusterfs) 
-skipping: [otus-nodedb-1] => (item=/glusterfs/br0) 
-skipping: [otus-nodedb-2] => (item=/glusterfs) 
-skipping: [otus-nodedb-2] => (item=/glusterfs/br0) 
-skipping: [otus-nodedb-3] => (item=/glusterfs) 
-skipping: [otus-nodedb-3] => (item=/glusterfs/br0) 
-ok: [otus-nodeweb-2] => (item=/glusterfs)
-ok: [otus-nodeweb-1] => (item=/glusterfs)
-ok: [otus-nodeweb-3] => (item=/glusterfs)
-ok: [otus-nodeweb-2] => (item=/glusterfs/br0)
-ok: [otus-nodeweb-1] => (item=/glusterfs/br0)
-ok: [otus-nodeweb-3] => (item=/glusterfs/br0)
-
-TASK [004_backend_glusterfs : Ensure Gluster disk is mounted.] *********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [004_backend_glusterfs : Install GlusterFS server & client] *******************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-ok: [otus-nodeweb-1]
-
-TASK [004_backend_glusterfs : Restart GlusterFS] ***********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [004_backend_glusterfs : Create a trusted storage pool] ***********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-1]
-
-TASK [004_backend_glusterfs : Ensure Gluster mount volume directories exist.] ******************************************************************************************************************************
-skipping: [otus-bastion-1] => (item=/glusterfs/br0/g0) 
-skipping: [otus-bastion-1] => (item=/opt/gfsvol) 
-skipping: [otus-frontend-1] => (item=/glusterfs/br0/g0) 
-skipping: [otus-frontend-1] => (item=/opt/gfsvol) 
-skipping: [otus-frontend-2] => (item=/glusterfs/br0/g0) 
-skipping: [otus-frontend-2] => (item=/opt/gfsvol) 
-skipping: [otus-nodedb-1] => (item=/glusterfs/br0/g0) 
-skipping: [otus-nodedb-1] => (item=/opt/gfsvol) 
-skipping: [otus-nodedb-2] => (item=/glusterfs/br0/g0) 
-skipping: [otus-nodedb-2] => (item=/opt/gfsvol) 
-skipping: [otus-nodedb-3] => (item=/glusterfs/br0/g0) 
-skipping: [otus-nodedb-3] => (item=/opt/gfsvol) 
-ok: [otus-nodeweb-1] => (item=/glusterfs/br0/g0)
-ok: [otus-nodeweb-2] => (item=/glusterfs/br0/g0)
-ok: [otus-nodeweb-3] => (item=/glusterfs/br0/g0)
-ok: [otus-nodeweb-1] => (item=/opt/gfsvol)
-ok: [otus-nodeweb-2] => (item=/opt/gfsvol)
-ok: [otus-nodeweb-3] => (item=/opt/gfsvol)
-
-TASK [004_backend_glusterfs : Create gluster volume] *******************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-1]
-
-TASK [004_backend_glusterfs : Start gluster volume] ********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-1]
-
-TASK [004_backend_glusterfs : Ensure Gluster volume is mounted.] *******************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Check Base Packages] *************************************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-frontend-1] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-frontend-2] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodedb-1] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodedb-2] => (item={'package': 'nginx', 'state': 'latest'}) 
-skipping: [otus-nodedb-3] => (item={'package': 'nginx', 'state': 'latest'}) 
-ok: [otus-nodeweb-2] => (item={'package': 'nginx', 'state': 'latest'})
-ok: [otus-nodeweb-3] => (item={'package': 'nginx', 'state': 'latest'})
-ok: [otus-nodeweb-1] => (item={'package': 'nginx', 'state': 'latest'})
-
-TASK [005_nginx_backend : Create a user nginx with a home directory] ***************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-ok: [otus-nodeweb-2]
-
-TASK [005_nginx_backend : adding existing user 'nginxuser' to group sudo] **********************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Remove DefaultSite (delete file)] ************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Delete content & directory] ******************************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-frontend-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-frontend-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-frontend-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-frontend-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-enabled) 
-changed: [otus-nodeweb-2] => (item=/etc/nginx/sites-available)
-changed: [otus-nodeweb-1] => (item=/etc/nginx/sites-available)
-changed: [otus-nodeweb-3] => (item=/etc/nginx/sites-available)
-changed: [otus-nodeweb-2] => (item=/etc/nginx/sites-enabled)
-changed: [otus-nodeweb-1] => (item=/etc/nginx/sites-enabled)
-changed: [otus-nodeweb-3] => (item=/etc/nginx/sites-enabled)
-
-TASK [005_nginx_backend : Create conf directory] ***********************************************************************************************************************************************************
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-bastion-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-frontend-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-frontend-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-frontend-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-frontend-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-1] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-2] => (item=/etc/nginx/sites-enabled) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-available) 
-skipping: [otus-nodedb-3] => (item=/etc/nginx/sites-enabled) 
-changed: [otus-nodeweb-1] => (item=/etc/nginx/sites-available)
-changed: [otus-nodeweb-2] => (item=/etc/nginx/sites-available)
-changed: [otus-nodeweb-3] => (item=/etc/nginx/sites-available)
-changed: [otus-nodeweb-1] => (item=/etc/nginx/sites-enabled)
-changed: [otus-nodeweb-2] => (item=/etc/nginx/sites-enabled)
-changed: [otus-nodeweb-3] => (item=/etc/nginx/sites-enabled)
-
-TASK [005_nginx_backend : Create an app directory if it does not exist] ************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Copy Nginx index file.] **********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-changed: [otus-nodeweb-3]
-changed: [otus-nodeweb-2]
-changed: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Copy Nginx site-configuration file.] *********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Copy Nginx site-configuration file.] *********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-changed: [otus-nodeweb-3]
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-2]
-
-TASK [005_nginx_backend : Check Nginx Sites File Symlink] **************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-changed: [otus-nodeweb-2]
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Include php-fpm service] *********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/005_nginx_backend/tasks/php-fpm.yml for otus-nodeweb-1, otus-nodeweb-2, otus-nodeweb-3
-
-TASK [005_nginx_backend : Copy Nginx index PHP file.] ******************************************************************************************************************************************************
-changed: [otus-nodeweb-2]
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Install PHP-FPM Debian] **********************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Start php-fpm service] ***********************************************************************************************************************************************************
-changed: [otus-nodeweb-2]
-changed: [otus-nodeweb-3]
-changed: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Include wordpress section] *******************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/005_nginx_backend/tasks/wordpress.yml for otus-nodeweb-1, otus-nodeweb-2, otus-nodeweb-3
-
-TASK [005_nginx_backend : Wordpress | Remove elements from /var/www/html/] *********************************************************************************************************************************
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Wordpress | Create directory] ****************************************************************************************************************************************************
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-changed: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Wordpress | Extract archive in /opt/gfsvol/wordpress] ****************************************************************************************************************************
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-changed: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Wordpress | Move files from /opt/gfsvol/wordpress/wordpress to /opt/gfsvol/wordpress] ********************************************************************************************
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-changed: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Wordpress | Remove wordpress dir] ************************************************************************************************************************************************
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-changed: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Wordpress | Fetch random salts for wp-config.php] ********************************************************************************************************************************
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-ok: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : set wp_salt fact] ****************************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-
-TASK [005_nginx_backend : Wordpress | Copy wp-config.php file] *********************************************************************************************************************************************
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-changed: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Wordpress | Change ownership of installation directory] **************************************************************************************************************************
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-ok: [otus-nodeweb-1]
-
-TASK [005_nginx_backend : Installing dependencies] *********************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-
-TASK [006_install_database_mysql : Check settings] *********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/006_install_database_mysql/tasks/check-settings.yml for otus-nodedb-1, otus-nodedb-2, otus-nodedb-3
-
-TASK [006_install_database_mysql : Check if percona-server is installed] ***********************************************************************************************************************************
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Check for innodb_log_file_size setting (Ubuntu)] ************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Abort when innodb_log_file_size changes] ********************************************************************************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Check settings] *********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Install packets (Debian)] ***********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/006_install_database_mysql/tasks/install.yml for otus-nodedb-1, otus-nodedb-2, otus-nodedb-3
-
-TASK [006_install_database_mysql : Install gnupg] **********************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Install percona-release package] ****************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Update apt cache] *******************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Configure Percona repo for PXC] *****************************************************************************************************************************************
-changed: [otus-nodedb-3]
-changed: [otus-nodedb-2]
-changed: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Configure Percona repo for tools] ***************************************************************************************************************************************
-changed: [otus-nodedb-3]
-changed: [otus-nodedb-1]
-changed: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Update apt cache] *******************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Install python-is-python3 (Ubuntu >= Focal/20.04)] **********************************************************************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : ansible.builtin.debug] **************************************************************************************************************************************************
-ok: [otus-nodedb-1] => {
-    "msg": "ansible_python_interpreter major version: 3"
-}
-ok: [otus-nodedb-2] => {
-    "msg": "ansible_python_interpreter major version: 3"
-}
-ok: [otus-nodedb-3] => {
-    "msg": "ansible_python_interpreter major version: 3"
-}
-
-TASK [006_install_database_mysql : Install package dependencies for ansible MySQL modules (python 2)] ******************************************************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Install package dependencies for ansible MySQL modules (python 3)] ******************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Install percona cluster packages, ProxySQL and dependencies on Debian] **************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Install mc, percona-toolkit and Percona Xtrabackup] *********************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Adjust permissions of datadir] ******************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Install packets (Red Hat)] **********************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Configure (Debian)] *****************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/006_install_database_mysql/tasks/configure.yml for otus-nodedb-1, otus-nodedb-2, otus-nodedb-3
-
-TASK [006_install_database_mysql : Add node1 to /etc/hosts] ************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Add node1 to /etc/hosts] ************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Add node1 to /etc/hosts] ************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Update the my.cnf] ******************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Update the mysqld.cnf] **************************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Restart mysql to apply changes done in my.cnf file] *********************************************************************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Copy the same SSL certs to all nodes (./ssl dir from project)] **********************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Configure (Red Hat)] ****************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Bootstrap cluster] ******************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/006_install_database_mysql/tasks/bootstrap_cluster.yml for otus-nodedb-1, otus-nodedb-2, otus-nodedb-3
-
-TASK [006_install_database_mysql : Start bootstap service] *************************************************************************************************************************************************
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-fatal: [otus-nodedb-1]: FAILED! => {"changed": false, "msg": "Unable to start service mysql@bootstrap: Job for mysql@bootstrap.service failed because the control process exited with error code.\nSee \"systemctl status mysql@bootstrap.service\" and \"journalctl -xeu mysql@bootstrap.service\" for details.\n"}
-...ignoring
-
-TASK [006_install_database_mysql : Pause 2 seconds to let bootstrap start] *********************************************************************************************************************************
-Pausing for 2 seconds
-(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Start mysql services] ***************************************************************************************************************************************************
-skipping: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-ok: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Pause 3 seconds to let hosts sync] **************************************************************************************************************************************
-Pausing for 3 seconds
-(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Stop bootstrap] *********************************************************************************************************************************************************
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Start mysql service on first] *******************************************************************************************************************************************
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Secure installation] ****************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/006_install_database_mysql/tasks/secure.yml for otus-nodedb-1, otus-nodedb-2, otus-nodedb-3
-
-TASK [006_install_database_mysql : Check if /root/.my.cnf file exists if installing >= 5.7 on Red Hat (to determine if new install)] ***********************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Parse temporary password from mysql log, getting last one] **************************************************************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Set root password (using temp password to log in)] **********************************************************************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Red Hat: Copy .my.cnf file into the root home folder after initial root password changed] *******************************************************************************
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Set the root password] **************************************************************************************************************************************************
-ok: [otus-nodedb-3] => (item=otus-nodedb-3)
-[WARNING]: Option column_case_sensitive is not provided. The default is now false, so the column's name will be uppercased. The default will be changed to true in community.mysql 4.0.0.
-ok: [otus-nodedb-1] => (item=otus-nodedb-1)
-ok: [otus-nodedb-2] => (item=otus-nodedb-2)
-
-TASK [006_install_database_mysql : Copy .my.cnf file into the root home folder] ****************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Pause 2 seconds] ********************************************************************************************************************************************************
-Pausing for 2 seconds
-(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Set the root password] **************************************************************************************************************************************************
-changed: [otus-nodedb-3] => (item=127.0.0.1)
-ok: [otus-nodedb-1] => (item=127.0.0.1)
-ok: [otus-nodedb-2] => (item=127.0.0.1)
-changed: [otus-nodedb-3] => (item=::1)
-ok: [otus-nodedb-1] => (item=::1)
-ok: [otus-nodedb-2] => (item=::1)
-changed: [otus-nodedb-3] => (item=localhost)
-ok: [otus-nodedb-2] => (item=localhost)
-ok: [otus-nodedb-1] => (item=localhost)
-
-TASK [006_install_database_mysql : Ensure anonymous users are not in the database] *************************************************************************************************************************
-ok: [otus-nodedb-3] => (item=otus-nodedb-3)
-ok: [otus-nodedb-2] => (item=otus-nodedb-2)
-ok: [otus-nodedb-1] => (item=otus-nodedb-1)
-ok: [otus-nodedb-3] => (item=localhost)
-ok: [otus-nodedb-2] => (item=localhost)
-ok: [otus-nodedb-1] => (item=localhost)
-
-TASK [006_install_database_mysql : Remove the test database] ***********************************************************************************************************************************************
-ok: [otus-nodedb-3]
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2]
-
-TASK [006_install_database_mysql : Remove the wordpress database] ******************************************************************************************************************************************
-ok: [otus-nodedb-1]
-
-TASK [006_install_database_mysql : Setup DBs] **************************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/006_install_database_mysql/tasks/databases.yml for otus-nodedb-1, otus-nodedb-2, otus-nodedb-3
-
-TASK [006_install_database_mysql : Make sure the MySQL databases are present] ******************************************************************************************************************************
-changed: [otus-nodedb-3] => (item={'name': 'wordpress', 'collation': 'utf8_general_ci', 'encoding': 'utf8'})
-ok: [otus-nodedb-1] => (item={'name': 'wordpress', 'collation': 'utf8_general_ci', 'encoding': 'utf8'})
-ok: [otus-nodedb-2] => (item={'name': 'wordpress', 'collation': 'utf8_general_ci', 'encoding': 'utf8'})
-
-TASK [006_install_database_mysql : Load timezone database into MySQL] **************************************************************************************************************************************
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [006_install_database_mysql : Create users] ***********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodeweb-1]
-skipping: [otus-nodeweb-2]
-skipping: [otus-nodeweb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/006_install_database_mysql/tasks/users.yml for otus-nodedb-1, otus-nodedb-2, otus-nodedb-3
-
-TASK [006_install_database_mysql : Make sure the MySQL users are present] **********************************************************************************************************************************
-changed: [otus-nodedb-3] => (item=None)
-ok: [otus-nodedb-2] => (item=None)
-ok: [otus-nodedb-1] => (item=None)
-changed: [otus-nodedb-3] => (item=None)
-changed: [otus-nodedb-3]
-ok: [otus-nodedb-1] => (item=None)
-ok: [otus-nodedb-1]
-ok: [otus-nodedb-2] => (item=None)
-ok: [otus-nodedb-2]
-
-TASK [007_install_proxysql : check_vars] *******************************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-
-TASK [007_install_proxysql : install_proxysql] *************************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/007_install_proxysql/tasks/install_proxysql.yml for otus-nodeweb-1, otus-nodeweb-2, otus-nodeweb-3
-
-TASK [007_install_proxysql : Install gnupg] ****************************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-ok: [otus-nodeweb-1]
-
-TASK [007_install_proxysql : Adds repository key] **********************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [007_install_proxysql : Adds percona repositories] ****************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-ok: [otus-nodeweb-1]
-
-TASK [007_install_proxysql : Installs proxysql & python-mysqldb] *******************************************************************************************************************************************
-ok: [otus-nodeweb-2] => (item=['proxysql', 'python3-mysqldb'])
-ok: [otus-nodeweb-1] => (item=['proxysql', 'python3-mysqldb'])
-ok: [otus-nodeweb-3] => (item=['proxysql', 'python3-mysqldb'])
-
-TASK [007_install_proxysql : Holds proxysql version] *******************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [007_install_proxysql : Installs mysql-common & client] ***********************************************************************************************************************************************
-ok: [otus-nodeweb-2] => (item=['mysql-common', 'default-mysql-client'])
-ok: [otus-nodeweb-1] => (item=['mysql-common', 'default-mysql-client'])
-ok: [otus-nodeweb-3] => (item=['mysql-common', 'default-mysql-client'])
-
-TASK [007_install_proxysql : configure_proxysql] ***********************************************************************************************************************************************************
-skipping: [otus-bastion-1]
-skipping: [otus-frontend-1]
-skipping: [otus-frontend-2]
-skipping: [otus-nodedb-1]
-skipping: [otus-nodedb-2]
-skipping: [otus-nodedb-3]
-included: /home/sincere/otus/02_highload/lessons/08_mysqlcluster/ansible/roles/007_install_proxysql/tasks/configure_proxysql.yml for otus-nodeweb-1, otus-nodeweb-2, otus-nodeweb-3
-
-TASK [007_install_proxysql : Configures proxysql] **********************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [007_install_proxysql : Ensures proxysql is started and enabled] **************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [007_install_proxysql : Creates log dir] **************************************************************************************************************************************************************
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-
-TASK [007_install_proxysql : Adds logrotate] ***************************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-2]
-ok: [otus-nodeweb-3]
-
-TASK [007_install_proxysql : Adds proxysql.my.cnf] *********************************************************************************************************************************************************
-ok: [otus-nodeweb-1]
-ok: [otus-nodeweb-3]
-ok: [otus-nodeweb-2]
-
-RUNNING HANDLER [005_nginx_backend : restart nginx] ********************************************************************************************************************************************************
-skipping: [otus-frontend-2]
-skipping: [otus-frontend-1]
-changed: [otus-nodeweb-2]
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-3]
-
-RUNNING HANDLER [005_nginx_backend : reload nginx] *********************************************************************************************************************************************************
-changed: [otus-nodeweb-2]
-changed: [otus-nodeweb-1]
-changed: [otus-nodeweb-3]
-
-PLAY RECAP *************************************************************************************************************************************************************************************************
-otus-bastion-1             : ok=7    changed=1    unreachable=0    failed=0    skipped=51   rescued=0    ignored=0   
-otus-frontend-1            : ok=18   changed=6    unreachable=0    failed=0    skipped=41   rescued=0    ignored=0   
-otus-frontend-2            : ok=18   changed=6    unreachable=0    failed=0    skipped=41   rescued=0    ignored=0   
-otus-nodedb-1              : ok=47   changed=3    unreachable=0    failed=0    skipped=54   rescued=0    ignored=1   
-otus-nodedb-2              : ok=41   changed=3    unreachable=0    failed=0    skipped=56   rescued=0    ignored=0   
-otus-nodedb-3              : ok=41   changed=6    unreachable=0    failed=0    skipped=56   rescued=0    ignored=0   
-otus-nodeweb-1             : ok=60   changed=17   unreachable=0    failed=0    skipped=23   rescued=0    ignored=0   
-otus-nodeweb-2             : ok=49   changed=12   unreachable=0    failed=0    skipped=34   rescued=0    ignored=0   
-otus-nodeweb-3             : ok=49   changed=11   unreachable=0    failed=0    skipped=34   rescued=0    ignored=0  
-  
 ```
 
 </details>
 
 
 
-Итогом запуска станет настроенный wordpress на интерфейсе nlb балансировщика.
+Итогом запуска станет готовая к финальной настройке joomla на интерфейсе nlb балансировщика.
+там же по адресу nlb/haproxy?stats - будет админка балансировщика haproxy
+По адресу bastion:80 будет доступен web интерфейс elastic
+
 
 
 
