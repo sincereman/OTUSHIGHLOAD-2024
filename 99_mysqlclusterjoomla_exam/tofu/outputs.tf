@@ -11,7 +11,7 @@ output "otus-bastion"  {
 
     }
   ]
-  description = "info-frontend-node"
+  description = "info-bastion-node"
 }
 
 output "otus-frontend"  {
@@ -62,6 +62,22 @@ output "otus-nodedb"  {
   ]
   description = "info-db-node"
 
+}
+
+output "otus-nodebackup"  {
+  value       = [ 
+    for i in yandex_compute_instance.nodebackup :
+    {
+        name  = i.name
+        id    = i.id
+        fqdn  = i.fqdn
+        #link = "ssh devops@".${i.*.network_interface.0.}." -i ~/.ssh/id_otus_ed25519"   
+        internal_data_ip_manage = i.*.network_interface.0.ip_address     
+        internal_data_ip_web = i.*.network_interface.1.ip_address        
+        internal_data_ip_db = i.*.network_interface.2.ip_address
+    }
+  ]
+  description = "info-backup-node"
 }
 
 # output "otus-nodehaproxybackend"  {

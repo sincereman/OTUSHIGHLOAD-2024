@@ -1853,17 +1853,19 @@ MySQL [(none)]> SELECT hostgroup_id,hostname,port,status FROM runtime_mysql_serv
 
 ```
 
-Немножко скринов.
 
-![](<images/Screenshot from 2024-09-14 20-27-40.png>)
+borg list borg@10.200.0.220:/var/backup/{hostname}
 
-![alt text](<images/Screenshot from 2024-09-14 20-28-08.png>)
+borg info borg@10.200.0.220:/var/backup/{hostname}::otus-nodeweb-1-2025-02-13_16:17:33
 
-![alt text](<images/Screenshot from 2024-09-14 20-29-04.png>)
+borg extract borg@10.200.0.220:/var/backup/{hostname}::otus-nodeweb-1-2025-02-13_16:17:33
 
-![alt text](<images/Screenshot from 2024-09-14 20-46-55.png>)
+
 
 ## Задание выполнено!
+
+
+
 
 
 

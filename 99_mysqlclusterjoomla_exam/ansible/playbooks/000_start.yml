@@ -52,3 +52,23 @@
   roles:
     - { role: '010_install_filebeat' }
 
+
+- name: Playbook of "backupserver"
+  hosts:
+    - nodesbackup
+  become: true
+  roles:
+    - role: '../roles/015_backupserver'
+
+
+- name: Playbook of "dataservers"
+  hosts:
+    - frontend
+    - nodesweb
+    - nodesdb
+  become: true
+  roles:
+    - role: '../roles/015_dataservers'    
+
+
+

@@ -6,12 +6,16 @@ table ip filter {
         tcp dport {22} counter accept
 		ip protocol icmp accept
 		iifname "lo" counter packets 0 bytes 0 accept
-		ct state new tcp dport 80 counter packets 0 bytes 0 accept comment "HTTP"
-		ct state new tcp dport 443 counter packets 0 bytes 0 accept comment "HTTPS"
-		ct state new tcp dport { 6032, 6033 } counter packets 0 bytes 0 accept comment "PROXYSQL"     
-		ct state new tcp dport {111, 24007-24050} counter packets 0 bytes 0 accept comment "GLUSTERFSD"
-		ct state new tcp dport 24008 counter packets 0 bytes 0 accept comment "GLUSTERFSD+MANAGE"  
-		ct state new tcp dport {49152, 49153, 49154} counter packets 0 bytes 0 accept comment "GLUSTERFSDBRICK"              
+		ct state new tcp dport 80 counter accept comment "HTTP"
+		ct state new tcp dport 443 counter accept comment "HTTPS"
+        ip saddr 10.200.0.0/24 counter accept comment "MANAGEMENTNET"
+        ip saddr 10.100.0.0/24 counter accept comment "GLUSTERFSNET"
+        #ip saddr 172.28.80.0/24 icmp type echo-request counter accept
+		ct state new tcp dport { 6032, 6033 } counter accept comment "PROXYSQL"     
+		ct state new tcp dport {111, 24007-24050} counter accept comment "GLUSTERFSD"
+		ct state new tcp dport 24008 counter accept comment "GLUSTERFSD+MANAGE"  
+		ct state new tcp dport {49152-49154} counter accept comment "GLUSTERFSDBRICK"
+
 	}
 
 	chain FORWARD {

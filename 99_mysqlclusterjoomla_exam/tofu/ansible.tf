@@ -18,6 +18,9 @@ resource "local_file" "inventory" {
       nodeweb_name               = yandex_compute_instance.nodeweb.*.name,
       nodeweb_internal_ip_address = yandex_compute_instance.nodeweb.*.network_interface.0.ip_address,
 
+      nodebackup_name               = yandex_compute_instance.nodebackup.*.name,
+      nodebackup_internal_ip_address = yandex_compute_instance.nodebackup.*.network_interface.0.ip_address,
+
       nodeelk_name               = yandex_compute_instance.nodeelk.*.name,
       nodeelk_internal_ip_address = yandex_compute_instance.nodeelk.*.network_interface.0.ip_address,
 
@@ -94,7 +97,11 @@ resource "local_file" "group_vars" {
 
       nodeprom_name               = yandex_compute_instance.nodeprom.*.name,
       nodeprom_internal_ip_web = yandex_compute_instance.nodeprom.*.network_interface.1.ip_address,
-      nodeprom_internal_ip_db = yandex_compute_instance.nodeprom.*.network_interface.2.ip_address,     
+      nodeprom_internal_ip_db = yandex_compute_instance.nodeprom.*.network_interface.2.ip_address,    
+
+      nodebackup_name               = yandex_compute_instance.nodebackup.*.name,
+      nodebackup_internal_ip_web = yandex_compute_instance.nodebackup.*.network_interface.1.ip_address,
+      nodebackup_internal_ip_db = yandex_compute_instance.nodebackup.*.network_interface.2.ip_address,       
 
       # nodehaproxybackend_name               = yandex_compute_instance.nodehaproxybackend.*.name,
       # nodehaproxybackend_internal_ip_db = yandex_compute_instance.nodehaproxybackend.*.network_interface.1.ip_address,   

@@ -2,6 +2,19 @@
 https://itproblog.ru/сбор-журналов-nginx-в-elasticsearch/
 
 
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.10"
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.11"
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.12"
+
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.50"
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.51"
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.52"
+
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.150"
+
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.200"
+ssh-keygen -f "/home/sincere/.ssh/known_hosts" -R "10.200.0.201"
+
 apt install apt-transport-https -y
 apt install gnupg2 -y
 
