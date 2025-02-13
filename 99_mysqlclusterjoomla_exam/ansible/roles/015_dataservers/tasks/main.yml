@@ -1,5 +1,17 @@
 ---
 
+# Install BorgBackup
+ 
+- name: Install borgbackup
+  apt:
+    name: "borgbackup"
+    state: present
+    update_cache: yes
+  become: true
+  tags:
+    - dataserver
+    - borgbackup
+
 
 # Create SSH Key for borg users
 
