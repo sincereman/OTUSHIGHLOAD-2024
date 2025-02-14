@@ -127,7 +127,7 @@
 - name: borg-backup.timer
   service:
     name: borg-backup.timer
-    enabled: yes
+    enabled: true
     state: started
   notify:
     - systemctl daemon reload

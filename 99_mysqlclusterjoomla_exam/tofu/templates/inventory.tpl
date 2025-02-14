@@ -21,6 +21,10 @@ ${name} ansible_host=${nodeweb_internal_ip_address[index]}
 ${name} ansible_host=${nodedb_internal_ip_address[index]}
 %{ endfor ~}
 
+[nodesprom]
+%{ for index, name in nodeprom_name ~}
+${name} ansible_host=${nodeprom_internal_ip_address[index]}
+%{ endfor ~}
 
 [nodeselk]
 %{ for index, name in nodeelk_name ~}
@@ -42,6 +46,13 @@ ${name} ansible_host=${nodebackup_internal_ip_address[index]}
 #ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
 
 [nodesweb:vars]
+ansible_ssh_user=devops 
+ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
+ansible_ssh_transfer_method=smart
+ansible_ssh_port=22
+ansible_ssh_common_args='-o ProxyCommand="ssh -p 22 -W %h:%p -q devops@${bastion_external_ip_address[index]} " -o ServerAliveInterval=15'
+
+[nodesprom:vars]
 ansible_ssh_user=devops 
 ansible_ssh_private_key_file=~/.ssh/id_otus_ed25519
 ansible_ssh_transfer_method=smart

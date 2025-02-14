@@ -1,0 +1,8 @@
+---
+
+
+#prometheus
+
+prometheus_ip: "10.100.0.160"
+prometheus_version : 3.1.0
+alertmanager_version : 0.28.0

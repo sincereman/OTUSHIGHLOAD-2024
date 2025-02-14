@@ -40,13 +40,13 @@
     check_implicit_admin: true
     state: present
     login_unix_socket: "{% if ansible_os_family in ['RedHat', 'Rocky'] %}/var/lib/mysql/mysql.sock{% else %}/var/run/mysqld/mysqld.sock{% endif %}"
-    ignore_errors: yes
   with_items:
     - "{{ ansible_hostname }}"
     # "localhost"
     # - "127.0.0.1"
     # - "::1"
   tags: secure1
+  ignore_errors: true
 
 - name: "Copy .my.cnf file into the root home folder"
   template:

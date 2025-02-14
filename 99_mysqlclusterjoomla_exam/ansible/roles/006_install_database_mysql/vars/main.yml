@@ -137,5 +137,3 @@ mysql_default_authentication_plugin: "mysql_native_password"
 otus_nodedb_1: "10.110.0.50"
 otus_nodedb_2: "10.110.0.51"
 otus_nodedb_3: "10.110.0.52"
-
-

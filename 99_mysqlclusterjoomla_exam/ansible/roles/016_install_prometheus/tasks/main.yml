@@ -1,0 +1,12 @@
+---
+
+- name: install_prometheus
+  ansible.builtin.include_tasks: install_prometheus.yml
+  tags:
+    - install_prometheus
+
+- name: install_alertmanager
+  ansible.builtin.include_tasks: install_alertmanager.yml
+  tags:
+    - install_alertmanager    
+ 

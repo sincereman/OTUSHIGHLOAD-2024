@@ -1,5 +1,8 @@
 ---
 
+elastic_port: 5601
+grafana_port: 3000
+
 nginx_ssl_path: "/etc/nginx/ssl"
 nginx_www_folder: "/usr/share/nginx/html"
 nginx_app_folder: "{{ nginx_www_folder }}/{{ nginx_server_name }}"

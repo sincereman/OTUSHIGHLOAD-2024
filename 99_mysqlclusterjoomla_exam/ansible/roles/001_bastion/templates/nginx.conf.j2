@@ -21,13 +21,19 @@ http {
         include /etc/nginx/conf.d/*.conf;
         include /etc/nginx/sites-enabled/*;
 
-   upstream haproxybackend{
-      #ip_hash; #two least_conn;
-      server 10.100.0.150:{{nginx_haproxybackend_port}};
-      #server 10.200.0.21:{{nginx_haproxybackend_port}} max_fails=1 fail_timeout=90s;
+   upstream elastic{
+
+      server 10.100.0.150:{{elastic_port}};
+
    }
 
-   # Этот сервер принимает весь трафик на порт {{nginx_haproxybackend_port}} и передает его вышестоящему потоку.
+   upstream grafana{
+
+      server 10.100.0.160:{{grafana_port}};
+
+   }
+
+
    # Обратите внимание, что имя вышестоящего потока и proxy_pass должны совпадать.
 
 }

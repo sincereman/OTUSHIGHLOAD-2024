@@ -3,12 +3,12 @@
 - name: "Install gnupg"
   ansible.builtin.apt:
     name: gnupg2
-    update_cache: yes
+    update_cache: true
 
 - name: "Install apt-transport-https"
   ansible.builtin.apt:
     name: apt-transport-https
-    update_cache: yes
+    update_cache: true
 
 - name: Adds repository key
   apt_key:
@@ -34,7 +34,7 @@
     enabled: yes
 
 
-#set_elastic_config
+# set_elastic_config
 
 
 - name: Copy elastic-configuration file.
