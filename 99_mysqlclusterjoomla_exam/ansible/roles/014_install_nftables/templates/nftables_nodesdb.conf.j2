@@ -4,7 +4,9 @@ table ip filter {
 		ct state established,related counter packets 90 bytes 3744 accept
 		ct state new tcp dport 22 counter packets 0 bytes 0 accept comment "SSH"
         tcp dport {22} counter accept
-        ip saddr 10.200.0.0/24 counter accept comment "MANAGEMENTNET"		
+        ip saddr 10.200.0.0/24 counter accept comment "MANAGEMENTNET"
+        ip saddr 10.110.0.0/24 counter accept comment "PROXYSQL"	
+        ip saddr 10.100.0.0/24 counter accept comment "WEB"					
 		ip protocol icmp accept
 		iifname "lo" counter packets 0 bytes 0 accept
 		ct state new tcp dport {3306, 3307, 3308, 33060, 4567, 4568, 4444, 6446, 64460, 6447, 64470} counter packets 0 bytes 0 accept comment "MYSQLD"     

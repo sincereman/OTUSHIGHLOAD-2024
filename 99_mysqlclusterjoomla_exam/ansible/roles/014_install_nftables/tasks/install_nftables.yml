@@ -57,7 +57,7 @@
 #   when: "'bastions' in group_names"
 
 
-- name: Copy filebeat-configuration file for frontend.
+- name: Copy nftables-configuration file for frontend.
   template:
     src: "templates/nftables_frontend.conf.j2"
     dest: /etc/nftables.conf

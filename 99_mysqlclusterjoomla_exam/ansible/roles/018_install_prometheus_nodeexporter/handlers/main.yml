@@ -1,0 +1,6 @@
+---
+# handlers file for 018_install_prometheus_nodeexporter
+- name: restart node_exporter
+  service:
+    name: node_exporter
+    state: restarted

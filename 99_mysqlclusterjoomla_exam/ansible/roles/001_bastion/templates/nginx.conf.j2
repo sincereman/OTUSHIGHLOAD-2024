@@ -34,6 +34,12 @@ http {
    }
 
 
+   upstream haproxy{
+
+      server 10.100.0.200:{{haproxystat_port}};
+
+   }
+
    # Обратите внимание, что имя вышестоящего потока и proxy_pass должны совпадать.
 
 }

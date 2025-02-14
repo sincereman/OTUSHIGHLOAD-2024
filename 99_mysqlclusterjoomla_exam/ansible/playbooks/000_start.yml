@@ -72,3 +72,27 @@
 
 
 
+- name: Playbook of 016_install_prometheus
+  hosts:
+    - nodesprom
+  become: true
+  roles:
+    - { role: '016_install_prometheus' }
+
+
+- name: Playbook of 017_install_grafana
+  hosts:
+    - nodesprom
+  become: true
+  roles:
+    - { role: '017_install_grafana' }
+
+- name: Playbook of "018_install_prometheus_nodeexporter"
+  hosts:
+    - all
+  become: true
+  roles:
+    - role: '../roles/018_install_prometheus_nodeexporter'
+
+  
+      

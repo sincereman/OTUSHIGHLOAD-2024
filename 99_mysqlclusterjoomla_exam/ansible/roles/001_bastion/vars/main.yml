@@ -2,6 +2,7 @@
 
 elastic_port: 5601
 grafana_port: 3000
+haproxystat_port: 7000
 
 nginx_ssl_path: "/etc/nginx/ssl"
 nginx_www_folder: "/usr/share/nginx/html"
