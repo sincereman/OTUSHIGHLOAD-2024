@@ -545,7 +545,21 @@ otus-nodeweb = [
 
 ```shell
 
-Очень большой лог и не стал добавлять
+Очень большой лог и не стал добавлят весь
+
+
+PLAY RECAP *****************************************************************************************************************************************************************
+otus-bastion-1             : ok=32   changed=23   unreachable=0    failed=0    skipped=47   rescued=0    ignored=0   
+otus-frontend-1            : ok=41   changed=29   unreachable=0    failed=0    skipped=50   rescued=0    ignored=0   
+otus-frontend-2            : ok=41   changed=29   unreachable=0    failed=0    skipped=50   rescued=0    ignored=0   
+otus-nodebackup-1          : ok=12   changed=8    unreachable=0    failed=0    skipped=43   rescued=0    ignored=0   
+otus-nodedb-1              : ok=64   changed=37   unreachable=0    failed=0    skipped=50   rescued=0    ignored=0   
+otus-nodedb-2              : ok=37   changed=21   unreachable=0    failed=1    skipped=46   rescued=0    ignored=0   
+otus-nodedb-3              : ok=57   changed=33   unreachable=0    failed=0    skipped=52   rescued=0    ignored=0   
+otus-nodeelk-1             : ok=39   changed=22   unreachable=0    failed=0    skipped=43   rescued=0    ignored=0   
+otus-nodeweb-1             : ok=88   changed=69   unreachable=0    failed=0    skipped=22   rescued=0    ignored=0   
+otus-nodeweb-2             : ok=82   changed=63   unreachable=0    failed=0    skipped=28   rescued=0    ignored=0   
+otus-nodeweb-3             : ok=82   changed=64   unreachable=0    failed=0    skipped=28   rescued=0    ignored=0   
 
 ```
 

@@ -84,3 +84,4 @@
     - restart kibana
 
 
+- meta: flush_handlers

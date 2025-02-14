@@ -82,3 +82,6 @@
     headers:
       Content-Type: "application/json"      
   tags: passwordresetelastic
+
+
+- meta: flush_handlers

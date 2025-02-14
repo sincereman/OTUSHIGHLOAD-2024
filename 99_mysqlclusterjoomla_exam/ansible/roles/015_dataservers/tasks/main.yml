@@ -10,7 +10,7 @@
   become: true
   tags:
     - dataserver
-    - borgbackup
+    - borgbackupcd
 
 
 # Create SSH Key for borg users

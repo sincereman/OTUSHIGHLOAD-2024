@@ -92,3 +92,4 @@
     - restart logstash
 
 
+- meta: flush_handlers
