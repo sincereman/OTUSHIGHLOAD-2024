@@ -30,6 +30,7 @@ resource "yandex_compute_instance" "nodeweb" {
     initialize_params {
       name     = "boot-disk-nodeweb-${count.index + 1}"
       size     = "10"
+      type     = "network-ssd"
       #image_id = "fd8p9iv9fkpds5pueviu"
       image_id = data.yandex_compute_image.debian12.image_id
     }

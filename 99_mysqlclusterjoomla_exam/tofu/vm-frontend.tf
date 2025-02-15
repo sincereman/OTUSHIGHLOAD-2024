@@ -23,6 +23,7 @@ resource "yandex_compute_instance" "frontend" {
     initialize_params {
       name     = "boot-disk-frontend-${count.index + 1}"
       size     = "10"
+      type     = "network-ssd"
       #image_id = "fd8p9iv9fkpds5pueviu"
       image_id = data.yandex_compute_image.debian12.image_id
     }
