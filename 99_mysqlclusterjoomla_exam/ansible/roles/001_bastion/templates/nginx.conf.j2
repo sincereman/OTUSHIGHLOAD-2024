@@ -36,8 +36,8 @@ http {
 
    upstream haproxy{
 
-      server 10.100.0.200:{{haproxystat_port}};
-
+      server 10.100.0.200:{{haproxystat_port}} max_fails=2 fail_timeout=30s;
+      server 10.100.0.201:{{haproxystat_port}} max_fails=2 fail_timeout=30s;
    }
 
    # Обратите внимание, что имя вышестоящего потока и proxy_pass должны совпадать.

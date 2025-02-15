@@ -57,9 +57,9 @@
     mode: 0600
   tags: secure2
 
-- name: "Pause 2 seconds "
+- name: "Pause 10 seconds "
   ansible.builtin.pause:
-    seconds: 2
+    seconds: 10
 
 - name: "Set the root password"
   community.mysql.mysql_user:

@@ -65,6 +65,18 @@
   when: "'frontend' in group_names"
 
 
+- name: Copy filebeat-configuration file mysql.
+  template:
+    src: "templates/modules_mysql.yml.j2"
+    dest: /etc/filebeat/modules.d/mysql.yml
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify:
+    - restart filebeat
+  when: "'nodesdb' in group_names"
+
 - name: Copy filebeat-configuration file nginx.
   template:
     src: "templates/filebeat_nginx.yml.j2"
@@ -101,6 +113,18 @@
     - restart filebeat
   when: "'frontend' in group_names"  
 
+
+- name: Copy filebeat-configuration file mysql.
+  template:
+    src: "templates/filebeat_mysql.yml.j2"
+    dest: /etc/filebeat/filebeat.yml 
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  notify:
+    - restart filebeat
+  when: "'nodesdb' in group_names"  
 
 - name: restart filebeat
   systemd:

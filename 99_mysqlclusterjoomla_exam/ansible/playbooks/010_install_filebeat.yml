@@ -5,6 +5,7 @@
     - nodesweb
     - bastions
     - frontend
+    - nodesdb
   become: true
   roles:
     - { role: '010_install_filebeat' }

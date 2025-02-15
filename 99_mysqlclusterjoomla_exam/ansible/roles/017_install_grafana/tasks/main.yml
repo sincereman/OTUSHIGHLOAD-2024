@@ -90,6 +90,10 @@
     state: started
     enabled: true
 
+- name: "Pause 10 seconds "
+  ansible.builtin.pause:
+    seconds: 10
+
 - name: Check http grafana
   uri:
     url: "http://localhost:3000"  # refactoring: в переменные

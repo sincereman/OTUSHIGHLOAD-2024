@@ -597,30 +597,30 @@ mysql> show status like 'wsrep%';
 +----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
 | Variable_name                    | Value                                                                                                                                          |
 +----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| wsrep_local_state_uuid           | f6816bd1-72b7-11ef-9023-07a9b5465b3d                                                                                                           |
+| wsrep_local_state_uuid           | ec5d46bc-eb84-11ef-bf25-7e8509c4b03c                                                                                                           |
 | wsrep_protocol_version           | 11                                                                                                                                             |
-| wsrep_last_applied               | 277                                                                                                                                            |
-| wsrep_last_committed             | 277                                                                                                                                            |
-| wsrep_monitor_status (L/A/C)     | [ (277, 277), (277, 277), (277, 277) ]                                                                                                         |
-| wsrep_replicated                 | 32                                                                                                                                             |
-| wsrep_replicated_bytes           | 62696                                                                                                                                          |
-| wsrep_repl_keys                  | 145                                                                                                                                            |
-| wsrep_repl_keys_bytes            | 1928                                                                                                                                           |
-| wsrep_repl_data_bytes            | 58613                                                                                                                                          |
+| wsrep_last_applied               | 1669                                                                                                                                           |
+| wsrep_last_committed             | 1669                                                                                                                                           |
+| wsrep_monitor_status (L/A/C)     | [ (4, 4), (1669, 1669), (1669, 1669) ]                                                                                                         |
+| wsrep_replicated                 | 0                                                                                                                                              |
+| wsrep_replicated_bytes           | 0                                                                                                                                              |
+| wsrep_repl_keys                  | 0                                                                                                                                              |
+| wsrep_repl_keys_bytes            | 0                                                                                                                                              |
+| wsrep_repl_data_bytes            | 0                                                                                                                                              |
 | wsrep_repl_other_bytes           | 0                                                                                                                                              |
-| wsrep_received                   | 244                                                                                                                                            |
-| wsrep_received_bytes             | 3384808                                                                                                                                        |
-| wsrep_local_commits              | 29                                                                                                                                             |
+| wsrep_received                   | 3                                                                                                                                              |
+| wsrep_received_bytes             | 320                                                                                                                                            |
+| wsrep_local_commits              | 0                                                                                                                                              |
 | wsrep_local_cert_failures        | 0                                                                                                                                              |
 | wsrep_local_replays              | 0                                                                                                                                              |
 | wsrep_local_send_queue           | 0                                                                                                                                              |
-| wsrep_local_send_queue_max       | 2                                                                                                                                              |
+| wsrep_local_send_queue_max       | 1                                                                                                                                              |
 | wsrep_local_send_queue_min       | 0                                                                                                                                              |
-| wsrep_local_send_queue_avg       | 0.027027                                                                                                                                       |
+| wsrep_local_send_queue_avg       | 0                                                                                                                                              |
 | wsrep_local_recv_queue           | 0                                                                                                                                              |
-| wsrep_local_recv_queue_max       | 40                                                                                                                                             |
+| wsrep_local_recv_queue_max       | 1                                                                                                                                              |
 | wsrep_local_recv_queue_min       | 0                                                                                                                                              |
-| wsrep_local_recv_queue_avg       | 3.58197                                                                                                                                        |
+| wsrep_local_recv_queue_avg       | 0                                                                                                                                              |
 | wsrep_local_cached_downto        | 1                                                                                                                                              |
 | wsrep_flow_control_paused_ns     | 0                                                                                                                                              |
 | wsrep_flow_control_paused        | 0                                                                                                                                              |
@@ -632,66 +632,66 @@ mysql> show status like 'wsrep%';
 | wsrep_flow_control_interval_low  | 173                                                                                                                                            |
 | wsrep_flow_control_interval_high | 173                                                                                                                                            |
 | wsrep_flow_control_status        | OFF                                                                                                                                            |
-| wsrep_cert_deps_distance         | 1.00369                                                                                                                                        |
+| wsrep_cert_deps_distance         | 1.0098                                                                                                                                         |
 | wsrep_apply_oooe                 | 0                                                                                                                                              |
 | wsrep_apply_oool                 | 0                                                                                                                                              |
-| wsrep_apply_window               | 2.18315                                                                                                                                        |
-| wsrep_apply_waits                | 80                                                                                                                                             |
+| wsrep_apply_window               | 6.77273                                                                                                                                        |
+| wsrep_apply_waits                | 42                                                                                                                                             |
 | wsrep_commit_oooe                | 0                                                                                                                                              |
 | wsrep_commit_oool                | 0                                                                                                                                              |
 | wsrep_commit_window              | 1                                                                                                                                              |
 | wsrep_local_state                | 4                                                                                                                                              |
 | wsrep_local_state_comment        | Synced                                                                                                                                         |
-| wsrep_cert_index_size            | 23                                                                                                                                             |
-| wsrep_cert_bucket_count          | 257                                                                                                                                            |
-| wsrep_gcache_pool_size           | 3457152                                                                                                                                        |
+| wsrep_cert_index_size            | 19                                                                                                                                             |
+| wsrep_cert_bucket_count          | 29                                                                                                                                             |
+| wsrep_gcache_pool_size           | 3219504                                                                                                                                        |
 | wsrep_causal_reads               | 0                                                                                                                                              |
-| wsrep_cert_interval              | 0.00369004                                                                                                                                     |
+| wsrep_cert_interval              | 1615.13                                                                                                                                        |
 | wsrep_open_transactions          | 0                                                                                                                                              |
 | wsrep_open_connections           | 0                                                                                                                                              |
 | wsrep_ist_receive_status         |                                                                                                                                                |
 | wsrep_ist_receive_seqno_start    | 0                                                                                                                                              |
 | wsrep_ist_receive_seqno_current  | 0                                                                                                                                              |
 | wsrep_ist_receive_seqno_end      | 0                                                                                                                                              |
-| wsrep_incoming_addresses         | 10.110.0.51:3306,10.110.0.52:3306,10.110.0.50:3306                                                                                             |
+| wsrep_incoming_addresses         | 10.110.0.50:3306,10.110.0.52:3306,10.110.0.51:3306                                                                                             |
 | wsrep_cluster_weight             | 3                                                                                                                                              |
 | wsrep_desync_count               | 0                                                                                                                                              |
 | wsrep_evs_delayed                |                                                                                                                                                |
 | wsrep_evs_evict_list             |                                                                                                                                                |
 | wsrep_evs_repl_latency           | 0/0/0/0/0                                                                                                                                      |
 | wsrep_evs_state                  | OPERATIONAL                                                                                                                                    |
-| wsrep_gcomm_uuid                 | 42360ff4-72bc-11ef-8e78-1e8190ec2f7e                                                                                                           |
+| wsrep_gcomm_uuid                 | 0bd14220-eba8-11ef-a39e-aa4e755121b1                                                                                                           |
 | wsrep_gmcast_segment             | 0                                                                                                                                              |
 | wsrep_cluster_capabilities       |                                                                                                                                                |
-| wsrep_cluster_conf_id            | 5                                                                                                                                              |
+| wsrep_cluster_conf_id            | 7                                                                                                                                              |
 | wsrep_cluster_size               | 3                                                                                                                                              |
-| wsrep_cluster_state_uuid         | f6816bd1-72b7-11ef-9023-07a9b5465b3d                                                                                                           |
+| wsrep_cluster_state_uuid         | ec5d46bc-eb84-11ef-bf25-7e8509c4b03c                                                                                                           |
 | wsrep_cluster_status             | Primary                                                                                                                                        |
 | wsrep_connected                  | ON                                                                                                                                             |
 | wsrep_local_bf_aborts            | 0                                                                                                                                              |
-| wsrep_local_index                | 2                                                                                                                                              |
+| wsrep_local_index                | 0                                                                                                                                              |
 | wsrep_provider_capabilities      | :MULTI_MASTER:CERTIFICATION:PARALLEL_APPLYING:TRX_REPLAY:ISOLATION:PAUSE:CAUSAL_READS:INCREMENTAL_WRITESET:UNORDERED:PREORDERED:STREAMING:NBO: |
 | wsrep_provider_name              | Galera                                                                                                                                         |
 | wsrep_provider_vendor            | Codership Oy <info@codership.com> (modified by Percona <https://percona.com/>)                                                                 |
-| wsrep_provider_version           | 4.17(aa2461d)                                                                                                                                  |
+| wsrep_provider_version           | 4.20(6d8c05a)                                                                                                                                  |
 | wsrep_ready                      | ON                                                                                                                                             |
 | wsrep_thread_count               | 9                                                                                                                                              |
 +----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-79 rows in set (0.02 sec)
-
+79 rows in set (0.05 sec)
 
 
 mysql> SELECT SUBSTRING_INDEX(host, ':', 1) AS host_short, GROUP_CONCAT(DISTINCT user) AS users, COUNT(*) AS threads FROM information_schema.processlist GROUP BY host_short ORDER BY COUNT(*), host_short;
-+-------------------------------------+-------------------------+---------+
-| host_short                          | users                   | threads |
-+-------------------------------------+-------------------------+---------+
-| localhost                           | event_scheduler,root    |       2 |
-| otus-nodeweb-2.ru-central1.internal | mysqluser,psmonitoruser |       2 |
-| otus-nodeweb-1.ru-central1.internal | mysqluser,psmonitoruser |       3 |
-| otus-nodeweb-3.ru-central1.internal | mysqluser,psmonitoruser |       3 |
-|                                     | system user             |       9 |
-+-------------------------------------+-------------------------+---------+
++-------------------------------------+----------------------+---------+
+| host_short                          | users                | threads |
++-------------------------------------+----------------------+---------+
+| otus-nodeweb-1.ru-central1.internal | psmonitoruser        |       1 |
+| otus-nodeweb-2.ru-central1.internal | psmonitoruser        |       1 |
+| otus-nodeweb-3.ru-central1.internal | psmonitoruser        |       1 |
+| localhost                           | event_scheduler,root |       2 |
+|                                     | system user          |       9 |
++-------------------------------------+----------------------+---------+
 5 rows in set, 1 warning (0.00 sec)
+
 
 
 ```
@@ -718,103 +718,8 @@ root@otus-nodedb-3:/home/devops# systemctl status mysql
      Status: "Server shutdown complete"
         CPU: 50.193s
 
-Sep 14 20:09:59 otus-nodedb-3 systemd[1]: mysql.service: Got notification message from PID 17334, but reception only permitted for main PID 16599
-Sep 14 20:10:00 otus-nodedb-3 mysql-systemd[17468]:  SUCCESS!
-Sep 14 20:10:00 otus-nodedb-3 systemd[1]: Started mysql.service - Percona XtraDB Cluster.
-Sep 14 20:42:10 otus-nodedb-3 systemd[1]: Stopping mysql.service - Percona XtraDB Cluster...
-Sep 14 20:42:11 otus-nodedb-3 mysql-systemd[22076]:  SUCCESS! Stopping Percona XtraDB Cluster......
-Sep 14 20:42:26 otus-nodedb-3 mysql-systemd[22105]:  WARNING: mysql pid file /var/run/mysqld/mysqld.pid empty or not readable
-Sep 14 20:42:26 otus-nodedb-3 mysql-systemd[22105]:  WARNING: mysql may be already dead
-Sep 14 20:42:26 otus-nodedb-3 systemd[1]: mysql.service: Deactivated successfully.
-Sep 14 20:42:26 otus-nodedb-3 systemd[1]: Stopped mysql.service - Percona XtraDB Cluster.
-Sep 14 20:42:26 otus-nodedb-3 systemd[1]: mysql.service: Consumed 50.193s CPU time.
 
-mysql> show status like 'wsrep%';
-+----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| Variable_name                    | Value                                                                                                                                          |
-+----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| wsrep_local_state_uuid           | f6816bd1-72b7-11ef-9023-07a9b5465b3d                                                                                                           |
-| wsrep_protocol_version           | 11                                                                                                                                             |
-| wsrep_last_applied               | 278                                                                                                                                            |
-| wsrep_last_committed             | 278                                                                                                                                            |
-| wsrep_monitor_status (L/A/C)     | [ (278, 278), (278, 278), (278, 278) ]                                                                                                         |
-| wsrep_replicated                 | 32                                                                                                                                             |
-| wsrep_replicated_bytes           | 62696                                                                                                                                          |
-| wsrep_repl_keys                  | 145                                                                                                                                            |
-| wsrep_repl_keys_bytes            | 1928                                                                                                                                           |
-| wsrep_repl_data_bytes            | 58613                                                                                                                                          |
-| wsrep_repl_other_bytes           | 0                                                                                                                                              |
-| wsrep_received                   | 245                                                                                                                                            |
-| wsrep_received_bytes             | 3385032                                                                                                                                        |
-| wsrep_local_commits              | 29                                                                                                                                             |
-| wsrep_local_cert_failures        | 0                                                                                                                                              |
-| wsrep_local_replays              | 0                                                                                                                                              |
-| wsrep_local_send_queue           | 0                                                                                                                                              |
-| wsrep_local_send_queue_max       | 2                                                                                                                                              |
-| wsrep_local_send_queue_min       | 0                                                                                                                                              |
-| wsrep_local_send_queue_avg       | 0.027027                                                                                                                                       |
-| wsrep_local_recv_queue           | 0                                                                                                                                              |
-| wsrep_local_recv_queue_max       | 40                                                                                                                                             |
-| wsrep_local_recv_queue_min       | 0                                                                                                                                              |
-| wsrep_local_recv_queue_avg       | 3.56735                                                                                                                                        |
-| wsrep_local_cached_downto        | 1                                                                                                                                              |
-| wsrep_flow_control_paused_ns     | 0                                                                                                                                              |
-| wsrep_flow_control_paused        | 0                                                                                                                                              |
-| wsrep_flow_control_sent          | 0                                                                                                                                              |
-| wsrep_flow_control_recv          | 0                                                                                                                                              |
-| wsrep_flow_control_active        | false                                                                                                                                          |
-| wsrep_flow_control_requested     | false                                                                                                                                          |
-| wsrep_flow_control_interval      | [ 141, 141 ]                                                                                                                                   |
-| wsrep_flow_control_interval_low  | 141                                                                                                                                            |
-| wsrep_flow_control_interval_high | 141                                                                                                                                            |
-| wsrep_flow_control_status        | OFF                                                                                                                                            |
-| wsrep_cert_deps_distance         | 1.00369                                                                                                                                        |
-| wsrep_apply_oooe                 | 0                                                                                                                                              |
-| wsrep_apply_oool                 | 0                                                                                                                                              |
-| wsrep_apply_window               | 2.18315                                                                                                                                        |
-| wsrep_apply_waits                | 80                                                                                                                                             |
-| wsrep_commit_oooe                | 0                                                                                                                                              |
-| wsrep_commit_oool                | 0                                                                                                                                              |
-| wsrep_commit_window              | 1                                                                                                                                              |
-| wsrep_local_state                | 4                                                                                                                                              |
-| wsrep_local_state_comment        | Synced                                                                                                                                         |
-| wsrep_cert_index_size            | 23                                                                                                                                             |
-| wsrep_cert_bucket_count          | 257                                                                                                                                            |
-| wsrep_gcache_pool_size           | 3457400                                                                                                                                        |
-| wsrep_causal_reads               | 0                                                                                                                                              |
-| wsrep_cert_interval              | 0.00369004                                                                                                                                     |
-| wsrep_open_transactions          | 0                                                                                                                                              |
-| wsrep_open_connections           | 0                                                                                                                                              |
-| wsrep_ist_receive_status         |                                                                                                                                                |
-| wsrep_ist_receive_seqno_start    | 0                                                                                                                                              |
-| wsrep_ist_receive_seqno_current  | 0                                                                                                                                              |
-| wsrep_ist_receive_seqno_end      | 0                                                                                                                                              |
-| wsrep_incoming_addresses         | 10.110.0.51:3306,10.110.0.50:3306                                                                                                              |
-| wsrep_cluster_weight             | 2                                                                                                                                              |
-| wsrep_desync_count               | 0                                                                                                                                              |
-| wsrep_evs_delayed                |                                                                                                                                                |
-| wsrep_evs_evict_list             |                                                                                                                                                |
-| wsrep_evs_repl_latency           | 0/0/0/0/0                                                                                                                                      |
-| wsrep_evs_state                  | OPERATIONAL                                                                                                                                    |
-| wsrep_gcomm_uuid                 | 42360ff4-72bc-11ef-8e78-1e8190ec2f7e                                                                                                           |
-| wsrep_gmcast_segment             | 0                                                                                                                                              |
-| wsrep_cluster_capabilities       |                                                                                                                                                |
-| wsrep_cluster_conf_id            | 6                                                                                                                                              |
-| wsrep_cluster_size               | 2                                                                                                                                              |
-| wsrep_cluster_state_uuid         | f6816bd1-72b7-11ef-9023-07a9b5465b3d                                                                                                           |
-| wsrep_cluster_status             | Primary                                                                                                                                        |
-| wsrep_connected                  | ON                                                                                                                                             |
-| wsrep_local_bf_aborts            | 0                                                                                                                                              |
-| wsrep_local_index                | 1                                                                                                                                              |
-| wsrep_provider_capabilities      | :MULTI_MASTER:CERTIFICATION:PARALLEL_APPLYING:TRX_REPLAY:ISOLATION:PAUSE:CAUSAL_READS:INCREMENTAL_WRITESET:UNORDERED:PREORDERED:STREAMING:NBO: |
-| wsrep_provider_name              | Galera                                                                                                                                         |
-| wsrep_provider_vendor            | Codership Oy <info@codership.com> (modified by Percona <https://percona.com/>)                                                                 |
-| wsrep_provider_version           | 4.17(aa2461d)                                                                                                                                  |
-| wsrep_ready                      | ON                                                                                                                                             |
-| wsrep_thread_count               | 9                                                                                                                                              |
-+----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-79 rows in set (0.00 sec)
-
+mysql -h 127.0.0.1 -P6032 -uadmin -p
 
 MySQL [(none)]> SELECT hostgroup_id,hostname,port,status FROM runtime_mysql_servers;
 +--------------+-------------+------+---------+
@@ -827,6 +732,30 @@ MySQL [(none)]> SELECT hostgroup_id,hostname,port,status FROM runtime_mysql_serv
 3 rows in set (0.002 sec)
 
 
+MySQL [(none)]> select hostgroup,srv_host,status,ConnUsed,MaxConnUsed,Queries,Latency_us from stats.stats_mysql_connection_pool order by srv_host;
++-----------+-------------+---------+----------+-------------+---------+------------+
+| hostgroup | srv_host    | status  | ConnUsed | MaxConnUsed | Queries | Latency_us |
++-----------+-------------+---------+----------+-------------+---------+------------+
+| 0         | 10.110.0.50 | SHUNNED | 0        | 1           | 41      | 838        |
+| 0         | 10.110.0.51 | ONLINE  | 0        | 1           | 118     | 1207       |
+| 0         | 10.110.0.52 | ONLINE  | 0        | 1           | 132     | 874        |
++-----------+-------------+---------+----------+-------------+---------+------------+
+3 rows in set (0.015 sec)
+
+
+
+MySQL [(none)]> select * from monitor.mysql_server_ping_log order by time_start_us DESC limit 0,3;
++-------------+------+------------------+----------------------+------------+
+| hostname    | port | time_start_us    | ping_success_time_us | ping_error |
++-------------+------+------------------+----------------------+------------+
+| 10.110.0.52 | 3306 | 1739631219313740 | 628                  | NULL       |
+| 10.110.0.50 | 3306 | 1739631219313441 | 874                  | NULL       |
+| 10.110.0.51 | 3306 | 1739631219313404 | 993                  | NULL       |
++-------------+------+------------------+----------------------+------------+
+3 rows in set (0.001 sec)
+
+
+load mysql servers to runtime;
 
 ```
 Обратно запустим mysql на otus-nodedb-3
@@ -852,10 +781,6 @@ root@otus-nodedb-3:/home/devops# systemctl status mysql
      CGroup: /system.slice/mysql.service
              └─22256 /usr/sbin/mysqld --wsrep_start_position=f6816bd1-72b7-11ef-9023-07a9b5465b3d:277
 
-Sep 14 20:44:47 otus-nodedb-3 systemd[1]: Starting mysql.service - Percona XtraDB Cluster...
-Sep 14 20:44:51 otus-nodedb-3 systemd[1]: mysql.service: Got notification message from PID 22684, but reception only permitted for main PID 22256
-Sep 14 20:44:54 otus-nodedb-3 mysql-systemd[22884]:  SUCCESS!
-Sep 14 20:44:54 otus-nodedb-3 systemd[1]: Started mysql.service - Percona XtraDB Cluster.
 
 
 ```
@@ -866,34 +791,34 @@ Sep 14 20:44:54 otus-nodedb-3 systemd[1]: Started mysql.service - Percona XtraDB
 
 ```shell
 
-mysql> show status like 'wsrep%';
+ysql> show status like 'wsrep%';
 +----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
 | Variable_name                    | Value                                                                                                                                          |
 +----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
-| wsrep_local_state_uuid           | f6816bd1-72b7-11ef-9023-07a9b5465b3d                                                                                                           |
+| wsrep_local_state_uuid           | ec5d46bc-eb84-11ef-bf25-7e8509c4b03c                                                                                                           |
 | wsrep_protocol_version           | 11                                                                                                                                             |
-| wsrep_last_applied               | 279                                                                                                                                            |
-| wsrep_last_committed             | 279                                                                                                                                            |
-| wsrep_monitor_status (L/A/C)     | [ (279, 279), (279, 279), (279, 279) ]                                                                                                         |
-| wsrep_replicated                 | 32                                                                                                                                             |
-| wsrep_replicated_bytes           | 62696                                                                                                                                          |
-| wsrep_repl_keys                  | 145                                                                                                                                            |
-| wsrep_repl_keys_bytes            | 1928                                                                                                                                           |
-| wsrep_repl_data_bytes            | 58613                                                                                                                                          |
+| wsrep_last_applied               | 1675                                                                                                                                           |
+| wsrep_last_committed             | 1675                                                                                                                                           |
+| wsrep_monitor_status (L/A/C)     | [ (6, 6), (1675, 1675), (1675, 1675) ]                                                                                                         |
+| wsrep_replicated                 | 1                                                                                                                                              |
+| wsrep_replicated_bytes           | 1856                                                                                                                                           |
+| wsrep_repl_keys                  | 4                                                                                                                                              |
+| wsrep_repl_keys_bytes            | 56                                                                                                                                             |
+| wsrep_repl_data_bytes            | 1734                                                                                                                                           |
 | wsrep_repl_other_bytes           | 0                                                                                                                                              |
-| wsrep_received                   | 246                                                                                                                                            |
-| wsrep_received_bytes             | 3385336                                                                                                                                        |
-| wsrep_local_commits              | 29                                                                                                                                             |
+| wsrep_received                   | 4                                                                                                                                              |
+| wsrep_received_bytes             | 2176                                                                                                                                           |
+| wsrep_local_commits              | 1                                                                                                                                              |
 | wsrep_local_cert_failures        | 0                                                                                                                                              |
 | wsrep_local_replays              | 0                                                                                                                                              |
 | wsrep_local_send_queue           | 0                                                                                                                                              |
-| wsrep_local_send_queue_max       | 2                                                                                                                                              |
+| wsrep_local_send_queue_max       | 1                                                                                                                                              |
 | wsrep_local_send_queue_min       | 0                                                                                                                                              |
-| wsrep_local_send_queue_avg       | 0.027027                                                                                                                                       |
+| wsrep_local_send_queue_avg       | 0                                                                                                                                              |
 | wsrep_local_recv_queue           | 0                                                                                                                                              |
-| wsrep_local_recv_queue_max       | 40                                                                                                                                             |
+| wsrep_local_recv_queue_max       | 2                                                                                                                                              |
 | wsrep_local_recv_queue_min       | 0                                                                                                                                              |
-| wsrep_local_recv_queue_avg       | 3.55285                                                                                                                                        |
+| wsrep_local_recv_queue_avg       | 0.25                                                                                                                                           |
 | wsrep_local_cached_downto        | 1                                                                                                                                              |
 | wsrep_flow_control_paused_ns     | 0                                                                                                                                              |
 | wsrep_flow_control_paused        | 0                                                                                                                                              |
@@ -905,21 +830,21 @@ mysql> show status like 'wsrep%';
 | wsrep_flow_control_interval_low  | 173                                                                                                                                            |
 | wsrep_flow_control_interval_high | 173                                                                                                                                            |
 | wsrep_flow_control_status        | OFF                                                                                                                                            |
-| wsrep_cert_deps_distance         | 1.00369                                                                                                                                        |
+| wsrep_cert_deps_distance         | 1.00943                                                                                                                                        |
 | wsrep_apply_oooe                 | 0                                                                                                                                              |
 | wsrep_apply_oool                 | 0                                                                                                                                              |
-| wsrep_apply_window               | 2.18315                                                                                                                                        |
-| wsrep_apply_waits                | 80                                                                                                                                             |
+| wsrep_apply_window               | 1                                                                                                                                              |
+| wsrep_apply_waits                | 0                                                                                                                                              |
 | wsrep_commit_oooe                | 0                                                                                                                                              |
 | wsrep_commit_oool                | 0                                                                                                                                              |
 | wsrep_commit_window              | 1                                                                                                                                              |
 | wsrep_local_state                | 4                                                                                                                                              |
 | wsrep_local_state_comment        | Synced                                                                                                                                         |
-| wsrep_cert_index_size            | 23                                                                                                                                             |
-| wsrep_cert_bucket_count          | 257                                                                                                                                            |
-| wsrep_gcache_pool_size           | 3457912                                                                                                                                        |
+| wsrep_cert_index_size            | 19                                                                                                                                             |
+| wsrep_cert_bucket_count          | 29                                                                                                                                             |
+| wsrep_gcache_pool_size           | 3228112                                                                                                                                        |
 | wsrep_causal_reads               | 0                                                                                                                                              |
-| wsrep_cert_interval              | 0.00369004                                                                                                                                     |
+| wsrep_cert_interval              | 1585.7                                                                                                                                         |
 | wsrep_open_transactions          | 0                                                                                                                                              |
 | wsrep_open_connections           | 0                                                                                                                                              |
 | wsrep_ist_receive_status         |                                                                                                                                                |
@@ -931,14 +856,14 @@ mysql> show status like 'wsrep%';
 | wsrep_desync_count               | 0                                                                                                                                              |
 | wsrep_evs_delayed                |                                                                                                                                                |
 | wsrep_evs_evict_list             |                                                                                                                                                |
-| wsrep_evs_repl_latency           | 0.00171546/0.502288/1.00286/0.500572/2                                                                                                         |
+| wsrep_evs_repl_latency           | 0/0/0/0/0                                                                                                                                      |
 | wsrep_evs_state                  | OPERATIONAL                                                                                                                                    |
-| wsrep_gcomm_uuid                 | 42360ff4-72bc-11ef-8e78-1e8190ec2f7e                                                                                                           |
+| wsrep_gcomm_uuid                 | adf2c1b5-ebaa-11ef-8cfe-eaada5d0e6eb                                                                                                           |
 | wsrep_gmcast_segment             | 0                                                                                                                                              |
 | wsrep_cluster_capabilities       |                                                                                                                                                |
-| wsrep_cluster_conf_id            | 7                                                                                                                                              |
+| wsrep_cluster_conf_id            | 9                                                                                                                                              |
 | wsrep_cluster_size               | 3                                                                                                                                              |
-| wsrep_cluster_state_uuid         | f6816bd1-72b7-11ef-9023-07a9b5465b3d                                                                                                           |
+| wsrep_cluster_state_uuid         | ec5d46bc-eb84-11ef-bf25-7e8509c4b03c                                                                                                           |
 | wsrep_cluster_status             | Primary                                                                                                                                        |
 | wsrep_connected                  | ON                                                                                                                                             |
 | wsrep_local_bf_aborts            | 0                                                                                                                                              |
@@ -946,11 +871,14 @@ mysql> show status like 'wsrep%';
 | wsrep_provider_capabilities      | :MULTI_MASTER:CERTIFICATION:PARALLEL_APPLYING:TRX_REPLAY:ISOLATION:PAUSE:CAUSAL_READS:INCREMENTAL_WRITESET:UNORDERED:PREORDERED:STREAMING:NBO: |
 | wsrep_provider_name              | Galera                                                                                                                                         |
 | wsrep_provider_vendor            | Codership Oy <info@codership.com> (modified by Percona <https://percona.com/>)                                                                 |
-| wsrep_provider_version           | 4.17(aa2461d)                                                                                                                                  |
+| wsrep_provider_version           | 4.20(6d8c05a)                                                                                                                                  |
 | wsrep_ready                      | ON                                                                                                                                             |
 | wsrep_thread_count               | 9                                                                                                                                              |
 +----------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------+
 79 rows in set (0.00 sec)
+
+
+
 
 
 MySQL [(none)]> SELECT hostgroup_id,hostname,port,status FROM runtime_mysql_servers;
@@ -961,12 +889,12 @@ MySQL [(none)]> SELECT hostgroup_id,hostname,port,status FROM runtime_mysql_serv
 | 0            | 10.110.0.51 | 3306 | ONLINE |
 | 0            | 10.110.0.52 | 3306 | ONLINE |
 +--------------+-------------+------+--------+
-3 rows in set (0.002 sec)
-
+3 rows in set (0.006 sec)
 
 
 ```
 
+Бэкапчик
 
 borg list borg@10.200.0.220:/var/backup/{hostname}
 
@@ -974,7 +902,7 @@ borg info borg@10.200.0.220:/var/backup/{hostname}::otus-nodeweb-1-2025-02-13_16
 
 borg extract borg@10.200.0.220:/var/backup/{hostname}::otus-nodeweb-1-2025-02-13_16:17:33
 
-
+Prometheus, grafana и ELK в комплекте
 
 ## Задание выполнено!
 
