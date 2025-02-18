@@ -1,0 +1,51 @@
+---
+
+- name: Install haproxy package
+  package:
+    name: haproxy
+    state: present
+    update_cache: yes    
+
+- name: Install rsyslog package
+  package:
+    name: rsyslog
+    state: present
+    update_cache: yes  
+
+- name: Deploy haproxy configuration
+  template:
+    src: templates/haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+  tags:
+    - config
+
+- name: Deploy haproxy rsyslog to elastic
+  template:
+    src: templates/rsyslog_49_haproxy.conf
+    dest: /etc/rsyslog.d/49-haproxy.conf
+    mode: 0644
+  tags:
+    - config
+
+# - name: Create haproxy.log
+#   ansible.builtin.file:
+#     path: /var/log/haproxy.log
+#     owner: root
+#     group: root
+#     mode: '0644'
+
+
+- name: systemctl daemon-reload / start haproxy
+  systemd:
+    daemon_reload: yes
+    name: haproxy
+    state: restarted
+    enabled: yes
+
+- name: systemctl daemon-reload / start rsyslog
+  systemd:
+    daemon_reload: yes
+    name: rsyslog
+    state: restarted
+    enabled: yes

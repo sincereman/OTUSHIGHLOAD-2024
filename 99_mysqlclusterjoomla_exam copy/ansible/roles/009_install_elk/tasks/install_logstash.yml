@@ -1,0 +1,95 @@
+---
+
+- name: "Install gnupg"
+  ansible.builtin.apt:
+    name: gnupg2
+    update_cache: yes
+
+- name: "Install apt-transport-https"
+  ansible.builtin.apt:
+    name: apt-transport-https
+    update_cache: yes
+
+- name: Adds repository key
+  apt_key:
+    url: http://elasticrepo.serveradmin.ru/elastic.asc
+    state: present
+
+- name: Adds elastic alter repositories
+  apt_repository:
+    repo: 'deb http://elasticrepo.serveradmin.ru bookworm main'
+    state: present
+
+- name: Installs logstash
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - logstash
+
+- name: restart logstash
+  systemd:
+    name: logstash
+    state: restarted
+    enabled: yes
+
+# set logstash config 
+
+- name: Copy elastic-logstash ca file.
+  copy:
+    src: /etc/elasticsearch/certs
+    dest: /etc/logstash
+    owner: root
+    group: logstash
+    remote_src: true
+  become: true
+  notify:
+    - restart logstash
+
+
+- name: Download elastic-logstash geoip  file.
+  ansible.builtin.get_url:
+    url: https://git.io/GeoLite2-City.mmdb
+    dest: /etc/logstash/GeoLite2-City.mmdb
+    owner: root
+    group: logstash
+  become: true
+  notify:
+    - restart logstash
+
+# - name: Copy elastic-logstash geoip  file.
+#   copy:
+#     src: /var/lib/logstash/geoip_database_management/1738342717/GeoLite2-City.mmdb 
+#     dest: /etc/logstash
+#     owner: root
+#     group: logstash
+#     remote_src: true
+#   become: true
+#   notify:
+#     - restart logstash
+
+
+- name: Copy elastic-configuration file.
+  template:
+    src: "templates/logstash_itself.conf.j2"
+    dest: /etc/logstash/conf.d/logstash_itself.conf
+    owner: root
+    group: logstash
+    mode: 0660
+  become: true
+  notify:
+    - restart logstash
+
+- name: Copy elastic-configuration file.
+  template:
+    src: "templates/logstash_nginx.conf.j2"
+    dest: /etc/logstash/conf.d/nginx.conf
+    owner: root
+    group: logstash
+    mode: 0660
+  become: true
+  notify:
+    - restart logstash
+
+
+- meta: flush_handlers

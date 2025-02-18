@@ -1,0 +1,133 @@
+---
+
+- name: "Install gnupg"
+  ansible.builtin.apt:
+    name: gnupg2
+    update_cache: yes
+
+- name: "Install apt-transport-https"
+  ansible.builtin.apt:
+    name: apt-transport-https
+    update_cache: yes
+
+- name: Adds repository key
+  apt_key:
+    url: http://elasticrepo.serveradmin.ru/elastic.asc
+    state: present
+
+- name: Adds elastic alter repositories
+  apt_repository:
+    repo: 'deb http://elasticrepo.serveradmin.ru bookworm main'
+    state: present
+
+- name: Installs filebeat
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - filebeat
+
+- name: Copy filebeat-configuration file nginx.
+  template:
+    src: "templates/modules_nginx.yml.j2"
+    dest: /etc/filebeat/modules.d/nginx.yml
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify:
+    - restart filebeat
+  when: "'nodesweb' in group_names"
+
+- name: Copy filebeat-configuration file nginx.
+  template:
+    src: "templates/modules_nginx.yml.j2"
+    dest: /etc/filebeat/modules.d/nginx.yml
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify:
+    - restart filebeat
+  when: "'bastions' in group_names"
+
+
+- name: Copy filebeat-configuration file haproxy.
+  template:
+    src: "templates/modules_haproxy.yml.j2"
+    dest: /etc/filebeat/modules.d/haproxy.yml
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify:
+    - restart filebeat
+  when: "'frontend' in group_names"
+
+
+- name: Copy filebeat-configuration file mysql.
+  template:
+    src: "templates/modules_mysql.yml.j2"
+    dest: /etc/filebeat/modules.d/mysql.yml
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+  notify:
+    - restart filebeat
+  when: "'nodesdb' in group_names"
+
+- name: Copy filebeat-configuration file nginx.
+  template:
+    src: "templates/filebeat_nginx.yml.j2"
+    dest: /etc/filebeat/filebeat.yml 
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  notify:
+    - restart filebeat
+  when: "'nodesweb' in group_names"    
+
+- name: Copy filebeat-configuration file nginx.
+  template:
+    src: "templates/filebeat_nginx.yml.j2"
+    dest: /etc/filebeat/filebeat.yml 
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  notify:
+    - restart filebeat
+  when: "'bastions' in group_names"   
+
+- name: Copy filebeat-configuration file haproxy.
+  template:
+    src: "templates/filebeat_haproxy.yml.j2"
+    dest: /etc/filebeat/filebeat.yml 
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  notify:
+    - restart filebeat
+  when: "'frontend' in group_names"  
+
+
+- name: Copy filebeat-configuration file mysql.
+  template:
+    src: "templates/filebeat_mysql.yml.j2"
+    dest: /etc/filebeat/filebeat.yml 
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  notify:
+    - restart filebeat
+  when: "'nodesdb' in group_names"  
+
+- name: restart filebeat
+  systemd:
+    name: filebeat
+    state: restarted
+    enabled: yes

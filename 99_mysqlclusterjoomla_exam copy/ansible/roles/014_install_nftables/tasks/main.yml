@@ -1,0 +1,7 @@
+---
+
+- name: install_nftables
+  ansible.builtin.include_tasks: install_nftables.yml
+  tags:
+    - install_nftables
+ 

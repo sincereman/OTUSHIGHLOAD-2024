@@ -1,0 +1,33 @@
+---
+
+- name: Configures proxysql
+  template:
+    src: proxysql.cnf.j2
+    dest: /etc/proxysql.cnf
+    mode: 0644
+    backup: true
+  notify:
+    - Load config from file to memory
+
+- name: Ensures proxysql is started and enabled
+  service:
+    name: proxysql
+    state: started
+    enabled: yes
+
+- name: Creates log dir
+  file:
+    path: /var/log/proxysql/
+    state: directory
+
+- name: Adds logrotate
+  template:
+    src: proxysql.logrotate.conf.j2
+    dest: /etc/logrotate.d/proxysql
+    mode: 0644
+
+- name: Adds proxysql.my.cnf
+  template:
+    src: proxysql.my.cnf.j2
+    dest: /etc/proxysql.my.cnf
+    mode: 0600

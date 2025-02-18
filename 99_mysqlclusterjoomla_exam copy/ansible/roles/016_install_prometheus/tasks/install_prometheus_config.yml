@@ -1,0 +1,50 @@
+---
+- name: Register content
+  command: /bin/cat /etc/prometheus/prometheus.yml
+  register: content
+  tags:
+    - install_prometheus_config
+
+- name: Update prometheus.yml
+  lineinfile:
+    insertafter: EOF
+    dest: /etc/prometheus/prometheus.yml
+    line: "\n  - job_name: '{{item}}'\n    static_configs:\n      - targets: [ '{{item}}:9100' ]"
+  with_items:
+    - 10.100.0.200
+    - 10.100.0.201
+    - 10.100.0.10
+    - 10.100.0.11
+    - 10.100.0.12
+    - 10.110.0.50
+    - 10.110.0.51
+    - 10.110.0.52
+    - 10.100.0.150
+    - 10.100.0.160      
+  when: not content is search(item)
+  notify:
+    -  restart prometheus
+  tags:
+    - install_prometheus_config
+
+
+- name: Check http
+  uri:
+    url: "http://localhost:9090"  # refactoring: в переменные
+    return_content: no
+  register: http_response
+  tags:
+    - prometeus-server-configure
+    - test-prometeus-http
+    - install_prometheus_config    
+
+- name: Check http
+  fail:
+    msg: 'Http response detected as fail: {{http_response}}'
+  when: http_response.status != 200
+  tags:
+    - prometeus-server-configure
+    - test-prometeus-http
+    - install_prometheus_config    
+
+- meta: flush_handlers  

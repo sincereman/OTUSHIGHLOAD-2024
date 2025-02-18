@@ -1,7 +1,7 @@
 ---
 
-- meta: end_play
-  when: ansible_os_family != "Debian"
+# - meta: end_play
+#  when: ansible_os_family != "Debian"
 
 
 ### Set hostname

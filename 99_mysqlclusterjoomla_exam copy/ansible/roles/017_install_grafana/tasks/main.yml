@@ -1,0 +1,112 @@
+---
+# tasks file for 017_install_grafana
+
+- name: Security Settings And Install Grafana For RedHat
+  block:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: Stop SELinux
+      shell: setenforce 0
+      ignore_errors: true
+
+    - name: Add Repository
+      yum_repository:
+        name: Grafana
+        description: Grafana YUM repo
+        baseurl: https://packages.grafana.com/oss/rpm
+        gpgkey: https://packages.grafana.com/gpg.key
+        gpgcheck: yes
+        sslverify: yes
+        sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+
+    - name: Install Grafana on RedHat Family
+      yum:
+        name: grafana
+        state: present
+      notify:
+        - grafana systemd
+  when:
+    ansible_os_family == "RedHat"
+
+- name: Security Settings And Install Grafana For Debian
+  block:
+
+    - name: install gpg
+      apt:
+        name:
+          - gpg
+          - adduser
+          - musl
+          - libfontconfig1
+        state: present
+        update_cache: yes
+
+    - name: Download Grafana
+      ansible.builtin.get_url:
+        url: https://dl.grafana.com/oss/release/grafana_11.5.1_amd64.deb
+        dest: /tmp/grafana_11.5.1_amd64.deb
+
+    - name: Install a Grafana .deb package
+      ansible.builtin.apt:
+        deb: /tmp/grafana_11.5.1_amd64.deb
+
+#     - name: Copy gpgkey grafana.
+#       template:
+#         src: "files/grafanagpg.key"
+#         dest: /tmp/grafanagpg.key
+#         owner: root
+#         group: root
+#         mode: 0744
+#       become: true
+
+
+#     - name: Import Grafana Apt Key
+#       apt_key:
+# #        url: https://apt.grafana.com/gpg.key
+#         file: "/tmp/grafanagpg.key"
+#         state: present
+
+#     - name: Add APT Repository
+#       apt_repository:
+#         repo: deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main
+#         state: present
+# # deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main
+
+#     - name: Install Grafana on Debian Family
+#       apt:
+#         name: grafana
+#         state: present
+#       notify:
+#         - grafana systemd
+#   when:
+#     ansible_os_family == "Debian"
+
+
+- name: Systemctl grafana start
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: true
+
+- name: "Pause 10 seconds "
+  ansible.builtin.pause:
+    seconds: 10
+
+- name: Check http grafana
+  uri:
+    url: "http://localhost:3000"  # refactoring: в переменные
+    return_content: no
+  register: http_response_grafana
+  tags:
+    - grafana-service-install
+    - test-grafana-http
+
+- name: Check http grafana
+  fail:
+    msg: 'Http response detected as fail: {{http_response_grafana}}'
+  when: http_response_grafana.status != 200
+  tags:
+    - grafana-service-install
+    - test-grafana-http

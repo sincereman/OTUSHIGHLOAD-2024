@@ -1,0 +1,158 @@
+---
+
+- meta: end_play
+  when: ansible_os_family != "Debian"
+
+- name: Check Base Packages
+  apt:
+    name:         "{{ item.package }}"
+    state:        "{{ item.state }}"
+    update_cache: yes
+  loop:
+    - { package: "nginx",   state: "latest" }
+    - { package: "openssl", state: "present" }
+#    - { package: "apache2-utils", state: "present" }
+
+# add nginx user
+
+- name: Create a user nginx with a home directory
+  ansible.builtin.user:
+    name: "{{ wwwnginxuser }}"
+#    group: www-data
+    create_home: yes
+
+- name: adding existing user '{{ wwwnginxuser }}' to group sudo
+  user:
+    name: '{{ wwwnginxuser }}'
+    groups: '{{ wwwnginxgroup }}'
+    append: yes
+
+
+# - name: Check Nginx SSL Self-signed Configuration
+#   blockinfile:
+#     path:   /etc/nginx/snippets/self-signed.conf
+#     create: yes
+#     block: |
+#       ssl_certificate {{ nginx_ssl_certificate }};
+#       ssl_certificate_key {{ nginx_ssl_certificate_key }};
+
+# - name: Check Nginx SSL Parameters File
+#   blockinfile:
+#     path:   /etc/nginx/snippets/ssl-params.conf
+#     create: yes
+#     block: |
+#       ssl_protocols TLSv1.2 TLSv1.3;
+#       ssl_prefer_server_ciphers on;
+#       # ssl_dhparam /etc/nginx/dhparam.pem;
+#       ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+#       ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
+#       ssl_session_timeout  10m;
+#       ssl_session_cache shared:SSL:10m;
+#       ssl_session_tickets off; # Requires nginx >= 1.5.9
+#       ssl_stapling on; # Requires nginx >= 1.3.7
+#       ssl_stapling_verify on; # Requires nginx => 1.3.7
+#       resolver {{ web_dns }} valid=300s;
+#       resolver_timeout 5s;
+#       # Disable strict transport security for now. You can uncomment the following
+#       # line if you understand the implications.
+#       # add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+#       add_header X-Frame-Options DENY;
+#       add_header X-Content-Type-Options nosniff;
+#       add_header X-XSS-Protection "1; mode=block";
+
+# - name: Create Nginx SSL configuration folder.
+#   file:
+#     path: /etc/nginx/ssl
+#     state: directory
+#     owner: root
+#     group: root
+#     mode: 0700
+#   when: nginx_create_self_signed_cert
+
+# - name: Create self-signed certificate.
+#   command: >
+#     openssl req -new -nodes -x509 -subj "{{ nginx_self_signed_cert_subj }}"
+#     -days 3650 -keyout {{ nginx_ssl_certificate_key }} -out {{ nginx_ssl_certificate }} -extensions v3_ca
+#     creates={{ nginx_ssl_certificate }}
+#   when: nginx_create_self_signed_cert
+
+
+- name: Remove DefaultSite (delete file)
+  ansible.builtin.file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
+- name: Delete content & directory
+  ansible.builtin.file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "/etc/nginx/sites-available"
+    - "/etc/nginx/sites-enabled"
+  tags: conffolder
+
+
+
+- name: Create conf directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "root"
+    group: "root"
+  with_items:
+    - "/etc/nginx/sites-available"
+    - "/etc/nginx/sites-enabled"
+  tags: conffolder
+
+- name: Create an app directory if it does not exist
+  ansible.builtin.file:
+    path:  "{{nginx_app_folder}}"
+    state: directory
+    mode: '2774'
+    recurse: yes
+    owner: '{{ wwwnginxuser }}'
+    group: '{{ wwwnginxgroup }}'
+
+
+
+- name: Copy Nginx site-configuration file.
+  template:
+    src: "templates/{{ nginx_config_template }}"
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0600
+  notify:
+    - restart nginx
+#    - reload daemon
+
+
+- name: Copy Nginx site-configuration file.
+  template:
+    src: "templates/{{ nginx_app_template }}"
+    dest: /etc/nginx/sites-available/{{ nginx_server_name }}
+    owner: root
+    group: root
+    mode: 0600
+  notify:
+    - restart nginx
+#    - reload daemon
+
+- name: Check Nginx Sites File Symlink 
+  file:
+    src:    /etc/nginx/sites-available/{{ nginx_server_name }}
+    dest:   /etc/nginx/sites-enabled/{{ nginx_server_name }}
+    state:  link
+    owner:  root
+    group:  root
+  notify: restart nginx
+
+- name: restart nginx
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
+
+
+

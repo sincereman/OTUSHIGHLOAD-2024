@@ -1,0 +1,8 @@
+---
+
+- name: Playbook of "015_backupserver"
+  hosts:
+    - nodesbackup
+  become: true
+  roles:
+    - role: '../roles/015_backupserver'

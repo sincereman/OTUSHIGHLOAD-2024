@@ -1,0 +1,12 @@
+---
+
+- name: restart nftables
+  systemd:
+    name: nftables
+    state: restarted
+    enabled: yes
+
+
+- name: systemctl daemon reload
+  systemd:
+    daemon_reload: yes

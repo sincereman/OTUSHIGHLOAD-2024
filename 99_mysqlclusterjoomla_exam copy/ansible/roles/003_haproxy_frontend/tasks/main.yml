@@ -1,0 +1,12 @@
+---
+
+
+- name: Make sure handlers are flushed immediately
+  ansible.builtin.meta: flush_handlers
+
+- name: "HAPROXY"
+  ansible.builtin.include_tasks: "haproxy.yml"
+
+
+# - name: "KEEPALIVED"
+#   ansible.builtin.include_tasks: "keepalived.yml"  

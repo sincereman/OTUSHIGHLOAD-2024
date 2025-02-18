@@ -6,10 +6,10 @@ site_name: "otus-6"
 
 # WP
 wp_version: 5.0.3
-wp_install_dir: "/usr/share/nginx/html"
+#wp_install_dir: "/usr/share/nginx/html"
 wp_db_name: "wordpress"
-wp_db_user: "mysqluser"
-wp_db_password: "mysqlpass"
+wp_db_user: "mywpsqluser"
+wp_db_password: "mywpsqlpass"
 #wp_db_host: "{{ ip_address['otus-nodedb-1-db'] }}"
 wp_db_charset: 'utf8'
 wp_db_collate: 'utf8_general_ci'
@@ -23,8 +23,8 @@ wp_webserver: nginx
 # JM
 joomla_install: true
 jm_version: "5-1-4"
-jm_install_dir: "{{ nginx_app_folder }}"
-jm_db_name: "joomla"
+#jm_install_dir: "{{ nginx_app_folder }}"
+jm_db_name: "joomla_db"
 jm_db_user: "mysqluser"
 jm_db_password: "mysqlpass"
 #wp_db_host: "{{ ip_address['otus-nodedb-1-db'] }}"

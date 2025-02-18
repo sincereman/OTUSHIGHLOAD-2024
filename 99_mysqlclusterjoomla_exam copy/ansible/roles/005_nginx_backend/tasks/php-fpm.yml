@@ -1,0 +1,56 @@
+---
+
+
+# PHP
+
+
+## PHP template
+# - name: Copy Nginx index PHP file.
+#   template:
+#     src: "templates/{{ nginx_index_php_template }}"
+#     dest: "{{nginx_app_folder}}/index.php"
+#     owner: '{{ wwwnginxuser }}'
+#     group: '{{ wwwnginxgroup }}'
+#     mode: '774'
+
+
+### install additional package for nginx 
+
+
+# apt install php-fpm -y
+- name: Install PHP-FPM Debian
+  ansible.builtin.apt:
+    name:
+      - "php{{ php_version }}-fpm"
+      - "php{{ php_version }}-common"
+      - "php{{ php_version }}-mysql"
+      - "php{{ php_version }}-bcmath"
+      - "php{{ php_version }}-ctype"
+      - "php-json"
+      - "php{{ php_version }}-mbstring"
+      - "php{{ php_version }}-pdo"
+      - "php{{ php_version }}-tokenizer"
+      - "php{{ php_version }}-xml"
+      - "php{{ php_version }}-xmlrpc"
+      - "php{{ php_version }}-gd"
+      - "php{{ php_version }}-imagick"
+      - "php{{ php_version }}-cli"
+      - "php{{ php_version }}-curl"
+      - "php{{ php_version }}-dev"
+      - "php{{ php_version }}-imap"
+      - "php{{ php_version }}-soap"
+      - "php{{ php_version }}-pgsql"
+    state: latest
+    update_cache: yes
+
+
+
+# systemctl restart php-fpm.service
+- name: Start php-fpm service
+  ansible.builtin.service:
+    name: php{{ php_version }}-fpm
+    state: restarted
+    enabled: yes
+  notify: restart nginx
+
+
