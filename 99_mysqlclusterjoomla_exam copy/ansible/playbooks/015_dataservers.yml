@@ -1,9 +1,0 @@
----
-- name: Playbook of "dataservers"
-  hosts:
-    - frontend
-    - nodesweb
-    - nodesdb
-  become: true
-  roles:
-    - role: '../roles/015_dataservers'

@@ -1,8 +1,0 @@
----
-
-- name: Playbook of 016_install_prometheus
-  hosts:
-    - nodesprom
-  become: true
-  roles:
-    - { role: '016_install_prometheus' }

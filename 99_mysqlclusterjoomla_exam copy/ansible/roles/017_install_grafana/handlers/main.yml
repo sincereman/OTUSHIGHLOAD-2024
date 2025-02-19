@@ -1,8 +1,0 @@
----
-# handlers file for 017_install_grafana
-
-- name: grafana systemd
-  systemd:
-    name: grafana-server
-    enabled: yes
-    state: started

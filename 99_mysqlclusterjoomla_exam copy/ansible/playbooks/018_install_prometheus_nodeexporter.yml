@@ -1,8 +1,0 @@
----
-
-- name: Playbook of "018_install_prometheus_nodeexporter"
-  hosts:
-    - all
-  become: true
-  roles:
-    - role: '../roles/018_install_prometheus_nodeexporter'

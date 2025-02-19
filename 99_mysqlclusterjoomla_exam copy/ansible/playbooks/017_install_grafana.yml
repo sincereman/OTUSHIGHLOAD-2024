@@ -1,8 +1,0 @@
----
-
-- name: Playbook of 017_install_grafana
-  hosts:
-    - nodesprom
-  become: true
-  roles:
-    - { role: '017_install_grafana' }

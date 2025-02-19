@@ -1,8 +1,0 @@
----
-
-- name: Playbook of 003_haproxy_frontend
-  hosts:
-    - frontend
-  become: true
-  roles:
-    - { role: '003_haproxy_frontend' }
